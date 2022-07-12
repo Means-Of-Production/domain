@@ -11,6 +11,7 @@ import {ThingTitle} from "../../valueItems/thingTitle";
 import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
 import {USDMoney} from "../../valueItems/money/USDMoney";
+import {DueDate} from "../../valueItems/dueDate";
 
 const loc = new Location(40.6501, -73.94958)
 
@@ -29,7 +30,7 @@ describe("Loan", () => {
             "testId",
             thing,
             borrower,
-            new Date(2020,12,23)
+            new DueDate(new Date(2020,12,23))
         )
 
         expect(loan.active).toEqual(true)

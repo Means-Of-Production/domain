@@ -1,14 +1,16 @@
-// encapsulates due dates, which are nullable.  Null is considered to be forever, i.e. the latest ever due
+/**
+ * encapsulates due dates, which are nullable.  Null is considered to be forever, i.e. the latest ever due
+ */
 export class DueDate{
     readonly date: Date | null
 
-    constructor(date: Date | null) {
+    constructor(date: Date | null = null) {
         this.date = date
     }
 
     public isLaterThan(other: DueDate): boolean {
         if(!this.date){
-            return other.date ? true : false
+            return !!other.date
         }
 
         if(other.date && this.date){
@@ -27,7 +29,7 @@ export class DueDate{
 
     public isBefore(other: DueDate): boolean {
         if(!other.date){
-            return this.date ? true: false
+            return !!this.date
         }
 
         if(this.date && other.date){
@@ -35,5 +37,10 @@ export class DueDate{
         }
 
         return false
+    }
+
+    public static compare(a: DueDate, b: DueDate): number {
+        if(a.equals(b)){ return 0}
+        return a.isLaterThan(b)? 1: -1
     }
 }

@@ -8,6 +8,7 @@ import {ThingTitle} from "../../valueItems/thingTitle";
 import {Location} from "../../valueItems/location";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Borrower} from "../people/borrower";
+import {DueDate} from "../../valueItems/dueDate";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -69,7 +70,7 @@ describe("Simple Library Tests", () => {
         library.addItem(item)
 
         // act
-        const loan = library.borrow(item, borrower, new Date())
+        const loan = library.borrow(item, borrower, new DueDate())
 
         expect(loan).not.toBeNull()
         const availableTitles = Array.from(library.availableTitles)

@@ -31,7 +31,7 @@ describe("DistributedLibrary", () => {
         const borrower = new Borrower("1",testPerson, underTest)
         underTest.addBorrower(borrower)
 
-         expect(() => underTest.borrow(thing, borrower, new Date())).toThrow(InvalidThingStatusToBorrow)
+         expect(() => underTest.borrow(thing, borrower, new DueDate())).toThrow(InvalidThingStatusToBorrow)
     })
 
     it("makes a loan when borrowing", () => {
@@ -43,7 +43,7 @@ describe("DistributedLibrary", () => {
         )
         const borrower = new Borrower("1",testPerson, underTest)
         underTest.addBorrower(borrower)
-        const loan = underTest.borrow(thing, borrower, new Date())
+        const loan = underTest.borrow(thing, borrower, new DueDate())
 
         expect(loan).not.toBeNull()
         expect(loan.active).toBeTruthy()
@@ -65,5 +65,6 @@ describe("DistributedLibrary", () => {
         const loan = new Loan("loanId", thing, borrower, new DueDate(new Date()))
 
         // action needed!
+        expect(loan).not.toBeNull()
     })
 })
