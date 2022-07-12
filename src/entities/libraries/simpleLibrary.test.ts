@@ -9,6 +9,7 @@ import {Location} from "../../valueItems/location";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
+import {MoneyFactory} from "../../factories/moneyFactory";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -18,8 +19,9 @@ function createLibrary(): SimpleLibrary {
         person,
         location,
         new WaitingListFactory(),
-        new USDMoney(0),
-        []
+        new USDMoney(100),
+        [],
+        new MoneyFactory()
     )
 }
 

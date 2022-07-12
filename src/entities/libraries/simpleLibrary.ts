@@ -12,18 +12,22 @@ import {Person} from "../people/person";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {DueDate} from "../../valueItems/dueDate";
+import {MoneyFactory} from "../../factories/moneyFactory";
+import {FeeStatus} from "../../valueItems/feeStatus";
 
 
 // library which also lends items from a simple, single, location
 export class SimpleLibrary extends BaseLibrary implements ILender{
     private readonly _items: IThing[];
     readonly location: Location
+    readonly moneyFactory: MoneyFactory
 
     constructor(name: string, admin: Person, location: Location,
-                waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
+                waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory) {
         super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans);
         this._items = []
         this.location = location
+        this.moneyFactory = moneyFactory
     }
 
     addItem(item: IThing): IThing{
@@ -63,7 +67,17 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     }
 
     canBorrow(borrower: IBorrower): boolean {
-        return borrower.library.name === this.name;
+        if(borrower.library.name !== this.name){
+            return false
+        }
+
+        const feeAmounts = Array.from(borrower.fees).filter(f => f.status === FeeStatus.OUTSTANDING).map(f => f.amount)
+        const totalFees = this.moneyFactory.total(feeAmounts)
+        if(totalFees.greaterThan(this.maxFinesBeforeSuspension)){
+            return false
+        }
+
+        return true
     }
 
     get allTitles(): Iterable<ThingTitle> {

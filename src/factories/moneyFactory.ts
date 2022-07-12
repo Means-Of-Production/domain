@@ -15,4 +15,13 @@ export class MoneyFactory{
         }
         throw new Error(`Invalid money type of ${this.moneyType}`)
     }
+
+    public total(items: Iterable<IMoney>){
+        let res = this.getEmptyMoney()
+        for(const item of items){
+            res = res.add(item)
+        }
+
+        return res
+    }
 }
