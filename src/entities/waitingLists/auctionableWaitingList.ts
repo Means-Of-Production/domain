@@ -5,6 +5,7 @@ import {IWaitingList} from "./IWaitingList";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {IAuctionBid} from "./IAuctionBid";
 import {WaitingList} from "./waitingList";
+import {MoneyFactory} from "../../factories/moneyFactory";
 
 export class AuctionableWaitingList implements IAuctionableWaitingList{
     readonly ends: Date;
@@ -29,7 +30,7 @@ export class AuctionableWaitingList implements IAuctionableWaitingList{
     }
 
     addBid(bid: IAuctionBid): void {
-        if(!bid.madeFor.id in this.bidsByForId){
+        if(!this.bidsByForId.has(bid.madeFor.id)){
             this.bidsByForId[bid.madeFor.id] = []
         }
         const bids = this.bidsByForId[bid.madeFor.id]
@@ -72,8 +73,8 @@ export class AuctionableWaitingList implements IAuctionableWaitingList{
     }
 
     pop(): IBorrower | null {
-        if(!topAmount.greaterThan(this.moneyFactory.getEmptyMoney())){
-            // no bids, give them the list first person
+        if(this.bidsByForId.size === 0){
+            return
         }
     }
 

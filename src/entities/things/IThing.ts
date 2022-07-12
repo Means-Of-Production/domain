@@ -1,4 +1,3 @@
-import {IBorrowCost} from "../../valueItems/borrowCost"
 import {ILender} from "../lenders/ILender"
 import {IMoney} from "../../valueItems/money/IMoney"
 import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags"

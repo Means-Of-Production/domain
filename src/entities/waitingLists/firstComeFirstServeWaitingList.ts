@@ -17,16 +17,13 @@ export class FirstComeFirstServeWaitingList implements IWaitingList{
     }
 
     isOnList(borrower: IBorrower): boolean {
-        return borrower in this.members
+        const memberIds = this.members.map(b => b.id);
+        return borrower.id in memberIds
     }
 
-    next(): IBorrower {
-        return this.members[0]
-    }
-
-    remove(borrower: IBorrower): void {
-        this.members.forEach((element,index)=>{
-            if(element.id==borrower.id) this.members.splice(index,1);
-        });
+    pop(): IBorrower | null {
+        const first = this.members[0]
+        this.members.splice(0, 1)
+        return first
     }
 }
