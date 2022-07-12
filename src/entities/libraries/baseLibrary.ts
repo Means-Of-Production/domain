@@ -7,6 +7,7 @@ import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {IWaitingList} from "../waitingLists/IWaitingList";
 import {Person} from "../people/person";
 import {IMoney} from "../../valueItems/money/IMoney";
+import {DueDate} from "../../valueItems/dueDate";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -17,14 +18,11 @@ export abstract class BaseLibrary implements ILibrary{
     readonly administrator: Person;
     readonly maxFinesBeforeSuspension: IMoney
 
-    protected constructor(name: string, administrator: Person, borrowers: Iterable<IBorrower>, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
+    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
         this.name = name;
         this.waitingListFactory = waitingListFactory
         this._borrowers = []
         this.administrator = administrator
-        for (const b of borrowers){
-            this._borrowers.push(b)
-        }
         this.waitingListsByItemId= new Map<string, IWaitingList>()
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
         this._loans = []
@@ -36,7 +34,7 @@ export abstract class BaseLibrary implements ILibrary{
     abstract get allTitles(): Iterable<ThingTitle>
     abstract get availableTitles(): Iterable<ThingTitle>
 
-    abstract borrow(item: IThing, borrower: IBorrower, until: Date): ILoan
+    abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 
     abstract canBorrow(borrower: IBorrower): boolean
 
@@ -81,19 +79,7 @@ export abstract class BaseLibrary implements ILibrary{
     }
 
     private static compareLoans(a: ILoan, b: ILoan): number {
-        if(a.dueDate && b.dueDate){
-            return b.dueDate > a.dueDate ? 1 : -1
-        }
-
-        // consider a null due date to be infinite
-        if(b.dueDate){
-            return 1
-        }
-
-        if(a.dueDate){
-            return -1
-        }
-        return 0
+        return DueDate.compare(a.dueDate, b.dueDate)
     }
 
     protected getBidForCost(item: IThing, borrower: IBorrower, amountToPay: IMoney): IMoney{
