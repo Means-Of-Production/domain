@@ -1,10 +1,8 @@
 import {ThingStatus} from "../../valueItems/thingStatus"
-import {IBorrowCost} from "../../valueItems/borrowCost";
 import {Location} from "../../valueItems/location";
 import {IMoney} from "../../valueItems/money/IMoney"
 import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags";
 import {ILender} from "../lenders/ILender";
-import {NoCost} from "../../valueItems/noCost";
 import {IThing} from "./IThing"
 import {ThingTitle} from "../../valueItems/thingTitle";
 
