@@ -11,6 +11,7 @@ import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {Person} from "../people/person";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
+import {DueDate} from "../../valueItems/dueDate";
 
 
 // library which also lends items from a simple, single, location
@@ -34,7 +35,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return this._items
     }
 
-    borrow(item: IThing, borrower: IBorrower, until: Date): ILoan {
+    borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
         // check if available
         if(item.status !== ThingStatus.READY){
             throw new Error();

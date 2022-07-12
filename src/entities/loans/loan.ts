@@ -5,17 +5,18 @@ import {Location} from "../../valueItems/location";
 import {ILender} from "../lenders/ILender";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "./ILoan"
+import {DueDate} from "../../valueItems/dueDate";
 
 export class Loan implements ILoan {
     public readonly id: string
     public readonly item: IThing
     public readonly borrower: IBorrower
-    public readonly dueDate: Date | undefined
+    public readonly dueDate: DueDate
     private _dateReturned: Date | undefined
     private _status: LoanStatus
     public readonly returnLocation: Location
 
-    public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: Date | undefined, status: LoanStatus = LoanStatus.LOANED,
+    public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.LOANED,
                        returnLocation: Location | null = null, dateReturned?: Date) {
         this.id = id
         this.item = item
@@ -56,14 +57,20 @@ export class Loan implements ILoan {
         } else{
             this._status = LoanStatus.RETURNED
         }
-        if(this._dateReturned > this.dueDate){
-            this._status = LoanStatus.OVERDUE
+
+        if(this._dateReturned) {
+            if (this.dueDate.date) {
+                if(this._dateReturned > this.dueDate.date){
+                    this._status = LoanStatus.OVERDUE
+                }
+            }
         }
+
         this.item.status = thingStatus
         return this
     }
 
     public get permanentLoan(): boolean{
-        return this.dueDate == undefined
+        return !this.dueDate.date
     }
 }

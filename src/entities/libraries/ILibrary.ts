@@ -4,6 +4,7 @@ import {ILoan} from "../loans/ILoan";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {IWaitingList} from "../waitingLists/IWaitingList";
 import {Person} from "../people/person";
+import {DueDate} from "../../valueItems/dueDate";
 
 export interface ILibrary {
     readonly name: string
@@ -14,7 +15,7 @@ export interface ILibrary {
 
     canBorrow(borrower: IBorrower): boolean
 
-    borrow(item: IThing, borrower: IBorrower, until: Date): ILoan
+    borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 
     startReturn(loan: ILoan): ILoan
     finishReturn(loan: ILoan): ILoan

@@ -26,7 +26,7 @@ export class SimpleTimeBasedFeeSchedule implements IFeeSchedule{
     }
 
     feesForOverdueItem(loan: ILoan): IMoney {
-        let timeOverdue = loan.dateReturned?.valueOf() - loan.dueDate?.valueOf()
+        let timeOverdue = loan.dateReturned?.valueOf() - loan.dueDate?.date.valueOf()
         if(timeOverdue < 0){
             timeOverdue = 0
         }

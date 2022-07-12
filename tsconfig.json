@@ -4,7 +4,8 @@
         "target": "es6",
         "declaration": true,
         "outDir": "./dist",
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "strict": true
     },
     "include": [
         "src/**/*"

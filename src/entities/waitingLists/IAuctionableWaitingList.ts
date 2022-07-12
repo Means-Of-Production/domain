@@ -8,8 +8,8 @@ export interface IAuctionableWaitingList extends IWaitingList {
     readonly ends: Date;
     readonly isActive: boolean;
 
-    getWinningBorrower(): [IBorrower, IMoney];
-
+    getWinningBorrower(): IBorrower;
+    getLargestAmount() : IMoney
     getBids(): Iterable<IAuctionBid>;
 
     addBid(bid: IAuctionBid): void;

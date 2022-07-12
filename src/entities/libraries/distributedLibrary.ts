@@ -12,12 +12,13 @@ import {BaseLibrary} from "./baseLibrary";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {Person} from "../people/person";
 import {NotImplemented} from "../../valueItems/exceptions"
+import {DueDate} from "../../valueItems/dueDate";
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: IndividualDistributedLender[]
 
     constructor(name: string, administrator: Person, maxFees: IMoney, lenders: IndividualDistributedLender[], waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>) {
-        super(name,  administrator,[], waitingListFactory, maxFees, loans)
+        super(name,  administrator, waitingListFactory, maxFees, loans)
 
         this._lenders = lenders
     }
@@ -55,7 +56,7 @@ export class DistributedLibrary extends BaseLibrary{
         return null
     }
 
-    borrow(item: IThing, borrower: IBorrower, until: Date): ILoan {
+    borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
         if (item.status === ThingStatus.DAMAGED) {
             throw new InvalidThingStatusToBorrow(item.status)
         }

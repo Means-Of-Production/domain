@@ -12,6 +12,7 @@ import {Person} from "../people/person";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {USDMoney} from "../../valueItems/money/USDMoney";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
+import {DueDate} from "../../valueItems/dueDate";
 
 const loc =  new Location(40.6501, -73.94958)
 
@@ -61,7 +62,7 @@ describe("DistributedLibrary", () => {
         )
         const borrower = new Borrower("1",testPerson, underTest)
         underTest.addBorrower(borrower)
-        const loan = new Loan("loanId", thing, borrower, new Date())
+        const loan = new Loan("loanId", thing, borrower, new DueDate(new Date()))
 
         // action needed!
     })

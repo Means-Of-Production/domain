@@ -33,7 +33,7 @@ export abstract class BaseLibrary implements ILibrary{
     abstract get allTitles(): Iterable<ThingTitle>
     abstract get availableTitles(): Iterable<ThingTitle>
 
-    abstract borrow(item: IThing, borrower: IBorrower, until: Date): ILoan
+    abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 
     abstract canBorrow(borrower: IBorrower): boolean
 
