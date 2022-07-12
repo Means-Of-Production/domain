@@ -4,7 +4,8 @@ module.exports = {
     collectCoverage: true,
     coverageDirectory: "coverage",
     collectCoverageFrom: [
-        "packages/**/*.{ts,js,jsx}"
+        "src/**/*.{ts,tsx,js,jsx}",
+        "!src/**/*d.ts"
     ],
     coveragePathIgnorePatterns: [
         "jest.config.js",

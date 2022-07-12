@@ -82,6 +82,24 @@ describe("Simple Library Tests", () => {
     })
 
     it("item borrowed with another title available is still available", () => {
+        const library = createLibrary()
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
 
+        const item = createThing(library)
+        const item2 = new Thing("item2", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], null);
+        library.addItem(item)
+        library.addItem(item2)
+
+        // act
+        const loan = library.borrow(item, borrower, new DueDate())
+
+        expect(loan).not.toBeNull()
+        const availableTitles = Array.from(library.availableTitles)
+        expect(availableTitles.length).toEqual(1)
+
+        const allTitles = Array.from(library.allTitles)
+        expect(allTitles.length).toEqual(1)
+        expect(allTitles[0].name).toEqual("title")
     })
 })
