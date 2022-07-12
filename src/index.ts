@@ -21,5 +21,7 @@ export * from "./entities/things/thing"
 export * from "./entities/waitingLists/IWaitingList"
 
 
-
+export * from "./factories/IFeeSchedule"
+export * from "./factories/IWaitingListFactory"
+export * from "./factories/moneyFactory"
 
