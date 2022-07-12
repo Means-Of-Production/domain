@@ -6,14 +6,19 @@
   "devDependencies": {
     "@babel/core": "^7.18.6",
     "@babel/preset-env": "^7.18.6",
+    "@types/cucumber": "^7.0.0",
     "@types/jest": "^28.1.4",
     "babel-jest": "^28.1.2",
+    "cucumber": "^6.0.7",
+    "cucumber-pretty": "^6.0.1",
+    "cucumber-tsflow": "^4.0.0-preview.7",
     "jest": "^27.5.1",
+    "ts-node": "^10.8.2",
     "typescript": "^4.7.4"
   },
   "scripts": {
     "test": "jest",
-    "compile": "rm -rf dist/* && tsc -p tsconfig.pkg.json"
+    "compile": "tsc"
   },
   "repository": {
     "type": "git",
