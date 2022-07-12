@@ -16,7 +16,6 @@ export class SimpleLibrarySteps {
             new Person("`1", new PersonName("Testy", "McTesterson")),
             null,
             [],
-            [],
             new WaitingListFactory(),
             new USDMoney(0),
             []

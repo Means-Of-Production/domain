@@ -17,14 +17,11 @@ export abstract class BaseLibrary implements ILibrary{
     readonly administrator: Person;
     readonly maxFinesBeforeSuspension: IMoney
 
-    protected constructor(name: string, administrator: Person, borrowers: Iterable<IBorrower>, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
+    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
         this.name = name;
         this.waitingListFactory = waitingListFactory
         this._borrowers = []
         this.administrator = administrator
-        for (const b of borrowers){
-            this._borrowers.push(b)
-        }
         this.waitingListsByItemId= new Map<string, IWaitingList>()
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
         this._loans = []

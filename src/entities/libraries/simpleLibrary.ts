@@ -15,14 +15,23 @@ import {IMoney} from "../../valueItems/money/IMoney";
 
 // library which also lends items from a simple, single, location
 export class SimpleLibrary extends BaseLibrary implements ILender{
-    readonly items: Iterable<IThing>
+    private readonly _items: IThing[];
     readonly location: Location
 
-    constructor(name: string, admin: Person, location: Location, items: Iterable<IThing>, borrowers: Iterable<IBorrower>,
+    constructor(name: string, admin: Person, location: Location,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
-        super(name, admin, borrowers, waitingListFactory, maxFinesBeforeSuspension, loans);
-        this.items = items
+        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans);
+        this._items = []
         this.location = location
+    }
+
+    addItem(item: IThing): IThing{
+        this._items.push(item)
+        return item
+    }
+
+    get items(): Iterable<IThing>{
+        return this._items
     }
 
     borrow(item: IThing, borrower: IBorrower, until: Date): ILoan {
@@ -47,11 +56,13 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
             undefined
         )
 
+        item.status = ThingStatus.CURRENTLY_BORROWED
+
         return loan
     }
 
     canBorrow(borrower: IBorrower): boolean {
-        return false;
+        return borrower.library.name === this.name;
     }
 
     get allTitles(): Iterable<ThingTitle> {
