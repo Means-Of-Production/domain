@@ -4,6 +4,7 @@ import {ILender} from "./ILender";
 import {IThing} from "../things/IThing";
 import {EmailAddress} from "../../valueItems/emailAddress";
 import {Location} from "../../valueItems/location";
+import {ThingStatus} from "../../valueItems/thingStatus";
 
 /*
 Class to represent the lenders in a distributed library
@@ -22,11 +23,16 @@ export class IndividualDistributedLender implements ILender{
     }
 
     startReturn(loan: ILoan): ILoan{
-        // ping out the item to accept this return!
+        // mark that we've started to return this item
+        loan.item.status = ThingStatus.RETURNING
         return loan
     }
+
     finishReturn(loan: ILoan): ILoan {
         // todo - see the user actions to determine the status
+        if(loan.item.status == ThingStatus.DAMAGED){
+
+        }
         return loan
     }
 

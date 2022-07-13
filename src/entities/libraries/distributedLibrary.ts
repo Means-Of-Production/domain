@@ -6,19 +6,19 @@ import {ILoan} from "../loans/ILoan";
 import {Loan} from "../loans/loan"
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
-import {InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {InvalidThingStatusToBorrow, NotImplemented} from "../../valueItems/exceptions";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {BaseLibrary} from "./baseLibrary";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {Person} from "../people/person";
-import {NotImplemented} from "../../valueItems/exceptions"
 import {DueDate} from "../../valueItems/dueDate";
+import {IFeeSchedule} from "../../factories/IFeeSchedule";
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: IndividualDistributedLender[]
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, lenders: IndividualDistributedLender[], waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>) {
-        super(name,  administrator, waitingListFactory, maxFees, loans)
+    constructor(name: string, administrator: Person, maxFees: IMoney, lenders: IndividualDistributedLender[], waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule) {
+        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule)
 
         this._lenders = lenders
     }
@@ -80,11 +80,15 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     finishReturn(loan: ILoan): ILoan {
-        throw new NotImplemented()
-    }
+        // if the lender has marked this as damaged, assess a fine
+        const lender = this.getOwnerOfItem(loan.item)
+        lender?.finishReturn(loan)
 
-    markAsDamaged(item: IThing): IThing {
-        throw new NotImplemented()
+        if(loan.item.status == ThingStatus.DAMAGED){
+            // assess a fee
+        }
+
+        return loan
     }
 
     startReturn(loan: ILoan): ILoan {

@@ -8,6 +8,11 @@ import {IWaitingList} from "../waitingLists/IWaitingList";
 import {Person} from "../people/person";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {DueDate} from "../../valueItems/dueDate";
+import {ThingStatus} from "../../valueItems/thingStatus";
+import {LoanStatus} from "../../valueItems/loanStatus";
+import {LibraryFee} from "./libraryFee";
+import {FeeStatus} from "../../valueItems/feeStatus";
+import {IFeeSchedule} from "../../factories/IFeeSchedule";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -17,14 +22,16 @@ export abstract class BaseLibrary implements ILibrary{
     readonly waitingListsByItemId: Map<string, IWaitingList>
     readonly administrator: Person;
     readonly maxFinesBeforeSuspension: IMoney
+    readonly feeSchedule: IFeeSchedule
 
-    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
+    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule) {
         this.name = name;
         this.waitingListFactory = waitingListFactory
         this._borrowers = []
         this.administrator = administrator
         this.waitingListsByItemId= new Map<string, IWaitingList>()
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
+        this.feeSchedule = feeSchedule
         this._loans = []
         for(const l of loans){
             this._loans.push(l)
@@ -102,5 +109,26 @@ export abstract class BaseLibrary implements ILibrary{
 
         // multiple effective rate times this
         return numPreviousLoans > 0 ? amountToPay.multiply(1/numPreviousLoans) : amountToPay
+    }
+
+
+    protected createFee(loan: ILoan): ILoan {
+        let feeAmount: IMoney | undefined = undefined
+        if (loan.item.status == ThingStatus.DAMAGED) {
+            // apply the fees
+            feeAmount = this.feeSchedule.feesForDamagedItem(loan)
+        }
+
+        if (loan.status == LoanStatus.OVERDUE) {
+            // calculate the late fee and apply
+            feeAmount = this.feeSchedule.feesForOverdueItem(loan)
+        }
+
+        if (feeAmount) {
+            const fee = new LibraryFee(feeAmount, loan, FeeStatus.OUTSTANDING)
+            loan.borrower.applyFee(fee)
+        }
+
+        return loan
     }
 }

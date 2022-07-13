@@ -13,12 +13,15 @@ import {ThingTitle} from "../../valueItems/thingTitle";
 import {USDMoney} from "../../valueItems/money/USDMoney";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
 import {DueDate} from "../../valueItems/dueDate";
+import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
+import {MoneyFactory} from "../../factories/moneyFactory";
 
 const loc =  new Location(40.6501, -73.94958)
 
 const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
 const testTitle = new ThingTitle("testThing")
 const testLender = new IndividualDistributedLender("testLender", testPerson, [], [])
+const feeSchedule = new SimpleTimeBasedFeeSchedule(new USDMoney(1), new MoneyFactory())
 
 describe("DistributedLibrary", () => {
     it("should fail to loan if item is damaged", () => {
@@ -26,7 +29,7 @@ describe("DistributedLibrary", () => {
         const lender = new IndividualDistributedLender("testLender", testPerson, [new EmailAddress("test@test.com")], [thing])
 
         const underTest = new DistributedLibrary(
-            "testLib", testPerson, new USDMoney(0), [lender], new WaitingListFactory(), []
+            "testLib", testPerson, new USDMoney(0), [lender], new WaitingListFactory(), [], feeSchedule
         )
         const borrower = new Borrower("1",testPerson, underTest)
         underTest.addBorrower(borrower)
@@ -39,7 +42,7 @@ describe("DistributedLibrary", () => {
         const lender = new IndividualDistributedLender("testLender", testPerson, [new EmailAddress("test@test.com")], [thing])
 
         const underTest = new DistributedLibrary(
-            "testLib", testPerson, new USDMoney(0), [lender], new WaitingListFactory(), []
+            "testLib", testPerson, new USDMoney(0), [lender], new WaitingListFactory(), [], feeSchedule
         )
         const borrower = new Borrower("1",testPerson, underTest)
         underTest.addBorrower(borrower)
@@ -58,7 +61,7 @@ describe("DistributedLibrary", () => {
         const lender = new IndividualDistributedLender("testLender", testPerson, [new EmailAddress("test@test.com")], [thing])
 
         const underTest = new DistributedLibrary(
-            "testLib", testPerson, new USDMoney(0), [lender], new WaitingListFactory(), []
+            "testLib", testPerson, new USDMoney(0), [lender], new WaitingListFactory(), [], feeSchedule
         )
         const borrower = new Borrower("1",testPerson, underTest)
         underTest.addBorrower(borrower)

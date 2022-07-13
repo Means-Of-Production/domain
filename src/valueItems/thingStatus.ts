@@ -4,5 +4,6 @@ export enum ThingStatus {
     LOST, // this thing was lost
     DESTROYED ,// this thing was FUBAR
     CURRENTLY_BORROWED,
-    RESERVED //item is held for someone
+    RESERVED, //item is held for someone
+    RETURNING, // item is returning
 }
