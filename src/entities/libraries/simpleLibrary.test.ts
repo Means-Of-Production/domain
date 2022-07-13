@@ -11,6 +11,7 @@ import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
 import {MoneyFactory} from "../../factories/moneyFactory";
 import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
+import {InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -104,5 +105,20 @@ describe("Simple Library Tests", () => {
         const allTitles = Array.from(library.allTitles)
         expect(allTitles.length).toEqual(1)
         expect(allTitles[0].name).toEqual("title")
+    })
+
+    it("cannot borrow a damaged item", () => {
+        const library = createLibrary()
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const cost = new USDMoney(100)
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, "", [], cost)
+
+        library.addItem(item)
+
+        // act
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrow)
     })
 })

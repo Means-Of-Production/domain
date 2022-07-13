@@ -16,6 +16,7 @@ import {MoneyFactory} from "../../factories/moneyFactory"
 import {FeeStatus} from "../../valueItems/feeStatus"
 import {IFeeSchedule} from "../../factories/IFeeSchedule"
 import {LibraryFee} from "./libraryFee"
+import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 
 
 // library which also lends items from a simple, single, location
@@ -47,12 +48,12 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
         // check if available
         if(item.status !== ThingStatus.READY){
-            throw new Error();
+            throw new InvalidThingStatusToBorrow(item.status)
         }
 
         // check if borrower in good standing
         if(!this.canBorrow(borrower)){
-            throw new Error();
+            throw new BorrowerNotInGoodStanding()
         }
 
         //make loan

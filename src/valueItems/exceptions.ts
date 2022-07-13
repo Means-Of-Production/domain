@@ -30,6 +30,10 @@ export class InvalidThingStatusToBorrow extends Error{
     }
 }
 
+export class BorrowerNotInGoodStanding extends Error{
+
+}
+
 export class DifferentTypesOfMoney extends Error{
 
 }
