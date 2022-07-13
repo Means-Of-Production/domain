@@ -8,4 +8,5 @@ export interface IMoney {
 
     readonly amount: number
     readonly currencyName: string
+    readonly symbol: string
 }

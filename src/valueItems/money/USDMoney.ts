@@ -47,4 +47,8 @@ export class USDMoney implements IMoney{
         return new USDMoney(this.amount * amount)
     }
 
+    get symbol(): string{
+        return "$"
+    }
+
 }
