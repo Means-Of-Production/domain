@@ -5,5 +5,4 @@ export enum ThingStatus {
     DESTROYED ,// this thing was FUBAR
     CURRENTLY_BORROWED,
     RESERVED, //item is held for someone
-    RETURNING, // item is returning
 }

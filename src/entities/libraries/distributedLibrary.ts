@@ -45,7 +45,7 @@ export class DistributedLibrary extends BaseLibrary{
 
     }
 
-    private getOwnerOfItem(item: IThing): IndividualDistributedLender| null {
+    private getOwnerOfItem(item: IThing): IndividualDistributedLender {
         for (const lender of this._lenders){
             for (const lenderItem of lender.items){
                 if (item.id === lenderItem.id){
@@ -53,7 +53,7 @@ export class DistributedLibrary extends BaseLibrary{
                 }
             }
         }
-        return null
+        throw new Error()
     }
 
     borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
@@ -82,16 +82,14 @@ export class DistributedLibrary extends BaseLibrary{
     finishReturn(loan: ILoan): ILoan {
         // if the lender has marked this as damaged, assess a fine
         const lender = this.getOwnerOfItem(loan.item)
-        lender?.finishReturn(loan)
+        const fromLender = lender.finishReturn(loan)
 
-        if(loan.item.status == ThingStatus.DAMAGED){
-            // assess a fee
-        }
-
-        return loan
+        return this.createFee(fromLender)
     }
 
     startReturn(loan: ILoan): ILoan {
-        throw new NotImplemented()
+        // fire it to the lender
+        const lender = this.getOwnerOfItem(loan.item)
+        return lender.startReturn(loan)
     }
 }

@@ -24,16 +24,13 @@ export class IndividualDistributedLender implements ILender{
 
     startReturn(loan: ILoan): ILoan{
         // mark that we've started to return this item
-        loan.item.status = ThingStatus.RETURNING
+        loan.startReturn()
         return loan
     }
 
     finishReturn(loan: ILoan): ILoan {
         // todo - see the user actions to determine the status
-        if(loan.item.status == ThingStatus.DAMAGED){
-
-        }
-        return loan
+        return loan.startReturn()
     }
 
     get items(): Iterable<IThing> {
