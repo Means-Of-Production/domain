@@ -6,8 +6,9 @@ import {Person} from "./person";
 // this is the equivalent of a library card
 export interface IBorrower {
     readonly id: string
-    readonly person: Person;
-    readonly library: ILibrary;
-    readonly verificationFlags: Iterable<BorrowerVerificationFlags>;
-    readonly fees: Iterable<ILibraryFee>;
+    readonly person: Person
+    readonly library: ILibrary
+    readonly verificationFlags: Iterable<BorrowerVerificationFlags>
+    readonly fees: Iterable<ILibraryFee>
+    applyFee(fee: ILibraryFee): IBorrower
 }

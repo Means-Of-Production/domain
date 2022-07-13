@@ -7,13 +7,15 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {Loan} from "../loans/loan";
 import {Location} from "../../valueItems/location";
 import {ILender} from "../lenders/ILender";
-import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
-import {Person} from "../people/person";
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {DueDate} from "../../valueItems/dueDate";
-import {MoneyFactory} from "../../factories/moneyFactory";
-import {FeeStatus} from "../../valueItems/feeStatus";
+import {IWaitingListFactory} from "../../factories/IWaitingListFactory"
+import {Person} from "../people/person"
+import {LoanStatus} from "../../valueItems/loanStatus"
+import {IMoney} from "../../valueItems/money/IMoney"
+import {DueDate} from "../../valueItems/dueDate"
+import {MoneyFactory} from "../../factories/moneyFactory"
+import {FeeStatus} from "../../valueItems/feeStatus"
+import {IFeeSchedule} from "../../factories/IFeeSchedule"
+import {LibraryFee} from "./libraryFee"
 
 
 // library which also lends items from a simple, single, location
@@ -21,13 +23,16 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     private readonly _items: IThing[];
     readonly location: Location
     readonly moneyFactory: MoneyFactory
+    readonly feeSchedule: IFeeSchedule
 
     constructor(name: string, admin: Person, location: Location,
-                waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory) {
+                waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
+                feeSchedule: IFeeSchedule) {
         super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans);
         this._items = []
         this.location = location
         this.moneyFactory = moneyFactory
+        this.feeSchedule = feeSchedule
     }
 
     addItem(item: IThing): IThing{
@@ -73,11 +78,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
 
         const feeAmounts = Array.from(borrower.fees).filter(f => f.status === FeeStatus.OUTSTANDING).map(f => f.amount)
         const totalFees = this.moneyFactory.total(feeAmounts)
-        if(totalFees.greaterThan(this.maxFinesBeforeSuspension)){
-            return false
-        }
-
-        return true
+        return !totalFees.greaterThan(this.maxFinesBeforeSuspension);
     }
 
     get allTitles(): Iterable<ThingTitle> {
@@ -94,26 +95,28 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return this.name
     }
 
-    public markAsDamaged(item: IThing): IThing {
-        item.status = ThingStatus.DAMAGED
-        return item
-    }
-
     public startReturn(loan: ILoan): ILoan {
         return loan.startReturn()
     }
 
     public finishReturn(loan: ILoan): ILoan {
         const returnedLoad = loan.finishReturn(loan.item.status)
+
+        let feeAmount: IMoney | undefined = undefined
         if(returnedLoad.item.status == ThingStatus.DAMAGED){
             // apply the fees
-
+            feeAmount = this.feeSchedule.feesForDamagedItem(loan)
         }
 
         if(returnedLoad.status == LoanStatus.OVERDUE){
             // calculate the late fee and apply
+            feeAmount = this.feeSchedule.feesForOverdueItem(loan)
         }
 
+        if(feeAmount){
+            const fee = new LibraryFee(feeAmount, loan, FeeStatus.OUTSTANDING)
+            loan.borrower.applyFee(fee)
+        }
         return returnedLoad
     }
 }

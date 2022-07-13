@@ -10,10 +10,12 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
 import {MoneyFactory} from "../../factories/moneyFactory";
+import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
     const location = new Location(0, 0)
+    const moneyFactory = new MoneyFactory()
     return new SimpleLibrary(
         "testLibrary",
         person,
@@ -21,7 +23,8 @@ function createLibrary(): SimpleLibrary {
         new WaitingListFactory(),
         new USDMoney(100),
         [],
-        new MoneyFactory()
+        moneyFactory,
+        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory)
     )
 }
 
@@ -47,15 +50,13 @@ describe("Simple Library Tests", () => {
     it("item marked damaged is no longer available", () => {
         const library = createLibrary()
 
-        const item = createThing(library);
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, "", [], null);
         library.addItem(item)
 
         // act
-        const updatedItem = library.markAsDamaged(item)
-
-        expect(updatedItem.status).toEqual(ThingStatus.DAMAGED)
-
         const availableTitles = Array.from(library.availableTitles)
+
+        // assert
         expect(availableTitles.length).toEqual(0)
 
         const allTitles = Array.from(library.allTitles)

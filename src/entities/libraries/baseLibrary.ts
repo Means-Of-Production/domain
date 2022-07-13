@@ -41,8 +41,6 @@ export abstract class BaseLibrary implements ILibrary{
     abstract startReturn(loan:ILoan): ILoan
     abstract finishReturn(loan: ILoan): ILoan
 
-    abstract markAsDamaged(item: IThing): IThing;
-
     public get borrowers(): Iterable<IBorrower>{
         return this._borrowers
     }

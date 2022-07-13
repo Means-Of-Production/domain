@@ -20,8 +20,6 @@ export interface ILibrary {
     startReturn(loan: ILoan): ILoan
     finishReturn(loan: ILoan): ILoan
 
-    markAsDamaged(item: IThing): IThing
-
     // reserve the next available item
     reserveItem(item: IThing, borrower: IBorrower): IWaitingList
 }
