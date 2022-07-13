@@ -6,6 +6,7 @@ import {ILender} from "../lenders/ILender";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "./ILoan"
 import {DueDate} from "../../valueItems/dueDate";
+import {ReturnNotStarted} from "../../valueItems/exceptions";
 
 export class Loan implements ILoan {
     public readonly id: string
@@ -51,23 +52,26 @@ export class Loan implements ILoan {
         return this
     }
 
-    public finishReturn(thingStatus: ThingStatus): ILoan {
-        if(thingStatus == ThingStatus.DAMAGED){
-            this._status = LoanStatus.RETURNED_DAMAGED
-        } else{
-            this._status = LoanStatus.RETURNED
+    public finishReturn(): ILoan {
+        if(this.status !== LoanStatus.RETURN_STARTED){
+            throw new ReturnNotStarted()
         }
 
+        if(this.item.status === ThingStatus.DAMAGED){
+            this._status = LoanStatus.RETURNED_DAMAGED
+            return this
+        }
         if(this._dateReturned) {
             if (this.dueDate.date) {
                 if(this._dateReturned > this.dueDate.date){
                     this._status = LoanStatus.OVERDUE
+                    return this
                 }
             }
         }
-
-        this.item.status = thingStatus
+        this._status = LoanStatus.RETURNED
         return this
+
     }
 
     public get permanentLoan(): boolean{

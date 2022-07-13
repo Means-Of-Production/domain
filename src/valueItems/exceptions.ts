@@ -30,6 +30,8 @@ export class InvalidThingStatusToBorrow extends Error{
     }
 }
 
+export class ReturnNotStarted extends Error {}
+
 export class BorrowerNotInGoodStanding extends Error{
 
 }
