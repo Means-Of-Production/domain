@@ -60,6 +60,10 @@ export abstract class BaseLibrary implements ILibrary{
         return list
     }
 
+    public addLoan(loan: ILoan){
+        this._loans.push(loan)
+    }
+
     protected getTitlesFromItems(items: Iterable<IThing>): Iterable<ThingTitle>{
         const titles = []
         for (const item of items){

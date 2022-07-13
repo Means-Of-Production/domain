@@ -12,15 +12,24 @@ export class USDMoney implements IMoney{
     }
 
     equals(other: IMoney): boolean {
-        return false;
+        if(!(other instanceof USDMoney)){
+            throw new DifferentTypesOfMoney()
+        }
+        return this.amount === other.amount
     }
 
     greaterThan(other: IMoney): boolean {
-        return false;
+        if(!(other instanceof USDMoney)){
+            throw new DifferentTypesOfMoney()
+        }
+        return this.amount > other.amount
     }
 
     lessThan(other: IMoney): boolean {
-        return false;
+        if(!(other instanceof USDMoney)){
+            throw new DifferentTypesOfMoney()
+        }
+        return this.amount < other.amount
     }
 
     add(other: IMoney): IMoney {

@@ -11,7 +11,10 @@ import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
 import {MoneyFactory} from "../../factories/moneyFactory";
 import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
-import {InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {LibraryFee} from "./libraryFee";
+import {Loan} from "../loans/loan";
+import {FeeStatus} from "../../valueItems/feeStatus";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -120,5 +123,23 @@ describe("Simple Library Tests", () => {
 
         // act
         expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrow)
+    })
+
+    it("cannot borrow if you have too many fees", () => {
+        const library = createLibrary()
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const item = createThing(library)
+        library.addItem(item)
+
+        const loan = new Loan("loan", item, borrower, new DueDate())
+        const fee = new LibraryFee(new USDMoney(120), loan, FeeStatus.OUTSTANDING);
+        borrower.applyFee(fee)
+
+
+        // act
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStanding)
     })
 })

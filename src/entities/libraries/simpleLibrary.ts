@@ -68,7 +68,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         )
 
         item.status = ThingStatus.CURRENTLY_BORROWED
-
+        this.addLoan(loan)
         return loan
     }
 
