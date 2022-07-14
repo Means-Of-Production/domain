@@ -181,7 +181,7 @@ describe("Simple Library Tests", () => {
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], new USDMoney(25));
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], new USDMoney(25))
         library.addItem(item)
 
         const loan = library.borrow(item, borrower, getDueDate())
