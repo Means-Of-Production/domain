@@ -101,23 +101,26 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     }
 
     public finishReturn(loan: ILoan): ILoan {
-        const returnedLoad = loan.finishReturn(loan.item.status)
-
         let feeAmount: IMoney | undefined = undefined
-        if(returnedLoad.item.status == ThingStatus.DAMAGED){
+        if(loan.item.status == ThingStatus.DAMAGED){
             // apply the fees
             feeAmount = this.feeSchedule.feesForDamagedItem(loan)
         }
 
-        if(returnedLoad.status == LoanStatus.OVERDUE){
+        if(loan.status == LoanStatus.OVERDUE){
             // calculate the late fee and apply
             feeAmount = this.feeSchedule.feesForOverdueItem(loan)
+            loan.item.status = ThingStatus.READY
         }
 
         if(feeAmount){
             const fee = new LibraryFee(feeAmount, loan, FeeStatus.OUTSTANDING)
             loan.borrower.applyFee(fee)
+        } else {
+            loan.item.status = ThingStatus.READY
         }
-        return returnedLoad
+
+        // TODO is there a waiting list for the item?
+        return loan.finishReturn()
     }
 }

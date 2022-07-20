@@ -18,5 +18,5 @@ export interface ILoan {
     readonly permanentLoan: boolean
 
     startReturn(): ILoan
-    finishReturn(thingStatus: ThingStatus): ILoan
+    finishReturn(): ILoan
 }

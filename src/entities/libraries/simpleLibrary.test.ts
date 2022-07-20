@@ -15,6 +15,7 @@ import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../value
 import {LibraryFee} from "./libraryFee";
 import {Loan} from "../loans/loan";
 import {FeeStatus} from "../../valueItems/feeStatus";
+import {LoanStatus} from "../../valueItems/loanStatus";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -35,6 +36,13 @@ function createLibrary(): SimpleLibrary {
 function createThing(library: SimpleLibrary) {
     return new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], null);
 }
+
+function getDueDate(numDays: number = 1) : DueDate {
+    const now = new Date()
+    const then = new Date(now.setDate(now.getDate() + numDays))
+    return new DueDate(then)
+}
+
 
 describe("Simple Library Tests", () => {
     it("lists items it has", () => {
@@ -141,5 +149,61 @@ describe("Simple Library Tests", () => {
 
         // act
         expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStanding)
+    })
+
+    it("can borrow and return on time", () => {
+        const library = createLibrary()
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const item = createThing(library)
+        library.addItem(item)
+
+        const loan = library.borrow(item, borrower, getDueDate())
+
+        expect(loan).not.toBeNull()
+        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+
+        const updatedLoan = library.startReturn(loan)
+        expect(updatedLoan).not.toBeNull()
+        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+
+        const finished = library.finishReturn(updatedLoan)
+        expect(finished).not.toBeNull()
+        expect(finished.status).toEqual(LoanStatus.RETURNED)
+        expect(finished.item.status).toEqual(ThingStatus.READY)
+    })
+
+    it("item borrowed but marked damaged", () => {
+        const library = createLibrary()
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], new USDMoney(25))
+        library.addItem(item)
+
+        const loan = library.borrow(item, borrower, getDueDate())
+
+        expect(loan).not.toBeNull()
+        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+
+        const updatedLoan = library.startReturn(loan)
+        expect(updatedLoan).not.toBeNull()
+        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+
+        // ACT
+        updatedLoan.item.status = ThingStatus.DAMAGED
+
+        const finished = library.finishReturn(updatedLoan)
+
+        // assert
+        expect(finished).not.toBeNull()
+        expect(finished.status).toEqual(LoanStatus.RETURNED_DAMAGED)
+        expect(finished.item.status).toEqual(ThingStatus.DAMAGED)
+        const fees = Array.from(borrower.fees)
+        expect(fees.length).toEqual(1)
+        expect(fees[0].amount.amount).toEqual(item.purchaseCost?.amount)
     })
 })
