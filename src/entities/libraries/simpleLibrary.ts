@@ -101,6 +101,8 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     }
 
     public finishReturn(loan: ILoan): ILoan {
+        // this has to call FIRST, so the status can be updated to act here
+        loan.finishReturn();
         let feeAmount: IMoney | undefined = undefined
         if(loan.item.status == ThingStatus.DAMAGED){
             // apply the fees
@@ -121,6 +123,6 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         }
 
         // TODO is there a waiting list for the item?
-        return loan.finishReturn()
+        return loan
     }
 }

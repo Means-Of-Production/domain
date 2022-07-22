@@ -202,10 +202,37 @@ describe("Simple Library Tests", () => {
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED_DAMAGED)
         expect(finished.item.status).toEqual(ThingStatus.DAMAGED)
+
         const fees = Array.from(borrower.fees)
         expect(fees.length).toEqual(1)
         expect(fees[0].amount.amount).toEqual(item.purchaseCost?.amount)
     })
 
-    it("item returned late has loan overdue and ")
+    it("item returned late has loan overdue but item is ready", () => {
+        const library = createLibrary()
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const item = createThing(library)
+        library.addItem(item)
+
+        const loan = library.borrow(item, borrower, getDueDate(-10))
+
+        expect(loan).not.toBeNull()
+        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+
+        const updatedLoan = library.startReturn(loan)
+        expect(updatedLoan).not.toBeNull()
+        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+
+        const finished = library.finishReturn(updatedLoan)
+        expect(finished).not.toBeNull()
+        expect(finished.status).toEqual(LoanStatus.OVERDUE)
+        expect(finished.item.status).toEqual(ThingStatus.READY)
+
+        const fees = Array.from(borrower.fees)
+        expect(fees.length).toEqual(1)
+        //expect(fees[0].amount.amount).toEqual(item.purchaseCost?.amount)
+    });
 })
