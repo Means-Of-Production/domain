@@ -175,7 +175,7 @@ describe("Simple Library Tests", () => {
         expect(finished.item.status).toEqual(ThingStatus.READY)
     })
 
-    it("item borrowed but marked damaged", () => {
+    it("item borrowed but marked damaged gets RETURNED_DAMAGED", () => {
         const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
@@ -206,4 +206,6 @@ describe("Simple Library Tests", () => {
         expect(fees.length).toEqual(1)
         expect(fees[0].amount.amount).toEqual(item.purchaseCost?.amount)
     })
+
+    it("item returned late has loan overdue and ")
 })
