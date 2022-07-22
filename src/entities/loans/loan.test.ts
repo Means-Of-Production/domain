@@ -41,12 +41,11 @@ describe("Loan", () => {
         // act
         loan.startReturn()
 
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
         expect(loan.status).toEqual(LoanStatus.RETURN_STARTED)
         expect(loan.active).toEqual(false)
     })
 
-    it('should change item status on finishing return', () => {
+    it('should change status on finishing return', () => {
         const borrower = new Borrower("1", testPerson, testLib)
         const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.CURRENTLY_BORROWED, "", [], null, [])
 
@@ -58,13 +57,12 @@ describe("Loan", () => {
             LoanStatus.RETURN_STARTED
         )
 
-        expect(loan.active).toEqual(true)
+        expect(loan.active).toEqual(false)
 
         // act
         loan.finishReturn()
 
-        expect(loan.item.status).toEqual(ThingStatus.READY)
-        expect(loan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(loan.status).toEqual(LoanStatus.RETURNED)
         expect(loan.active).toEqual(false)
     })
 })
