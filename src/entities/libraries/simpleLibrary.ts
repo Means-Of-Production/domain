@@ -24,16 +24,14 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     private readonly _items: IThing[];
     readonly location: Location
     readonly moneyFactory: MoneyFactory
-    readonly feeSchedule: IFeeSchedule
 
     constructor(name: string, admin: Person, location: Location,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
                 feeSchedule: IFeeSchedule) {
-        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans);
+        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule);
         this._items = []
         this.location = location
         this.moneyFactory = moneyFactory
-        this.feeSchedule = feeSchedule
     }
 
     addItem(item: IThing): IThing{
@@ -90,6 +88,10 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         const availableItems = Array.from(this.items).filter(i => i.status === ThingStatus.READY)
 
         return this.getTitlesFromItems(availableItems)
+    }
+
+    preferredReturnLocation(item: IThing): Location {
+        return this.location
     }
 
     get id(): string{

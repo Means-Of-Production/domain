@@ -5,7 +5,6 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "../loans/ILoan";
 import {Loan} from "../loans/loan"
 import {LoanStatus} from "../../valueItems/loanStatus";
-import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {BaseLibrary} from "./baseLibrary";
@@ -13,14 +12,16 @@ import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {Person} from "../people/person";
 import {NotImplemented} from "../../valueItems/exceptions"
 import {DueDate} from "../../valueItems/dueDate";
+import {IFeeSchedule} from "../../factories/IFeeSchedule";
+import {ILender} from "../lenders/ILender";
 
 export class DistributedLibrary extends BaseLibrary{
-    private readonly _lenders: IndividualDistributedLender[]
+    private readonly _lenders: ILender[]
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, lenders: IndividualDistributedLender[], waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>) {
-        super(name,  administrator, waitingListFactory, maxFees, loans)
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule) {
+        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule)
 
-        this._lenders = lenders
+        this._lenders = []
     }
 
     public canBorrow(borrower: IBorrower): boolean {
@@ -45,7 +46,7 @@ export class DistributedLibrary extends BaseLibrary{
 
     }
 
-    private getOwnerOfItem(item: IThing): IndividualDistributedLender| null {
+    private getOwnerOfItem(item: IThing): ILender| null {
         for (const lender of this._lenders){
             for (const lenderItem of lender.items){
                 if (item.id === lenderItem.id){
@@ -83,11 +84,12 @@ export class DistributedLibrary extends BaseLibrary{
         throw new NotImplemented()
     }
 
-    markAsDamaged(item: IThing): IThing {
+    startReturn(loan: ILoan): ILoan {
         throw new NotImplemented()
     }
 
-    startReturn(loan: ILoan): ILoan {
-        throw new NotImplemented()
+    addLender(lender: ILender) : ILender {
+        this._lenders.push(lender)
+        return lender
     }
 }
