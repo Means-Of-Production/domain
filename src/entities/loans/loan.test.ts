@@ -25,7 +25,7 @@ const testTitle = new ThingTitle("test")
 const testLender = new IndividualDistributedLender("lender", new Person("test", new PersonName("Testy", "McTesterson")),[], [])
 
 describe("Loan", () => {
-    it('should not change item status on starting return', () => {
+    it('should change status on starting return', () => {
         const borrower = new Borrower("1", testPerson, testLib)
         const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.CURRENTLY_BORROWED, "", [], null, [])
 
