@@ -16,6 +16,7 @@ import {LibraryFee} from "./libraryFee";
 import {Loan} from "../loans/loan";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
+import {IMoney} from "../../valueItems/money/IMoney";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -33,8 +34,8 @@ function createLibrary(): SimpleLibrary {
     )
 }
 
-function createThing(library: SimpleLibrary) {
-    return new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], null);
+function createThing(library: SimpleLibrary, purchaseCost: IMoney | null = null) {
+    return new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], purchaseCost);
 }
 
 function getDueDate(numDays: number = 1) : DueDate {
@@ -175,13 +176,13 @@ describe("Simple Library Tests", () => {
         expect(finished.item.status).toEqual(ThingStatus.READY)
     })
 
-    it("item borrowed but marked damaged", () => {
+    it("item borrowed but marked damaged gets RETURNED_DAMAGED", () => {
         const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], new USDMoney(25))
+        const item = createThing(library, new USDMoney(25))
         library.addItem(item)
 
         const loan = library.borrow(item, borrower, getDueDate())
@@ -202,8 +203,38 @@ describe("Simple Library Tests", () => {
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED_DAMAGED)
         expect(finished.item.status).toEqual(ThingStatus.DAMAGED)
+
         const fees = Array.from(borrower.fees)
         expect(fees.length).toEqual(1)
         expect(fees[0].amount.amount).toEqual(item.purchaseCost?.amount)
     })
+
+    it("item returned late has loan overdue but item is ready", () => {
+        const library = createLibrary()
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const item = createThing(library, new USDMoney(100))
+        library.addItem(item)
+
+        const loan = library.borrow(item, borrower, getDueDate(-10))
+
+        expect(loan).not.toBeNull()
+        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+
+        const updatedLoan = library.startReturn(loan)
+        expect(updatedLoan).not.toBeNull()
+        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+
+        const finished = library.finishReturn(updatedLoan)
+        expect(finished).not.toBeNull()
+        expect(finished.status).toEqual(LoanStatus.OVERDUE)
+        expect(finished.item.status).toEqual(ThingStatus.READY)
+
+        const fees = Array.from(borrower.fees)
+        expect(fees.length).toEqual(1)
+        expect(fees[0].amount.amount).toBeGreaterThan(0)
+        expect(fees[0].amount.amount).toBeLessThan(100)
+    });
 })

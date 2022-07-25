@@ -5,22 +5,23 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "../loans/ILoan";
 import {Loan} from "../loans/loan"
 import {LoanStatus} from "../../valueItems/loanStatus";
-import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {BaseLibrary} from "./baseLibrary";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {Person} from "../people/person";
-import {NotImplemented} from "../../valueItems/exceptions"
 import {DueDate} from "../../valueItems/dueDate";
+import {IFeeSchedule} from "../../factories/IFeeSchedule";
+import {ILender} from "../lenders/ILender";
+import {MoneyFactory} from "../../factories/moneyFactory";
 
 export class DistributedLibrary extends BaseLibrary{
-    private readonly _lenders: IndividualDistributedLender[]
+    private readonly _lenders: ILender[]
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, lenders: IndividualDistributedLender[], waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>) {
-        super(name,  administrator, waitingListFactory, maxFees, loans)
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory) {
+        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory)
 
-        this._lenders = lenders
+        this._lenders = []
     }
 
     public canBorrow(borrower: IBorrower): boolean {
@@ -34,18 +35,12 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     get allTitles(): Iterable<ThingTitle> {
-        const items = []
-        for (const lender of this._lenders) {
-            for (const item of lender.items) {
-                items.push(item)
-            }
-        }
-
+        const items = this._lenders.flatMap(l => Array.from(l.items));
         return this.getTitlesFromItems(items)
 
     }
 
-    private getOwnerOfItem(item: IThing): IndividualDistributedLender| null {
+    private getOwnerOfItem(item: IThing): ILender {
         for (const lender of this._lenders){
             for (const lenderItem of lender.items){
                 if (item.id === lenderItem.id){
@@ -53,7 +48,7 @@ export class DistributedLibrary extends BaseLibrary{
                 }
             }
         }
-        return null
+        throw new Error(`Cannot find an owner for ${item.title.name}`)
     }
 
     borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
@@ -65,6 +60,8 @@ export class DistributedLibrary extends BaseLibrary{
         if (!lender){
             throw new Error(`Cannot find owner of item ${item.id}`)
         }
+
+        item.status = ThingStatus.CURRENTLY_BORROWED;
         return new Loan(
             this.makeLoanId(),
             item,
@@ -76,18 +73,23 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     get availableTitles(): Iterable<ThingTitle> {
-        throw new NotImplemented()
+        const items = this._lenders.flatMap(l => Array.from(l.items)).filter(i => i.status == ThingStatus.READY);
+        return this.getTitlesFromItems(items);
     }
 
     finishReturn(loan: ILoan): ILoan {
-        throw new NotImplemented()
-    }
-
-    markAsDamaged(item: IThing): IThing {
-        throw new NotImplemented()
+        const owner = this.getOwnerOfItem(loan.item);
+        const fromOwner = owner.finishReturn(loan);
+        return super.finishReturn(fromOwner);
     }
 
     startReturn(loan: ILoan): ILoan {
-        throw new NotImplemented()
+        const owner = this.getOwnerOfItem(loan.item);
+        return owner.startReturn(loan);
+    }
+
+    addLender(lender: ILender) : ILender {
+        this._lenders.push(lender)
+        return lender
     }
 }

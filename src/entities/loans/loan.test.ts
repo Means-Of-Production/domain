@@ -25,9 +25,9 @@ const testTitle = new ThingTitle("test")
 const testLender = new IndividualDistributedLender("lender", new Person("test", new PersonName("Testy", "McTesterson")),[], [])
 
 describe("Loan", () => {
-    it('should change item to ready when loan is ready', () => {
+    it('should change status on starting return', () => {
         const borrower = new Borrower("1", testPerson, testLib)
-        const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.READY, "", [], null, [])
+        const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.CURRENTLY_BORROWED, "", [], null, [])
 
         const loan = new Loan(
             "testId",
@@ -41,8 +41,28 @@ describe("Loan", () => {
         // act
         loan.startReturn()
 
-        expect(loan.item.status).toEqual(ThingStatus.READY)
         expect(loan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(loan.active).toEqual(false)
+    })
+
+    it('should change status on finishing return', () => {
+        const borrower = new Borrower("1", testPerson, testLib)
+        const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.CURRENTLY_BORROWED, "", [], null, [])
+
+        const loan = new Loan(
+            "testId",
+            thing,
+            borrower,
+            new DueDate(new Date(2020,12,23)),
+            LoanStatus.RETURN_STARTED
+        )
+
+        expect(loan.active).toEqual(false)
+
+        // act
+        loan.finishReturn()
+
+        expect(loan.status).toEqual(LoanStatus.RETURNED)
         expect(loan.active).toEqual(false)
     })
 })
