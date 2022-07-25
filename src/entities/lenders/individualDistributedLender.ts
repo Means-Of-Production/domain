@@ -4,6 +4,9 @@ import {ILender} from "./ILender";
 import {IThing} from "../things/IThing";
 import {EmailAddress} from "../../valueItems/emailAddress";
 import {Location} from "../../valueItems/location";
+import {ThingStatus} from "../../valueItems/thingStatus";
+import {ReturnNotStarted} from "../../valueItems/exceptions";
+import {LoanStatus} from "../../valueItems/loanStatus";
 
 /*
 Class to represent the lenders in a distributed library
@@ -26,11 +29,20 @@ export class IndividualDistributedLender implements ILender{
 
     startReturn(loan: ILoan): ILoan{
         // ping out the item to accept this return!
-        return loan
+        if(loan.item.status !== ThingStatus.CURRENTLY_BORROWED){
+            throw new ReturnNotStarted()
+        }
+
+        return loan.startReturn()
     }
+
     finishReturn(loan: ILoan): ILoan {
-        // todo - see the user actions to determine the status
-        return loan
+        // we need to check if the loan has been accepted by the lender
+        if(loan.status != LoanStatus.WAITING_ON_LENDER_ACCEPTANCE && loan.status != LoanStatus.RETURN_STARTED
+        ){
+            throw new Error(`Item ${loan.item.title.name} has not be given to the lender yet!`)
+        }
+        return loan.finishReturn()
     }
 
     get items(): Iterable<IThing> {

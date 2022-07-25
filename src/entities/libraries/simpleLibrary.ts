@@ -13,9 +13,7 @@ import {LoanStatus} from "../../valueItems/loanStatus"
 import {IMoney} from "../../valueItems/money/IMoney"
 import {DueDate} from "../../valueItems/dueDate"
 import {MoneyFactory} from "../../factories/moneyFactory"
-import {FeeStatus} from "../../valueItems/feeStatus"
 import {IFeeSchedule} from "../../factories/IFeeSchedule"
-import {LibraryFee} from "./libraryFee"
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 
 
@@ -23,15 +21,13 @@ import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../value
 export class SimpleLibrary extends BaseLibrary implements ILender{
     private readonly _items: IThing[];
     readonly location: Location
-    readonly moneyFactory: MoneyFactory
 
     constructor(name: string, admin: Person, location: Location,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
                 feeSchedule: IFeeSchedule) {
-        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule);
+        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory);
         this._items = []
         this.location = location
-        this.moneyFactory = moneyFactory
     }
 
     addItem(item: IThing): IThing{
@@ -43,7 +39,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return this._items
     }
 
-    borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
+    borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): ILoan {
         // check if available
         if(item.status !== ThingStatus.READY){
             throw new InvalidThingStatusToBorrow(item.status)
@@ -54,6 +50,9 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
             throw new BorrowerNotInGoodStanding()
         }
 
+        if(!until){
+            until = new DueDate(new Date())
+        }
         //make loan
         const loan = new Loan(
             this.makeLoanId(),
@@ -68,16 +67,6 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         item.status = ThingStatus.CURRENTLY_BORROWED
         this.addLoan(loan)
         return loan
-    }
-
-    canBorrow(borrower: IBorrower): boolean {
-        if(borrower.library.name !== this.name){
-            return false
-        }
-
-        const feeAmounts = Array.from(borrower.fees).filter(f => f.status === FeeStatus.OUTSTANDING).map(f => f.amount)
-        const totalFees = this.moneyFactory.total(feeAmounts)
-        return !totalFees.greaterThan(this.maxFinesBeforeSuspension);
     }
 
     get allTitles(): Iterable<ThingTitle> {
@@ -100,31 +89,5 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
 
     public startReturn(loan: ILoan): ILoan {
         return loan.startReturn()
-    }
-
-    public finishReturn(loan: ILoan): ILoan {
-        // this has to call FIRST, so the status can be updated to act here
-        loan.finishReturn();
-        let feeAmount: IMoney | undefined = undefined
-        if(loan.item.status == ThingStatus.DAMAGED){
-            // apply the fees
-            feeAmount = this.feeSchedule.feesForDamagedItem(loan)
-        }
-
-        if(loan.status == LoanStatus.OVERDUE){
-            // calculate the late fee and apply
-            feeAmount = this.feeSchedule.feesForOverdueItem(loan)
-            loan.item.status = ThingStatus.READY
-        }
-
-        if(feeAmount){
-            const fee = new LibraryFee(feeAmount, loan, FeeStatus.OUTSTANDING)
-            loan.borrower.applyFee(fee)
-        } else {
-            loan.item.status = ThingStatus.READY
-        }
-
-        // TODO is there a waiting list for the item?
-        return loan
     }
 }

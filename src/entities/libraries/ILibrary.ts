@@ -5,6 +5,7 @@ import {ThingTitle} from "../../valueItems/thingTitle";
 import {IWaitingList} from "../waitingLists/IWaitingList";
 import {Person} from "../people/person";
 import {DueDate} from "../../valueItems/dueDate";
+import {TimeInterval} from "../../valueItems/timeInterval";
 
 export interface ILibrary {
     readonly name: string
@@ -15,6 +16,7 @@ export interface ILibrary {
 
     canBorrow(borrower: IBorrower): boolean
 
+    // todo this should split into start and finish as well
     borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 
     startReturn(loan: ILoan): ILoan

@@ -34,7 +34,8 @@ function createLibrary(): DistributedLibrary {
         new USDMoney(100),
         new WaitingListFactory(),
         [],
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory)
+        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+        moneyFactory
     )
     lib.addLender(testLender)
 
@@ -108,10 +109,8 @@ describe("DistributedLibrary", () => {
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(testLender
-        )
+        const item = createThing(testLender)
         const item2 = new Thing("item2", new ThingTitle("title"), loc, testLender, ThingStatus.READY, "", [], null);
-        testLender.addItem(item)
         testLender.addItem(item2)
 
         // act
