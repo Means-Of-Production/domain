@@ -5,7 +5,7 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "../loans/ILoan";
 import {Loan} from "../loans/loan"
 import {LoanStatus} from "../../valueItems/loanStatus";
-import {InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {BaseLibrary} from "./baseLibrary";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
@@ -23,16 +23,6 @@ export class DistributedLibrary extends BaseLibrary{
         super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory, idFactory)
 
         this._lenders = []
-    }
-
-    public canBorrow(borrower: IBorrower): boolean {
-        for(const b of this.borrowers){
-            if(b.id === borrower.id){
-                // in the lib, for now that's enough
-                return true
-            }
-        }
-        return false
     }
 
     get allTitles(): Iterable<ThingTitle> {
@@ -53,9 +43,15 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
-        if (item.status === ThingStatus.DAMAGED) {
+        if (item.status !== ThingStatus.READY) {
             throw new InvalidThingStatusToBorrow(item.status)
         }
+
+        // check if borrower in good standing
+        if(!this.canBorrow(borrower)){
+            throw new BorrowerNotInGoodStanding()
+        }
+
         // get the lender for this item
         const lender = this.getOwnerOfItem(item)
         if (!lender){

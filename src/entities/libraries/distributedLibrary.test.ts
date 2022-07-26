@@ -174,10 +174,8 @@ describe("DistributedLibrary", () => {
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
         expect(updatedLoan.dateReturned).not.toBeNull()
-
-        updatedLoan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
@@ -200,7 +198,7 @@ describe("DistributedLibrary", () => {
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         // ACT
         updatedLoan.item.status = ThingStatus.DAMAGED
@@ -232,7 +230,7 @@ describe("DistributedLibrary", () => {
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
