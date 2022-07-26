@@ -4,7 +4,7 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {Borrower} from "../people/borrower";
 import {Loan} from "../loans/loan";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {DistributedLibrary} from "./distributedLibrary";
 import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {Person} from "../people/person";
@@ -19,42 +19,44 @@ import {MoneyFactory} from "../../factories/moneyFactory";
 import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {ILender} from "../lenders/ILender";
-
-const loc =  new Location(40.6501, -73.94958)
-
-const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
-const testLender = new IndividualDistributedLender("testLender", testPerson, [], [])
-
-function createLibrary(): DistributedLibrary {
-    const person = new Person("1", new PersonName("Test", "McTesterson"))
-    const moneyFactory = new MoneyFactory()
-    const lib = new DistributedLibrary(
-        "testDistributedLibrary",
-        person,
-        new USDMoney(100),
-        new WaitingListFactory(),
-        [],
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
-        moneyFactory
-    )
-    lib.addLender(testLender)
-
-    return lib
-}
-
-function createThing(lender: ILender, purchaseCost: IMoney | null = null) {
-    const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
-    testLender.addItem(thing)
-    return thing
-}
-
-function getDueDate(numDays: number = 1) : DueDate {
-    const now = new Date()
-    const then = new Date(now.setDate(now.getDate() + numDays))
-    return new DueDate(then)
-}
+import {IdFactory} from "../../factories/idFactory";
 
 describe("DistributedLibrary", () => {
+    const loc =  new PhysicalLocation(40.6501, -73.94958)
+
+    const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
+    const testLender = new IndividualDistributedLender("testLender", testPerson, [], [])
+
+    function createLibrary(): DistributedLibrary {
+        const person = new Person("1", new PersonName("Test", "McTesterson"))
+        const moneyFactory = new MoneyFactory()
+        const lib = new DistributedLibrary(
+            "testDistributedLibrary",
+            person,
+            new USDMoney(100),
+            new WaitingListFactory(),
+            [],
+            new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+            moneyFactory,
+            new IdFactory()
+        )
+        lib.addLender(testLender)
+
+        return lib
+    }
+
+    function getDueDate(numDays: number = 1) : DueDate {
+        const now = new Date()
+        const then = new Date(now.setDate(now.getDate() + numDays))
+        return new DueDate(then)
+    }
+
+    function createThing(lender: ILender, purchaseCost: IMoney | null = null) {
+        const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
+        testLender.addItem(thing)
+        return thing
+    }
+
     it("lists items it has", () => {
         const library = createLibrary();
 
@@ -167,11 +169,13 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
+        expect(loan.dateReturned).toBeNull()
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
+        expect(updatedLoan.dateReturned).not.toBeNull()
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
@@ -190,11 +194,11 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         // ACT
         updatedLoan.item.status = ThingStatus.DAMAGED
@@ -222,11 +226,11 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, getDueDate(-10))
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()

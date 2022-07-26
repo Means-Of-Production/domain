@@ -3,7 +3,7 @@ import {Person} from "../people/person";
 import {ILender} from "./ILender";
 import {IThing} from "../things/IThing";
 import {EmailAddress} from "../../valueItems/emailAddress";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {ReturnNotStarted} from "../../valueItems/exceptions";
 import {LoanStatus} from "../../valueItems/loanStatus";
@@ -15,9 +15,9 @@ export class IndividualDistributedLender implements ILender{
     private readonly _items: IThing[]
     readonly person: Person
     readonly id: string
-    private readonly _returnLocationOverride: Location | undefined
+    private readonly _returnLocationOverride: PhysicalLocation | undefined
 
-    constructor(id: string, person: Person, emails: EmailAddress[] = [], items: Iterable<IThing>, returnLocationOverride?: Location){
+    constructor(id: string, person: Person, emails: EmailAddress[] = [], items: Iterable<IThing>, returnLocationOverride?: PhysicalLocation){
         this.id = id
         this.person = person
         this._items = []
@@ -29,11 +29,12 @@ export class IndividualDistributedLender implements ILender{
 
     startReturn(loan: ILoan): ILoan{
         // ping out the item to accept this return!
-        if(loan.item.status !== ThingStatus.CURRENTLY_BORROWED){
+        if(loan.item.status !== ThingStatus.BORROWED){
             throw new ReturnNotStarted()
         }
-
-        return loan.startReturn()
+        loan.dateReturned = new Date()
+        loan.status = LoanStatus.RETURN_STARTED
+        return loan
     }
 
     finishReturn(loan: ILoan): ILoan {
@@ -42,7 +43,7 @@ export class IndividualDistributedLender implements ILender{
         ){
             throw new Error(`Item ${loan.item.title.name} has not be given to the lender yet!`)
         }
-        return loan.finishReturn()
+        return loan
     }
 
     get items(): Iterable<IThing> {
@@ -54,7 +55,7 @@ export class IndividualDistributedLender implements ILender{
         return item
     }
 
-    preferredReturnLocation(item: IThing): Location{
+    preferredReturnLocation(item: IThing): PhysicalLocation{
         if (this._returnLocationOverride){ return this._returnLocationOverride}
         return item.storageLocation
     }

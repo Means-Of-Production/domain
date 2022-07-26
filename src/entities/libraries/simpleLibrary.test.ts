@@ -5,7 +5,7 @@ import {WaitingListFactory} from "../../factories/waitingListFactory";
 import {USDMoney} from "../../valueItems/money/USDMoney";
 import {Thing} from "../things/thing";
 import {ThingTitle} from "../../valueItems/thingTitle";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
@@ -17,10 +17,11 @@ import {Loan} from "../loans/loan";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
+import {IdFactory} from "../../factories/idFactory";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
-    const location = new Location(0, 0)
+    const location = new PhysicalLocation(0, 0)
     const moneyFactory = new MoneyFactory()
     return new SimpleLibrary(
         "testLibrary",
@@ -30,7 +31,8 @@ function createLibrary(): SimpleLibrary {
         new USDMoney(100),
         [],
         moneyFactory,
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory)
+        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+        new IdFactory()
     )
 }
 
@@ -164,11 +166,11 @@ describe("Simple Library Tests", () => {
         const loan = library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
@@ -188,11 +190,11 @@ describe("Simple Library Tests", () => {
         const loan = library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         // ACT
         updatedLoan.item.status = ThingStatus.DAMAGED
@@ -221,11 +223,11 @@ describe("Simple Library Tests", () => {
         const loan = library.borrow(item, borrower, getDueDate(-10))
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()

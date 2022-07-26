@@ -5,7 +5,7 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "../loans/ILoan";
 import {Loan} from "../loans/loan"
 import {LoanStatus} from "../../valueItems/loanStatus";
-import {InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {BaseLibrary} from "./baseLibrary";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
@@ -14,24 +14,15 @@ import {DueDate} from "../../valueItems/dueDate";
 import {IFeeSchedule} from "../../factories/IFeeSchedule";
 import {ILender} from "../lenders/ILender";
 import {MoneyFactory} from "../../factories/moneyFactory";
+import {IdFactory} from "../../factories/idFactory";
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory) {
-        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory)
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory) {
+        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory, idFactory)
 
         this._lenders = []
-    }
-
-    public canBorrow(borrower: IBorrower): boolean {
-        for(const b of this.borrowers){
-            if(b.id === borrower.id){
-                // in the lib, for now that's enough
-                return true
-            }
-        }
-        return false
     }
 
     get allTitles(): Iterable<ThingTitle> {
@@ -52,23 +43,30 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
-        if (item.status === ThingStatus.DAMAGED) {
+        if (item.status !== ThingStatus.READY) {
             throw new InvalidThingStatusToBorrow(item.status)
         }
+
+        // check if borrower in good standing
+        if(!this.canBorrow(borrower)){
+            throw new BorrowerNotInGoodStanding()
+        }
+
         // get the lender for this item
         const lender = this.getOwnerOfItem(item)
         if (!lender){
             throw new Error(`Cannot find owner of item ${item.id}`)
         }
 
-        item.status = ThingStatus.CURRENTLY_BORROWED;
+        item.status = ThingStatus.BORROWED;
         return new Loan(
-            this.makeLoanId(),
+            this.idFactory.makeLoanID(),
             item,
             borrower,
             until,
-            LoanStatus.LOANED,
-            lender.preferredReturnLocation(item)
+            LoanStatus.BORROWED,
+            lender.preferredReturnLocation(item),
+            null
         )
     }
 
@@ -84,8 +82,15 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     startReturn(loan: ILoan): ILoan {
+        // TODO check the borrower is somewhere near where they should be!
         const owner = this.getOwnerOfItem(loan.item);
-        return owner.startReturn(loan);
+        const updated = owner.startReturn(loan);
+
+        loan.dateReturned = new Date()
+        // TODO notify the owner that we have started the return
+
+        loan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
+        return updated
     }
 
     addLender(lender: ILender) : ILender {

@@ -5,7 +5,7 @@ import {BaseLibrary} from "./baseLibrary"
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Loan} from "../loans/loan";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ILender} from "../lenders/ILender";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory"
 import {Person} from "../people/person"
@@ -15,17 +15,18 @@ import {DueDate} from "../../valueItems/dueDate"
 import {MoneyFactory} from "../../factories/moneyFactory"
 import {IFeeSchedule} from "../../factories/IFeeSchedule"
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {IdFactory} from "../../factories/idFactory";
 
 
 // library which also lends items from a simple, single, location
 export class SimpleLibrary extends BaseLibrary implements ILender{
     private readonly _items: IThing[];
-    readonly location: Location
+    readonly location: PhysicalLocation
 
-    constructor(name: string, admin: Person, location: Location,
+    constructor(name: string, admin: Person, location: PhysicalLocation,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
-                feeSchedule: IFeeSchedule) {
-        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory);
+                feeSchedule: IFeeSchedule, idFactory: IdFactory) {
+        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory);
         this._items = []
         this.location = location
     }
@@ -55,16 +56,16 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         }
         //make loan
         const loan = new Loan(
-            this.makeLoanId(),
+            this.idFactory.makeLoanID(),
             item,
             borrower,
             until,
-            LoanStatus.LOANED,
+            LoanStatus.BORROWED,
             this.location,
-            undefined
+            null
         )
 
-        item.status = ThingStatus.CURRENTLY_BORROWED
+        item.status = ThingStatus.BORROWED
         this.addLoan(loan)
         return loan
     }
@@ -79,7 +80,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return this.getTitlesFromItems(availableItems)
     }
 
-    preferredReturnLocation(item: IThing): Location {
+    preferredReturnLocation(item: IThing): PhysicalLocation {
         return this.location
     }
 
@@ -88,6 +89,10 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     }
 
     public startReturn(loan: ILoan): ILoan {
-        return loan.startReturn()
+        // simple library does not have an acceptance step, only the library starts returns!
+        loan.status = LoanStatus.RETURN_STARTED
+        loan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
+        loan.dateReturned = new Date()
+        return loan
     }
 }

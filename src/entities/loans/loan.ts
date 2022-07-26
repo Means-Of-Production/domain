@@ -1,24 +1,23 @@
 import {IThing} from "../things/IThing";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IBorrower} from "../people/IBorrower";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ILender} from "../lenders/ILender";
-import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "./ILoan"
 import {DueDate} from "../../valueItems/dueDate";
-import {ReturnNotStarted} from "../../valueItems/exceptions";
+import {InvalidLoanStateTransition} from "../../valueItems/exceptions";
 
 export class Loan implements ILoan {
     public readonly id: string
     public readonly item: IThing
     public readonly borrower: IBorrower
     public readonly dueDate: DueDate
-    private _dateReturned: Date | undefined
+    private _dateReturned: Date | null
     private _status: LoanStatus
-    public readonly returnLocation: Location
+    public readonly returnLocation: PhysicalLocation
 
-    public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.LOANED,
-                       returnLocation: Location | null = null, dateReturned?: Date) {
+    public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.BORROWED,
+                       returnLocation: PhysicalLocation | null = null, dateReturned: Date | null = null) {
         this.id = id
         this.item = item
         this.borrower = borrower
@@ -37,41 +36,46 @@ export class Loan implements ILoan {
     }
 
     public get active(): boolean {
-        return this._status === LoanStatus.LOANED
+        return this._status === LoanStatus.BORROWED
     }
-    public get dateReturned(): Date | undefined{
+
+    public get dateReturned(): Date | null{
         return this._dateReturned
+    }
+
+    public set dateReturned(date: Date | null){
+        this._dateReturned = date
+
     }
     public get status(): LoanStatus {
         return this._status
     }
 
-    public startReturn(): ILoan {
-        this._status = LoanStatus.RETURN_STARTED
-        this._dateReturned = new Date()
-        return this
-    }
-
-    public finishReturn(): ILoan {
-        if(this.status !== LoanStatus.RETURN_STARTED){
-            throw new ReturnNotStarted()
+    public set status(status: LoanStatus) {
+        let validNewStatus: LoanStatus[]
+        switch(this._status){
+            case LoanStatus.BORROWED:
+                validNewStatus = [LoanStatus.RETURN_STARTED, LoanStatus.OVERDUE]
+                break
+            case LoanStatus.OVERDUE:
+                validNewStatus = [LoanStatus.RETURN_STARTED]
+                break
+            case LoanStatus.RETURN_STARTED:
+                validNewStatus = [LoanStatus.WAITING_ON_LENDER_ACCEPTANCE, LoanStatus.RETURNED, LoanStatus.RETURNED_DAMAGED]
+                break
+            case LoanStatus.WAITING_ON_LENDER_ACCEPTANCE:
+                validNewStatus = [LoanStatus.RETURNED, LoanStatus.RETURNED_DAMAGED, LoanStatus.OVERDUE]
+                break
+            case LoanStatus.RETURNED_DAMAGED:
+            case LoanStatus.RETURNED:
+                validNewStatus = []
+                break
         }
 
-        if(this.item.status === ThingStatus.DAMAGED){
-            this._status = LoanStatus.RETURNED_DAMAGED
-            return this
+        if(validNewStatus.indexOf(status) < 0){
+            throw new InvalidLoanStateTransition(this._status, status);
         }
-        if(this._dateReturned) {
-            if (this.dueDate.date) {
-                if(this._dateReturned > this.dueDate.date){
-                    this._status = LoanStatus.OVERDUE
-                    return this
-                }
-            }
-        }
-        this._status = LoanStatus.RETURNED
-        return this
-
+        this._status = status
     }
 
     public get permanentLoan(): boolean{

@@ -4,25 +4,28 @@ import {IBorrower} from "../people/IBorrower";
 import {IWaitingList} from "./IWaitingList";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {IAuctionBid} from "./IAuctionBid";
-import {WaitingList} from "./waitingList";
 import {MoneyFactory} from "../../factories/moneyFactory";
+import {FirstComeFirstServeWaitingList} from "./firstComeFirstServeWaitingList";
+import {BaseWaitingList} from "./baseWaitingList";
+import {Reservation} from "./reservation";
+import {IdFactory} from "../../factories/idFactory";
+import { TimeInterval } from "../../valueItems/timeInterval";
 
-export class AuctionableWaitingList implements IAuctionableWaitingList{
+export class AuctionableWaitingList extends BaseWaitingList implements IAuctionableWaitingList {
     readonly ends: Date;
     readonly isActive: boolean;
-    readonly item: IThing;
     readonly started: Date;
     readonly moneyFactory: MoneyFactory
 
-    private readonly mainList: IWaitingList
+    private readonly backupList: IWaitingList
     private readonly bidsByForId: Map<string, IAuctionBid[]>
 
-    constructor(item: IThing, ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true) {
-        this.mainList = new WaitingList(item)
+    constructor(item: IThing, currentReservation: Reservation, expiredReservations: Reservation[], idFactory: IdFactory,  ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true) {
+        super(item, currentReservation, expiredReservations, idFactory)
+        this.backupList = new FirstComeFirstServeWaitingList(item)
         this.bidsByForId = new Map<string, IAuctionBid[]>()
         this.moneyFactory = moneyFactory
 
-        this.item = item
         this.started = started
         this.ends = ends
         this.isActive = isActive
@@ -30,7 +33,7 @@ export class AuctionableWaitingList implements IAuctionableWaitingList{
 
 
     add(borrower: IBorrower): IWaitingList {
-        this.mainList.add(borrower)
+        this.backupList.add(borrower)
         return this
     }
 
@@ -84,9 +87,9 @@ export class AuctionableWaitingList implements IAuctionableWaitingList{
         return false;
     }
 
-    pop(): IBorrower | null {
+    findNextBorrower(): IBorrower | null {
         if(this.bidsByForId.size === 0){
-            return this.mainList.pop()
+            return this.backupList.findNextBorrower()
         }
 
         return this.getWinningBorrower()
@@ -105,4 +108,32 @@ export class AuctionableWaitingList implements IAuctionableWaitingList{
         return amount
     }
 
+    processReservationExpired(reservation: Reservation): IWaitingList {
+        throw new Error("Method not implemented.");
+    }
+
+
+    protected getReservationTime(): TimeInterval {
+        throw new Error("Method not implemented.");
+    }
+
+    cancel(borrower: IBorrower): IWaitingList {
+        this.backupList.cancel(borrower);
+
+        if(this.bidsByForId.has(borrower.id)){
+            this.bidsByForId.delete(borrower.id)
+        }
+
+        // delete any bids for OR by this borrower
+        for(const bidList of this.bidsByForId.values()){
+            for(const bid of bidList){
+                if(bid.madeBy.id == borrower.id){
+                    const updatedList = bidList.filter(b => b.madeBy.id != borrower.id)
+                    this.bidsByForId.set(bid.madeFor.id, updatedList)
+                }
+            }
+        }
+
+        return this
+    }
 }

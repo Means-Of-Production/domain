@@ -1,7 +1,7 @@
 import {IWaitingListFactory} from "./IWaitingListFactory";
 import {Thing} from "../entities/things/thing";
 import {IWaitingList} from "../entities/waitingLists/IWaitingList";
-import {WaitingList} from "../entities/waitingLists/waitingList";
+import {FirstComeFirstServeWaitingList} from "../entities/waitingLists/firstComeFirstServeWaitingList";
 
 export class WaitingListFactory implements IWaitingListFactory{
     readonly supportsAuctions: boolean;
@@ -13,7 +13,7 @@ export class WaitingListFactory implements IWaitingListFactory{
         if (this.supportsAuctions){
             throw new Error()
         } else {
-            return new WaitingList(item)
+            return new FirstComeFirstServeWaitingList(item)
         }
     }
 }

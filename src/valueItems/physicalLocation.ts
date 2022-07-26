@@ -1,4 +1,4 @@
-export class Location {
+export class PhysicalLocation {
     public readonly latitude: number
     public readonly longitude: number
     public readonly address: string | null
