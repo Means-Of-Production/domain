@@ -17,7 +17,7 @@ export class Loan implements ILoan {
     private _status: LoanStatus
     public readonly returnLocation: Location
 
-    public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.LOANED,
+    public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.BORROWED,
                        returnLocation: Location | null = null, dateReturned?: Date) {
         this.id = id
         this.item = item
@@ -37,7 +37,7 @@ export class Loan implements ILoan {
     }
 
     public get active(): boolean {
-        return this._status === LoanStatus.LOANED
+        return this._status === LoanStatus.BORROWED
     }
     public get dateReturned(): Date | undefined{
         return this._dateReturned

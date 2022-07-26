@@ -167,7 +167,7 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
@@ -190,7 +190,7 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
@@ -222,7 +222,7 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, getDueDate(-10))
 
         expect(loan).not.toBeNull()
-        expect(loan.item.status).toEqual(ThingStatus.CURRENTLY_BORROWED)
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()

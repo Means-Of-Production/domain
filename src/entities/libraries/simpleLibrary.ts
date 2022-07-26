@@ -59,12 +59,12 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
             item,
             borrower,
             until,
-            LoanStatus.LOANED,
+            LoanStatus.BORROWED,
             this.location,
             undefined
         )
 
-        item.status = ThingStatus.CURRENTLY_BORROWED
+        item.status = ThingStatus.BORROWED
         this.addLoan(loan)
         return loan
     }

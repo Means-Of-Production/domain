@@ -29,7 +29,7 @@ export class IndividualDistributedLender implements ILender{
 
     startReturn(loan: ILoan): ILoan{
         // ping out the item to accept this return!
-        if(loan.item.status !== ThingStatus.CURRENTLY_BORROWED){
+        if(loan.item.status !== ThingStatus.BORROWED){
             throw new ReturnNotStarted()
         }
 

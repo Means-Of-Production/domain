@@ -23,7 +23,7 @@ describe("Thing", ()=>{
            title,
            location,
             lender,
-            ThingStatus.CURRENTLY_BORROWED,
+            ThingStatus.BORROWED,
             "description",
             ["http://example.com/img1.jpg"],
             null,

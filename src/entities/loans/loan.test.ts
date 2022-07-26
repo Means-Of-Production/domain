@@ -27,7 +27,7 @@ const testLender = new IndividualDistributedLender("lender", new Person("test", 
 describe("Loan", () => {
     it('should change status on starting return', () => {
         const borrower = new Borrower("1", testPerson, testLib)
-        const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.CURRENTLY_BORROWED, "", [], null, [])
+        const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.BORROWED, "", [], null, [])
 
         const loan = new Loan(
             "testId",
@@ -47,7 +47,7 @@ describe("Loan", () => {
 
     it('should change status on finishing return', () => {
         const borrower = new Borrower("1", testPerson, testLib)
-        const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.CURRENTLY_BORROWED, "", [], null, [])
+        const thing = new Thing("test", testTitle, loc, testLender, ThingStatus.BORROWED, "", [], null, [])
 
         const loan = new Loan(
             "testId",

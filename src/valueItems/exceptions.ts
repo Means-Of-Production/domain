@@ -10,17 +10,6 @@ export class InsufficentBorrowerVerificationFlag extends Error{
     }
 }
 
-export class InsufficientBorrowingCreditAvailableError extends Error{
-    public readonly amountPresent: number
-    public readonly amountRequired: number
-
-    constructor(amountPresent: number, amountRequired: number) {
-        super(`${amountRequired} was needed, but only have ${amountPresent}`);
-        this.amountPresent = amountPresent
-        this.amountRequired = amountRequired
-    }
-}
-
 export class InvalidThingStatusToBorrow extends Error{
     public readonly status: ThingStatus
 
@@ -35,13 +24,16 @@ export class ReturnNotStarted extends Error {}
 export class BorrowerNotInGoodStanding extends Error{
 
 }
-
-export class DifferentTypesOfMoney extends Error{
-
-}
+export class DifferentTypesOfMoney extends Error{}
 
 export class NotImplemented extends Error{
     constructor() {
         super("Not Implemented");
+    }
+}
+
+export class InvalidThingStateTransition extends Error {
+    constructor(from: ThingStatus, to: ThingStatus) {
+        super(`Invalid state transition requested from ${from} to ${to}`);
     }
 }

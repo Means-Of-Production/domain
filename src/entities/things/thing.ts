@@ -5,6 +5,7 @@ import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFl
 import {ILender} from "../lenders/ILender";
 import {IThing} from "./IThing"
 import {ThingTitle} from "../../valueItems/thingTitle";
+import {InvalidThingStateTransition} from "../../valueItems/exceptions";
 
 
 export class Thing implements IThing {
@@ -46,6 +47,24 @@ export class Thing implements IThing {
     }
 
     public set status(status: ThingStatus) {
+        let validNextStatus: ThingStatus[]
+        switch(this._status){
+            case ThingStatus.READY:
+                validNextStatus = [ThingStatus.BORROWED, ThingStatus.RESERVED]
+                break
+            case ThingStatus.BORROWED:
+                validNextStatus = [ThingStatus.RESERVED, ThingStatus.READY, ThingStatus.DAMAGED]
+                break
+            case ThingStatus.RESERVED:
+                validNextStatus = [ThingStatus.BORROWED, ThingStatus.READY]
+                break
+            case ThingStatus.DAMAGED:
+                // TODO this will require our repair path later
+                validNextStatus = []
+        }
+        if(validNextStatus.indexOf(status) < 0){
+            throw new InvalidThingStateTransition(this._status, status)
+        }
         this._status = status
     }
 }

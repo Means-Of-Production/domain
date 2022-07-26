@@ -61,13 +61,13 @@ export class DistributedLibrary extends BaseLibrary{
             throw new Error(`Cannot find owner of item ${item.id}`)
         }
 
-        item.status = ThingStatus.CURRENTLY_BORROWED;
+        item.status = ThingStatus.BORROWED;
         return new Loan(
             this.makeLoanId(),
             item,
             borrower,
             until,
-            LoanStatus.LOANED,
+            LoanStatus.BORROWED,
             lender.preferredReturnLocation(item)
         )
     }
