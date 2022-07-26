@@ -21,42 +21,42 @@ import {IMoney} from "../../valueItems/money/IMoney";
 import {ILender} from "../lenders/ILender";
 import {IdFactory} from "../../factories/idFactory";
 
-const loc =  new PhysicalLocation(40.6501, -73.94958)
-
-const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
-const testLender = new IndividualDistributedLender("testLender", testPerson, [], [])
-
-function createLibrary(): DistributedLibrary {
-    const person = new Person("1", new PersonName("Test", "McTesterson"))
-    const moneyFactory = new MoneyFactory()
-    const lib = new DistributedLibrary(
-        "testDistributedLibrary",
-        person,
-        new USDMoney(100),
-        new WaitingListFactory(),
-        [],
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
-        moneyFactory,
-        new IdFactory()
-    )
-    lib.addLender(testLender)
-
-    return lib
-}
-
-function createThing(lender: ILender, purchaseCost: IMoney | null = null) {
-    const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
-    testLender.addItem(thing)
-    return thing
-}
-
-function getDueDate(numDays: number = 1) : DueDate {
-    const now = new Date()
-    const then = new Date(now.setDate(now.getDate() + numDays))
-    return new DueDate(then)
-}
-
 describe("DistributedLibrary", () => {
+    const loc =  new PhysicalLocation(40.6501, -73.94958)
+
+    const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
+    const testLender = new IndividualDistributedLender("testLender", testPerson, [], [])
+
+    function createLibrary(): DistributedLibrary {
+        const person = new Person("1", new PersonName("Test", "McTesterson"))
+        const moneyFactory = new MoneyFactory()
+        const lib = new DistributedLibrary(
+            "testDistributedLibrary",
+            person,
+            new USDMoney(100),
+            new WaitingListFactory(),
+            [],
+            new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+            moneyFactory,
+            new IdFactory()
+        )
+        lib.addLender(testLender)
+
+        return lib
+    }
+
+    function getDueDate(numDays: number = 1) : DueDate {
+        const now = new Date()
+        const then = new Date(now.setDate(now.getDate() + numDays))
+        return new DueDate(then)
+    }
+
+    function createThing(lender: ILender, purchaseCost: IMoney | null = null) {
+        const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
+        testLender.addItem(thing)
+        return thing
+    }
+
     it("lists items it has", () => {
         const library = createLibrary();
 
@@ -170,13 +170,15 @@ describe("DistributedLibrary", () => {
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
+        expect(loan.dateReturned).toBeNull()
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.dateReturned).not.toBeNull()
 
         updatedLoan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
-        
+
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED)

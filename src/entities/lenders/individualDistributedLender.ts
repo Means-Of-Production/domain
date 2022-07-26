@@ -32,6 +32,8 @@ export class IndividualDistributedLender implements ILender{
         if(loan.item.status !== ThingStatus.BORROWED){
             throw new ReturnNotStarted()
         }
+        loan.dateReturned = new Date()
+        loan.status = LoanStatus.RETURN_STARTED
         return loan
     }
 
