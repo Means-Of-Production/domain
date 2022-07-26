@@ -14,12 +14,13 @@ import {DueDate} from "../../valueItems/dueDate";
 import {IFeeSchedule} from "../../factories/IFeeSchedule";
 import {ILender} from "../lenders/ILender";
 import {MoneyFactory} from "../../factories/moneyFactory";
+import {IdFactory} from "../../factories/idFactory";
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory) {
-        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory)
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory) {
+        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory, idFactory)
 
         this._lenders = []
     }
@@ -63,12 +64,13 @@ export class DistributedLibrary extends BaseLibrary{
 
         item.status = ThingStatus.BORROWED;
         return new Loan(
-            this.makeLoanId(),
+            this.idFactory.makeLoanID(),
             item,
             borrower,
             until,
             LoanStatus.BORROWED,
-            lender.preferredReturnLocation(item)
+            lender.preferredReturnLocation(item),
+            null
         )
     }
 

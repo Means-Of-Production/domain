@@ -1,14 +1,19 @@
 import {IWaitingList} from "./IWaitingList";
 import {IBorrower} from "../people/IBorrower";
 import {IThing} from "../things/IThing";
+import {BaseWaitingList} from "./baseWaitingList";
+import {TimeInterval} from "../../valueItems/timeInterval";
+import {Reservation} from "./reservation";
+import {ReservationStatus} from "../../valueItems/reservationStatus";
 
-export class FirstComeFirstServeWaitingList implements IWaitingList{
-    private readonly members: IBorrower[]
-    readonly item: IThing;
+export class FirstComeFirstServeWaitingList extends BaseWaitingList{
+    private members: IBorrower[]
+    private readonly reservationDays: number
 
-    constructor(item: IThing){
-        this.item = item
-        this.members = []
+    constructor(item: IThing, members: IBorrower[] = [], reservationDays: number = 3){
+        super(item)
+        this.members = members
+        this.reservationDays = reservationDays
     }
 
     add(borrower: IBorrower): IWaitingList {
@@ -21,9 +26,25 @@ export class FirstComeFirstServeWaitingList implements IWaitingList{
         return borrower.id in memberIds
     }
 
-    pop(): IBorrower | null {
-        const first = this.members[0]
-        this.members.splice(0, 1)
-        return first
+    findNextBorrower(): IBorrower | null {
+        return this.members[0]
+    }
+
+    protected getReservationTime(): TimeInterval {
+        return TimeInterval.fromDays(this.reservationDays)
+    }
+
+    processReservationExpired(reservation: Reservation): IWaitingList {
+        reservation.status = ReservationStatus.EXPIRED
+        this._expiredReservations.push(reservation)
+        this.clearCurrentReservation()
+
+        return this
+    }
+
+    public cancel(borrower: IBorrower): IWaitingList {
+        this.members = this.members.filter(b => b.id != borrower.id)
+
+        return this
     }
 }

@@ -15,6 +15,7 @@ import {DueDate} from "../../valueItems/dueDate"
 import {MoneyFactory} from "../../factories/moneyFactory"
 import {IFeeSchedule} from "../../factories/IFeeSchedule"
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {IdFactory} from "../../factories/idFactory";
 
 
 // library which also lends items from a simple, single, location
@@ -24,8 +25,8 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
 
     constructor(name: string, admin: Person, location: Location,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
-                feeSchedule: IFeeSchedule) {
-        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory);
+                feeSchedule: IFeeSchedule, idFactory: IdFactory) {
+        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory);
         this._items = []
         this.location = location
     }
@@ -55,13 +56,13 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         }
         //make loan
         const loan = new Loan(
-            this.makeLoanId(),
+            this.idFactory.makeLoanID(),
             item,
             borrower,
             until,
             LoanStatus.BORROWED,
             this.location,
-            undefined
+            null
         )
 
         item.status = ThingStatus.BORROWED
@@ -88,6 +89,10 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     }
 
     public startReturn(loan: ILoan): ILoan {
-        return loan.startReturn()
+        // simple library does not have an acceptance step, only the library starts returns!
+        loan.status = LoanStatus.RETURN_STARTED
+        loan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
+        loan.dateReturned = new Date()
+        return loan
     }
 }

@@ -17,6 +17,7 @@ import {Loan} from "../loans/loan";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
+import {IdFactory} from "../../factories/idFactory";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -30,7 +31,8 @@ function createLibrary(): SimpleLibrary {
         new USDMoney(100),
         [],
         moneyFactory,
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory)
+        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+        new IdFactory()
     )
 }
 
@@ -168,7 +170,7 @@ describe("Simple Library Tests", () => {
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
@@ -192,7 +194,7 @@ describe("Simple Library Tests", () => {
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         // ACT
         updatedLoan.item.status = ThingStatus.DAMAGED
@@ -225,7 +227,7 @@ describe("Simple Library Tests", () => {
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
-        expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()

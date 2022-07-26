@@ -14,6 +14,8 @@ import {LoanStatus} from "../../valueItems/loanStatus";
 import {LibraryFee} from "./libraryFee";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {MoneyFactory} from "../../factories/moneyFactory";
+import {ReturnNotStarted} from "../../valueItems/exceptions";
+import {IdFactory} from "../../factories/idFactory";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -25,8 +27,9 @@ export abstract class BaseLibrary implements ILibrary{
     readonly maxFinesBeforeSuspension: IMoney
     readonly feeSchedule: IFeeSchedule
     readonly moneyFactory: MoneyFactory
+    protected readonly idFactory: IdFactory
 
-    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory) {
+    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory) {
         this.name = name;
         this.waitingListFactory = waitingListFactory
         this._borrowers = []
@@ -35,6 +38,7 @@ export abstract class BaseLibrary implements ILibrary{
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
         this.feeSchedule = feeSchedule
         this.moneyFactory = moneyFactory
+        this.idFactory = idFactory
 
         this._loans = []
         for(const l of loans){
@@ -94,10 +98,6 @@ export abstract class BaseLibrary implements ILibrary{
         return titles
     }
 
-    protected makeLoanId(): string{
-        return "guid"
-    }
-
     private static compareLoans(a: ILoan, b: ILoan): number {
         return DueDate.compare(a.dueDate, b.dueDate)
     }
@@ -124,7 +124,28 @@ export abstract class BaseLibrary implements ILibrary{
 
     public finishReturn(loan: ILoan): ILoan {
         // this has to call FIRST, so the status can be updated to act here
-        loan.finishReturn();
+        if(loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE){
+            throw new ReturnNotStarted()
+        }
+
+        if(loan.item.status === ThingStatus.DAMAGED){
+            loan.status = LoanStatus.RETURNED_DAMAGED
+        } else {
+            if (loan.dateReturned) {
+                if (loan.dueDate.date) {
+                    if (loan.dateReturned > loan.dueDate.date) {
+                        loan.status = LoanStatus.OVERDUE
+                    } else{
+                        loan.status = LoanStatus.RETURNED
+                    }
+                }
+            }
+            else{
+                loan.status = LoanStatus.RETURNED
+            }
+        }
+
+
         let feeAmount: IMoney | undefined = undefined
         if(loan.item.status == ThingStatus.DAMAGED){
             // apply the fees

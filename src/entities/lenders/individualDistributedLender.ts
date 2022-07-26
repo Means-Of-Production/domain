@@ -32,8 +32,7 @@ export class IndividualDistributedLender implements ILender{
         if(loan.item.status !== ThingStatus.BORROWED){
             throw new ReturnNotStarted()
         }
-
-        return loan.startReturn()
+        return loan
     }
 
     finishReturn(loan: ILoan): ILoan {
@@ -42,7 +41,7 @@ export class IndividualDistributedLender implements ILender{
         ){
             throw new Error(`Item ${loan.item.title.name} has not be given to the lender yet!`)
         }
-        return loan.finishReturn()
+        return loan
     }
 
     get items(): Iterable<IThing> {
