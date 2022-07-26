@@ -4,7 +4,7 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {Borrower} from "../people/borrower";
 import {Loan} from "../loans/loan";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {DistributedLibrary} from "./distributedLibrary";
 import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {Person} from "../people/person";
@@ -21,7 +21,7 @@ import {IMoney} from "../../valueItems/money/IMoney";
 import {ILender} from "../lenders/ILender";
 import {IdFactory} from "../../factories/idFactory";
 
-const loc =  new Location(40.6501, -73.94958)
+const loc =  new PhysicalLocation(40.6501, -73.94958)
 
 const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
 const testLender = new IndividualDistributedLender("testLender", testPerson, [], [])
@@ -175,6 +175,8 @@ describe("DistributedLibrary", () => {
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.RETURN_STARTED)
 
+        updatedLoan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
+        
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED)

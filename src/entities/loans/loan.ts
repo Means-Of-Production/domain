@@ -1,7 +1,7 @@
 import {IThing} from "../things/IThing";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IBorrower} from "../people/IBorrower";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ILender} from "../lenders/ILender";
 import {ILoan} from "./ILoan"
 import {DueDate} from "../../valueItems/dueDate";
@@ -14,10 +14,10 @@ export class Loan implements ILoan {
     public readonly dueDate: DueDate
     private _dateReturned: Date | null
     private _status: LoanStatus
-    public readonly returnLocation: Location
+    public readonly returnLocation: PhysicalLocation
 
     public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.BORROWED,
-                       returnLocation: Location | null = null, dateReturned: Date | null = null) {
+                       returnLocation: PhysicalLocation | null = null, dateReturned: Date | null = null) {
         this.id = id
         this.item = item
         this.borrower = borrower

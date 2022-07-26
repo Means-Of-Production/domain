@@ -5,7 +5,7 @@ import {WaitingListFactory} from "../../factories/waitingListFactory";
 import {USDMoney} from "../../valueItems/money/USDMoney";
 import {Thing} from "../things/thing";
 import {ThingTitle} from "../../valueItems/thingTitle";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
@@ -21,7 +21,7 @@ import {IdFactory} from "../../factories/idFactory";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
-    const location = new Location(0, 0)
+    const location = new PhysicalLocation(0, 0)
     const moneyFactory = new MoneyFactory()
     return new SimpleLibrary(
         "testLibrary",

@@ -5,7 +5,7 @@ import {BaseLibrary} from "./baseLibrary"
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Loan} from "../loans/loan";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ILender} from "../lenders/ILender";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory"
 import {Person} from "../people/person"
@@ -21,9 +21,9 @@ import {IdFactory} from "../../factories/idFactory";
 // library which also lends items from a simple, single, location
 export class SimpleLibrary extends BaseLibrary implements ILender{
     private readonly _items: IThing[];
-    readonly location: Location
+    readonly location: PhysicalLocation
 
-    constructor(name: string, admin: Person, location: Location,
+    constructor(name: string, admin: Person, location: PhysicalLocation,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
                 feeSchedule: IFeeSchedule, idFactory: IdFactory) {
         super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory);
@@ -80,7 +80,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return this.getTitlesFromItems(availableItems)
     }
 
-    preferredReturnLocation(item: IThing): Location {
+    preferredReturnLocation(item: IThing): PhysicalLocation {
         return this.location
     }
 
