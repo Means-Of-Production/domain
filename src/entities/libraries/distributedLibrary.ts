@@ -86,8 +86,15 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     startReturn(loan: ILoan): ILoan {
+        // TODO check the borrower is somewhere near where they should be!
         const owner = this.getOwnerOfItem(loan.item);
-        return owner.startReturn(loan);
+        const updated = owner.startReturn(loan);
+
+        loan.dateReturned = new Date()
+        // TODO notify the owner that we have started the return
+
+        loan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
+        return updated
     }
 
     addLender(lender: ILender) : ILender {
