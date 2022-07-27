@@ -16,6 +16,7 @@ import {FeeStatus} from "../../valueItems/feeStatus";
 import {MoneyFactory} from "../../factories/moneyFactory";
 import {ReturnNotStarted} from "../../valueItems/exceptions";
 import {IdFactory} from "../../factories/idFactory";
+import {TimeInterval} from "../../valueItems/timeInterval";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -28,8 +29,9 @@ export abstract class BaseLibrary implements ILibrary{
     readonly feeSchedule: IFeeSchedule
     readonly moneyFactory: MoneyFactory
     protected readonly idFactory: IdFactory
+    readonly defaultLoanTime: TimeInterval
 
-    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory) {
+    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval) {
         this.name = name;
         this.waitingListFactory = waitingListFactory
         this._borrowers = []
@@ -39,6 +41,7 @@ export abstract class BaseLibrary implements ILibrary{
         this.feeSchedule = feeSchedule
         this.moneyFactory = moneyFactory
         this.idFactory = idFactory
+        this.defaultLoanTime = defaultLoanTime
 
         this._loans = []
         for(const l of loans){

@@ -15,12 +15,13 @@ import {IFeeSchedule} from "../../factories/IFeeSchedule";
 import {ILender} from "../lenders/ILender";
 import {MoneyFactory} from "../../factories/moneyFactory";
 import {IdFactory} from "../../factories/idFactory";
+import {TimeInterval} from "../../valueItems/timeInterval";
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory) {
-        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory, idFactory)
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval) {
+        super(name,  administrator, waitingListFactory, maxFees, loans, feeSchedule, moneyFactory, idFactory, defaultLoanTime)
 
         this._lenders = []
     }
@@ -42,7 +43,7 @@ export class DistributedLibrary extends BaseLibrary{
         throw new Error(`Cannot find an owner for ${item.title.name}`)
     }
 
-    borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan {
+    borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): ILoan {
         if (item.status !== ThingStatus.READY) {
             throw new InvalidThingStatusToBorrow(item.status)
         }
@@ -56,6 +57,10 @@ export class DistributedLibrary extends BaseLibrary{
         const lender = this.getOwnerOfItem(item)
         if (!lender){
             throw new Error(`Cannot find owner of item ${item.id}`)
+        }
+
+        if(!until){
+            until = new DueDate(this.defaultLoanTime.fromNow())
         }
 
         item.status = ThingStatus.BORROWED;

@@ -16,6 +16,7 @@ import {MoneyFactory} from "../../factories/moneyFactory"
 import {IFeeSchedule} from "../../factories/IFeeSchedule"
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {IdFactory} from "../../factories/idFactory";
+import {TimeInterval} from "../../valueItems/timeInterval";
 
 
 // library which also lends items from a simple, single, location
@@ -25,8 +26,8 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
 
     constructor(name: string, admin: Person, location: PhysicalLocation,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
-                feeSchedule: IFeeSchedule, idFactory: IdFactory) {
-        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory);
+                feeSchedule: IFeeSchedule, idFactory: IdFactory, defaultLoanTime: TimeInterval) {
+        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory, TimeInterval.fromDays(14));
         this._items = []
         this.location = location
     }
@@ -52,7 +53,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         }
 
         if(!until){
-            until = new DueDate(new Date())
+            until = new DueDate(this.defaultLoanTime.fromNow())
         }
         //make loan
         const loan = new Loan(

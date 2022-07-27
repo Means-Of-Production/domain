@@ -15,10 +15,11 @@ import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
 import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {LoanStatus} from "../../valueItems/loanStatus";
+import {TimeInterval} from "../../valueItems/timeInterval";
 
 const testPerson = new Person("bob", new PersonName("Doug", "Jones"))
 const feeSchedule = new SimpleTimeBasedFeeSchedule(new USDMoney(0), new MoneyFactory())
-const testLib = new SimpleLibrary("testLibrary", testPerson, new PhysicalLocation(0, 0), new WaitingListFactory(), new USDMoney(0), [], new MoneyFactory(), feeSchedule, new IdFactory());
+const testLib = new SimpleLibrary("testLibrary", testPerson, new PhysicalLocation(0, 0), new WaitingListFactory(), new USDMoney(0), [], new MoneyFactory(), feeSchedule, new IdFactory(), TimeInterval.fromDays(14));
 const testBorrower = new Borrower("testBorrower", testPerson, testLib)
 
 const testTitle = new ThingTitle("test")

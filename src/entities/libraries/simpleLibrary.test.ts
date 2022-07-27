@@ -18,6 +18,7 @@ import {FeeStatus} from "../../valueItems/feeStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {IdFactory} from "../../factories/idFactory";
+import {TimeInterval} from "../../valueItems/timeInterval";
 
 function createLibrary(): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -32,7 +33,8 @@ function createLibrary(): SimpleLibrary {
         [],
         moneyFactory,
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
-        new IdFactory()
+        new IdFactory(),
+        TimeInterval.fromDays(14)
     )
 }
 

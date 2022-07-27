@@ -20,6 +20,7 @@ import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSche
 import {IMoney} from "../../valueItems/money/IMoney";
 import {ILender} from "../lenders/ILender";
 import {IdFactory} from "../../factories/idFactory";
+import {TimeInterval} from "../../valueItems/timeInterval";
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
 
@@ -39,7 +40,8 @@ function createLibrary(lender: ILender): DistributedLibrary {
         [],
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
         moneyFactory,
-        new IdFactory()
+        new IdFactory(),
+        TimeInterval.fromDays(12)
     )
     lib.addLender(lender)
 
