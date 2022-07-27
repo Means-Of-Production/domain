@@ -255,4 +255,34 @@ describe("DistributedLibrary", () => {
         expect(fees[0].amount.amount).toBeGreaterThan(0)
         expect(fees[0].amount.amount).toBeLessThan(100)
     })
+
+    it("returned items with an item on waitingList is reserved", () => {
+        const lender = createLender()
+        const library = createLibrary(lender)
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const item = createThing(lender)
+        lender.addItem(item)
+
+        const loan = library.borrow(item, borrower, getDueDate())
+        expect(loan).not.toBeNull()
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
+
+        // add a reservation to this
+        const secondBorrower = new Borrower("waitingPerson", new Person("someoneElse", new PersonName("Bob", "McGree")), library)
+        const waitingList = library.reserveItem(item, secondBorrower)
+        expect(waitingList).not.toBeNull()
+
+        // return
+        const updatedLoan = library.startReturn(loan)
+        expect(updatedLoan).not.toBeNull()
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
+
+        const finished = library.finishReturn(updatedLoan)
+        expect(finished).not.toBeNull()
+        expect(finished.status).toEqual(LoanStatus.RETURNED)
+        expect(finished.item.status).toEqual(ThingStatus.RESERVED)
+    })
 })

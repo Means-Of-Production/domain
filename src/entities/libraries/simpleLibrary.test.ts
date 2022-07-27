@@ -20,15 +20,18 @@ import {IMoney} from "../../valueItems/money/IMoney";
 import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 
-function createLibrary(): SimpleLibrary {
+function createLibrary(waitingListFactory: WaitingListFactory | null = null): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
     const location = new PhysicalLocation(0, 0)
     const moneyFactory = new MoneyFactory()
+    if(!waitingListFactory){
+        waitingListFactory = new WaitingListFactory()
+    }
     return new SimpleLibrary(
         "testLibrary",
         person,
         location,
-        new WaitingListFactory(),
+        waitingListFactory,
         new USDMoney(100),
         [],
         moneyFactory,
@@ -240,5 +243,34 @@ describe("Simple Library Tests", () => {
         expect(fees.length).toEqual(1)
         expect(fees[0].amount.amount).toBeGreaterThan(0)
         expect(fees[0].amount.amount).toBeLessThan(100)
-    });
+    })
+
+    it("returned items with an item on waitingList is reserved", () => {
+        const library = createLibrary()
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const item = createThing(library)
+        library.addItem(item)
+
+        const loan = library.borrow(item, borrower, getDueDate())
+        expect(loan).not.toBeNull()
+        expect(loan.item.status).toEqual(ThingStatus.BORROWED)
+
+        // add a reservation to this
+        const secondBorrower = new Borrower("waitingPerson", new Person("someoneElse", new PersonName("Bob", "McGree")), library)
+        const waitingList = library.reserveItem(item, secondBorrower)
+        expect(waitingList).not.toBeNull()
+
+        // return
+        const updatedLoan = library.startReturn(loan)
+        expect(updatedLoan).not.toBeNull()
+        expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
+
+        const finished = library.finishReturn(updatedLoan)
+        expect(finished).not.toBeNull()
+        expect(finished.status).toEqual(LoanStatus.RETURNED)
+        expect(finished.item.status).toEqual(ThingStatus.RESERVED)
+    })
 })

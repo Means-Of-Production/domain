@@ -17,7 +17,6 @@ import {MoneyFactory} from "../../factories/moneyFactory";
 import {ReturnNotStarted} from "../../valueItems/exceptions";
 import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
-import {ReservationStatus} from "../../valueItems/reservationStatus";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -166,22 +165,16 @@ export abstract class BaseLibrary implements ILibrary{
             loan.borrower.applyFee(fee)
         }
 
-        let isReserved = false;
         // is there a waiting list for the item?
         if(this.waitingListsByItemId.has(loan.item.id)){
             const waitingList = this.waitingListsByItemId.get(loan.item.id);
             if(waitingList) {
-                const reservation = waitingList.currentReservation;
-                if(reservation){
-                    reservation.status = ReservationStatus.ASSIGNED
-                    isReserved = true
-                    loan.item.status = ThingStatus.RESERVED
-                }
+                waitingList.reserveItemForNextBorrower()
             }
         }
 
-        if(loan.item.status != ThingStatus.DAMAGED) {
-            loan.item.status = isReserved ? ThingStatus.RESERVED : ThingStatus.READY
+        if(loan.item.status === ThingStatus.BORROWED) {
+            loan.item.status = ThingStatus.READY
         }
         return loan
     }
