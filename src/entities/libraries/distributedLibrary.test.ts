@@ -21,44 +21,47 @@ import {IMoney} from "../../valueItems/money/IMoney";
 import {ILender} from "../lenders/ILender";
 import {IdFactory} from "../../factories/idFactory";
 
-describe("DistributedLibrary", () => {
-    const loc =  new PhysicalLocation(40.6501, -73.94958)
+const loc =  new PhysicalLocation(40.6501, -73.94958)
 
+function createLender(): IndividualDistributedLender {
     const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
-    const testLender = new IndividualDistributedLender("testLender", testPerson, [], [])
+    return new IndividualDistributedLender("testLender", testPerson, [], [])
+}
 
-    function createLibrary(): DistributedLibrary {
-        const person = new Person("1", new PersonName("Test", "McTesterson"))
-        const moneyFactory = new MoneyFactory()
-        const lib = new DistributedLibrary(
-            "testDistributedLibrary",
-            person,
-            new USDMoney(100),
-            new WaitingListFactory(),
-            [],
-            new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
-            moneyFactory,
-            new IdFactory()
-        )
-        lib.addLender(testLender)
+function createLibrary(lender: ILender): DistributedLibrary {
+    const person = new Person("1", new PersonName("Test", "McTesterson"))
+    const moneyFactory = new MoneyFactory()
+    const lib = new DistributedLibrary(
+        "testDistributedLibrary",
+        person,
+        new USDMoney(100),
+        new WaitingListFactory(),
+        [],
+        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+        moneyFactory,
+        new IdFactory()
+    )
+    lib.addLender(lender)
 
-        return lib
-    }
+    return lib
+}
 
-    function getDueDate(numDays: number = 1) : DueDate {
-        const now = new Date()
-        const then = new Date(now.setDate(now.getDate() + numDays))
-        return new DueDate(then)
-    }
+function getDueDate(numDays: number = 1) : DueDate {
+    const now = new Date()
+    const then = new Date(now.setDate(now.getDate() + numDays))
+    return new DueDate(then)
+}
 
-    function createThing(lender: ILender, purchaseCost: IMoney | null = null) {
-        const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
-        testLender.addItem(thing)
-        return thing
-    }
+function createThing(lender: IndividualDistributedLender, purchaseCost: IMoney | null = null) {
+    const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
+    lender.addItem(thing)
+    return thing
+}
 
+describe("DistributedLibrary", () => {
     it("lists items it has", () => {
-        const library = createLibrary();
+        const testLender = createLender()
+        const library = createLibrary(testLender);
 
         const item = createThing(testLender)
 
@@ -71,7 +74,8 @@ describe("DistributedLibrary", () => {
     })
 
     it("item marked damaged is no longer available", () => {
-        const library = createLibrary()
+        const testLender = createLender()
+        const library = createLibrary(testLender)
 
         const item = new Thing("item", new ThingTitle("title"), loc, testLender, ThingStatus.DAMAGED, "", [], null);
         testLender.addItem(item)
@@ -88,11 +92,12 @@ describe("DistributedLibrary", () => {
     })
 
     it("borrowed item is no longer available", () => {
-        const library = createLibrary()
+        const lender = createLender()
+        const library = createLibrary(lender)
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(testLender)
+        const item = createThing(lender)
 
         // act
         const loan = library.borrow(item, borrower, new DueDate())
@@ -107,7 +112,8 @@ describe("DistributedLibrary", () => {
     })
 
     it("item borrowed with another title available is still available", () => {
-        const library = createLibrary()
+        const testLender = createLender()
+        const library = createLibrary(testLender)
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
@@ -128,7 +134,8 @@ describe("DistributedLibrary", () => {
     })
 
     it("cannot borrow a damaged item", () => {
-        const library = createLibrary()
+        const testLender = createLender()
+        const library = createLibrary(testLender)
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
@@ -142,7 +149,8 @@ describe("DistributedLibrary", () => {
     })
 
     it("cannot borrow if you have too many fees", () => {
-        const library = createLibrary()
+        const testLender = createLender()
+        const library = createLibrary(testLender)
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
@@ -159,7 +167,8 @@ describe("DistributedLibrary", () => {
     })
 
     it("can borrow and return on time", () => {
-        const library = createLibrary()
+        const testLender = createLender()
+        const library = createLibrary(testLender)
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
@@ -184,7 +193,8 @@ describe("DistributedLibrary", () => {
     })
 
     it("item borrowed but marked damaged gets RETURNED_DAMAGED", () => {
-        const library = createLibrary()
+        const testLender = createLender()
+        const library = createLibrary(testLender)
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
@@ -216,7 +226,8 @@ describe("DistributedLibrary", () => {
     })
 
     it("item returned late has loan overdue but item is ready", () => {
-        const library = createLibrary()
+        const testLender = createLender()
+        const library = createLibrary(testLender)
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
@@ -241,5 +252,5 @@ describe("DistributedLibrary", () => {
         expect(fees.length).toEqual(1)
         expect(fees[0].amount.amount).toBeGreaterThan(0)
         expect(fees[0].amount.amount).toBeLessThan(100)
-    });
+    })
 })
