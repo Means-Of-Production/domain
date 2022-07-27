@@ -17,6 +17,7 @@ import {MoneyFactory} from "../../factories/moneyFactory";
 import {ReturnNotStarted} from "../../valueItems/exceptions";
 import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
+import {ReservationStatus} from "../../valueItems/reservationStatus";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -158,17 +159,30 @@ export abstract class BaseLibrary implements ILibrary{
         if(loan.status == LoanStatus.OVERDUE){
             // calculate the late fee and apply
             feeAmount = this.feeSchedule.feesForOverdueItem(loan)
-            loan.item.status = ThingStatus.READY
         }
 
         if(feeAmount){
             const fee = new LibraryFee(feeAmount, loan, FeeStatus.OUTSTANDING)
             loan.borrower.applyFee(fee)
-        } else {
-            loan.item.status = ThingStatus.READY
         }
 
-        // TODO is there a waiting list for the item?
+        let isReserved = false;
+        // is there a waiting list for the item?
+        if(this.waitingListsByItemId.has(loan.item.id)){
+            const waitingList = this.waitingListsByItemId.get(loan.item.id);
+            if(waitingList) {
+                const reservation = waitingList.currentReservation;
+                if(reservation){
+                    reservation.status = ReservationStatus.ASSIGNED
+                    isReserved = true
+                    loan.item.status = ThingStatus.RESERVED
+                }
+            }
+        }
+
+        if(loan.item.status != ThingStatus.DAMAGED) {
+            loan.item.status = isReserved ? ThingStatus.RESERVED : ThingStatus.READY
+        }
         return loan
     }
 }
