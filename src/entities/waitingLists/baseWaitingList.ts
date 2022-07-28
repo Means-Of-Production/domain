@@ -13,7 +13,7 @@ export abstract class BaseWaitingList implements IWaitingList {
     protected _expiredReservations: Reservation[]
     protected idFactory: IdFactory
 
-    protected constructor(item: IThing, currentReservation : Reservation | null = null, expiredReservations: Reservation[] = [], idFactory: IdFactory = new IdFactory()) {
+    protected constructor(item: IThing, idFactory: IdFactory, currentReservation : Reservation | null = null, expiredReservations: Reservation[] = []) {
         this._item = item
         this._currentReservation = currentReservation
         this._expiredReservations = expiredReservations

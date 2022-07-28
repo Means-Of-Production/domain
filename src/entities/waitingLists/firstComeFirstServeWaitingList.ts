@@ -5,13 +5,14 @@ import {BaseWaitingList} from "./baseWaitingList";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {Reservation} from "./reservation";
 import {ReservationStatus} from "../../valueItems/reservationStatus";
+import {IdFactory} from "../../factories/idFactory";
 
 export class FirstComeFirstServeWaitingList extends BaseWaitingList{
     private members: IBorrower[]
     private readonly reservationDays: number
 
-    constructor(item: IThing, members: IBorrower[] = [], reservationDays: number = 3){
-        super(item)
+    constructor(item: IThing, members: IBorrower[] = [], reservationDays: number = 3, idFactory: IdFactory = new IdFactory()){
+        super(item, idFactory)
         this.members = members
         this.reservationDays = reservationDays
     }
