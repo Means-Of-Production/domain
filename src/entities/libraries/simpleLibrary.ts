@@ -26,8 +26,11 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
 
     constructor(name: string, admin: Person, location: PhysicalLocation,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
-                feeSchedule: IFeeSchedule, idFactory: IdFactory, defaultLoanTime: TimeInterval) {
-        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory, TimeInterval.fromDays(14));
+                feeSchedule: IFeeSchedule, idFactory: IdFactory, defaultLoanTime?: TimeInterval) {
+        if(!defaultLoanTime){
+            defaultLoanTime = TimeInterval.fromDays(14)
+        }
+        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory, defaultLoanTime);
         this._items = []
         this.location = location
     }

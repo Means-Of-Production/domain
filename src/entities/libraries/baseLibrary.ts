@@ -85,6 +85,10 @@ export abstract class BaseLibrary implements ILibrary{
         return list
     }
 
+    public getLoans(): Iterable<ILoan> {
+        return this._loans
+    }
+    
     public addLoan(loan: ILoan){
         this._loans.push(loan)
     }
@@ -101,49 +105,23 @@ export abstract class BaseLibrary implements ILibrary{
         return titles
     }
 
-    private static compareLoans(a: ILoan, b: ILoan): number {
-        return DueDate.compare(a.dueDate, b.dueDate)
-    }
-
-    protected getBidForCost(item: IThing, borrower: IBorrower, amountToPay: IMoney): IMoney{
-        // get loans for the item
-        const itemLoans = this._loans
-            .filter(l => l.item.id == item.id)
-            .sort(BaseLibrary.compareLoans)
-
-        // find how many times consecutively this borrower has borrowed this item
-        let numPreviousLoans = 0
-        for(const l of itemLoans){
-            if(l.borrower.id == borrower.id){
-                numPreviousLoans += 1
-            } else {
-                break;
-            }
-        }
-
-        // multiple effective rate times this
-        return numPreviousLoans > 0 ? amountToPay.multiply(1/numPreviousLoans) : amountToPay
-    }
-
     public finishReturn(loan: ILoan): ILoan {
         // this has to call FIRST, so the status can be updated to act here
-        if(loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE){
+        if(loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE || !loan.dateReturned){
             throw new ReturnNotStarted()
         }
 
         if(loan.item.status === ThingStatus.DAMAGED){
             loan.status = LoanStatus.RETURNED_DAMAGED
         } else {
-            if (loan.dateReturned) {
-                if (loan.dueDate.date) {
-                    if (loan.dateReturned > loan.dueDate.date) {
-                        loan.status = LoanStatus.OVERDUE
-                    } else{
-                        loan.status = LoanStatus.RETURNED
-                    }
+            if (loan.dueDate.date) {
+                if (loan.dateReturned > loan.dueDate.date) {
+                    loan.status = LoanStatus.OVERDUE
+                } else{
+                    loan.status = LoanStatus.RETURNED
                 }
-            }
-            else{
+            } else {
+                // should we be able to return things without a date?
                 loan.status = LoanStatus.RETURNED
             }
         }
