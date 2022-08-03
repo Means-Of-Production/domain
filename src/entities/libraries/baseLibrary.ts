@@ -17,6 +17,8 @@ import {MoneyFactory} from "../../factories/moneyFactory";
 import {ReturnNotStarted} from "../../valueItems/exceptions";
 import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
+import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
+import {WaitingListFactory} from "../../factories/waitingListFactory";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -30,10 +32,14 @@ export abstract class BaseLibrary implements ILibrary{
     readonly moneyFactory: MoneyFactory
     protected readonly idFactory: IdFactory
     readonly defaultLoanTime: TimeInterval
+    readonly biddingStrategy?: IBiddingStrategy
 
-    protected constructor(name: string, administrator: Person, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval) {
+    protected constructor(name: string, administrator: Person,
+                          maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule,
+                          moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval,
+                          biddingStrategy?: IBiddingStrategy, waitingListFactory?: IWaitingListFactory
+    ) {
         this.name = name;
-        this.waitingListFactory = waitingListFactory
         this._borrowers = []
         this.administrator = administrator
         this.waitingListsByItemId= new Map<string, IWaitingList>()
@@ -47,6 +53,12 @@ export abstract class BaseLibrary implements ILibrary{
         for(const l of loans){
             this._loans.push(l)
         }
+
+        if(!waitingListFactory){
+            waitingListFactory = new WaitingListFactory(biddingStrategy != undefined, undefined, moneyFactory)
+        }
+        this.waitingListFactory = waitingListFactory
+        this.biddingStrategy = biddingStrategy
     }
 
     abstract get allTitles(): Iterable<ThingTitle>
@@ -155,5 +167,9 @@ export abstract class BaseLibrary implements ILibrary{
             loan.item.status = ThingStatus.READY
         }
         return loan
+    }
+
+    public bidToSkipToFrontOfList(item: IThing, borrower: IBorrower, amountBid: IMoney): IWaitingList{
+
     }
 }
