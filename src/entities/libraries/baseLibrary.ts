@@ -5,6 +5,7 @@ import {ILoan} from "../loans/ILoan";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {IWaitingList} from "../waitingLists/IWaitingList";
+import {IAuctionableWaitingList} from "../waitingLists/IAuctionableWaitingList";
 import {Person} from "../people/person";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {DueDate} from "../../valueItems/dueDate";
@@ -14,7 +15,7 @@ import {LoanStatus} from "../../valueItems/loanStatus";
 import {LibraryFee} from "./libraryFee";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {MoneyFactory} from "../../factories/moneyFactory";
-import {ReturnNotStarted} from "../../valueItems/exceptions";
+import {InvalidLibraryConfiguration, ReturnNotStarted} from "../../valueItems/exceptions";
 import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
@@ -56,6 +57,13 @@ export abstract class BaseLibrary implements ILibrary{
 
         if(!waitingListFactory){
             waitingListFactory = new WaitingListFactory(biddingStrategy != undefined, undefined, moneyFactory)
+        } else {
+            if(waitingListFactory.supportsAuctions && !this.biddingStrategy){
+                throw new InvalidLibraryConfiguration("Waiting list supports auctions but no bidding strategy provided!")
+            }
+            if(!waitingListFactory.supportsAuctions && this.biddingStrategy){
+                throw new InvalidLibraryConfiguration("Waiting list does not support auctions but bidding strategy provided!")
+            }
         }
         this.waitingListFactory = waitingListFactory
         this.biddingStrategy = biddingStrategy
@@ -149,7 +157,6 @@ export abstract class BaseLibrary implements ILibrary{
             // calculate the late fee and apply
             feeAmount = this.feeSchedule.feesForOverdueItem(loan)
         }
-
         if(feeAmount){
             const fee = new LibraryFee(feeAmount, loan, FeeStatus.OUTSTANDING)
             loan.borrower.applyFee(fee)
@@ -169,7 +176,14 @@ export abstract class BaseLibrary implements ILibrary{
         return loan
     }
 
-    public bidToSkipToFrontOfList(item: IThing, borrower: IBorrower, amountBid: IMoney): IWaitingList{
+    public bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower: IBorrower): IWaitingList{
+        if(!this.biddingStrategy){
+            throw new InvalidLibraryConfiguration("This library does not support bidding!")
+        }
+        const waitingList = this.reserveItem(item, borrower)
+        const auctionableList = waitingList as IAuctionableWaitingList
 
+        const bid = this.biddingStrategy?.getBidForCost(item, bidder, amount, borrower)
+        return auctionableList.addBid(bid)
     }
 }

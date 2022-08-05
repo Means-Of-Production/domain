@@ -25,5 +25,5 @@ export interface ILibrary {
 
     // reserve the next available item
     reserveItem(item: IThing, borrower: IBorrower): IWaitingList
-    bidToSkipToFrontOfList(item: IThing, borrower: IBorrower, amountBid: IMoney): IWaitingList
+    bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower?: IBorrower): IWaitingList
 }

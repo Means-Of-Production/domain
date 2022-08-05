@@ -37,7 +37,7 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
         return this
     }
 
-    addBid(bid: IAuctionBid): void {
+    addBid(bid: IAuctionBid): IAuctionableWaitingList {
         if(!this.bidsByForId.has(bid.madeFor.id)){
             this.bidsByForId.set(bid.madeFor.id, [])
         }
@@ -45,6 +45,8 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
         if(bids) {
             bids.push(bid)
         }
+
+        return this
     }
 
     getBids(): Iterable<IAuctionBid> {

@@ -2,7 +2,7 @@ import {IBiddingStrategy} from "./IBiddingStrategy";
 import {IThing} from "../../entities/things/IThing";
 import {IBorrower} from "../../entities/people/IBorrower";
 import {IMoney} from "../../valueItems/money/IMoney";
-import {AuctionBid} from "../../entities/waitingLists/auctionBid";
+import {AuctionBid} from "../../valueItems/auctionBid";
 
 /**
  * Simple form of bidding - the bid is the amount you put in for yourself or another

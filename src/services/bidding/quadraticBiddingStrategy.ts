@@ -4,7 +4,7 @@ import {IThing} from "../../entities/things/IThing";
 import {IBorrower} from "../../entities/people/IBorrower";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {IBiddingStrategy} from "./IBiddingStrategy";
-import {AuctionBid} from "../../entities/waitingLists/auctionBid";
+import {AuctionBid} from "../../valueItems/auctionBid";
 
 /**
  * Form of bidding where the amount a bid is worth decreases the longer it has been held by the same person

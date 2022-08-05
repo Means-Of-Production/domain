@@ -17,6 +17,7 @@ import {IFeeSchedule} from "../../factories/IFeeSchedule"
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
 import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
+import {QuadraticBiddingStrategy} from "../../services/bidding/quadraticBiddingStrategy";
 
 
 // library which also lends items from a simple, single, location
@@ -30,7 +31,8 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         if(!defaultLoanTime){
             defaultLoanTime = TimeInterval.fromDays(14)
         }
-        super(name, admin, waitingListFactory, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory, defaultLoanTime);
+        const biddingStrategy = new QuadraticBiddingStrategy(loans);
+        super(name, admin, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory, defaultLoanTime, biddingStrategy, waitingListFactory);
         this._items = []
         this.location = location
     }
