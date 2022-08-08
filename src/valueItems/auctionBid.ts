@@ -1,6 +1,6 @@
-import {IMoney} from "../../valueItems/money/IMoney";
-import {IBorrower} from "../people/IBorrower";
-import {IAuctionBid} from "./IAuctionBid";
+import {IMoney} from "./money/IMoney";
+import {IBorrower} from "../entities/people/IBorrower";
+import {IAuctionBid} from "../entities/waitingLists/IAuctionBid";
 
 export class AuctionBid implements IAuctionBid{
     readonly amountBid: IMoney;

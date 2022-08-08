@@ -20,8 +20,8 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
     private readonly backupList: IWaitingList
     private readonly bidsByForId: Map<string, IAuctionBid[]>
 
-    constructor(item: IThing, currentReservation: Reservation, expiredReservations: Reservation[], idFactory: IdFactory,  ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true) {
-        super(item, currentReservation, expiredReservations, idFactory)
+    constructor(item: IThing, ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true, currentReservation: Reservation | null = null, expiredReservations: Reservation[] = [], idFactory: IdFactory = new IdFactory()) {
+        super(item, idFactory, currentReservation, expiredReservations)
         this.backupList = new FirstComeFirstServeWaitingList(item)
         this.bidsByForId = new Map<string, IAuctionBid[]>()
         this.moneyFactory = moneyFactory
@@ -37,7 +37,7 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
         return this
     }
 
-    addBid(bid: IAuctionBid): void {
+    addBid(bid: IAuctionBid): IAuctionableWaitingList {
         if(!this.bidsByForId.has(bid.madeFor.id)){
             this.bidsByForId.set(bid.madeFor.id, [])
         }
@@ -45,6 +45,8 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
         if(bids) {
             bids.push(bid)
         }
+
+        return this
     }
 
     getBids(): Iterable<IAuctionBid> {

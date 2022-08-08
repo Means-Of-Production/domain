@@ -41,7 +41,7 @@ export class IndividualDistributedLender implements ILender{
         // we need to check if the loan has been accepted by the lender
         if(loan.status != LoanStatus.WAITING_ON_LENDER_ACCEPTANCE && loan.status != LoanStatus.RETURN_STARTED
         ){
-            throw new Error(`Item ${loan.item.title.name} has not be given to the lender yet!`)
+            throw new Error(`Item ${loan.item.title.name} has not been given to the lender yet!`)
         }
         return loan
     }

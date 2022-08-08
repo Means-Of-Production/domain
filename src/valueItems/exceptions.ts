@@ -44,3 +44,9 @@ export class InvalidLoanStateTransition extends Error {
         super(`Invalid Loan state transition requested from ${LoanStatus[from]} to ${LoanStatus[to]}`);
     }
 }
+
+export class InvalidLibraryConfiguration extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}

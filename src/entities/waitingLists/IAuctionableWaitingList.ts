@@ -12,5 +12,5 @@ export interface IAuctionableWaitingList extends IWaitingList {
     getLargestAmount() : IMoney
     getBids(): Iterable<IAuctionBid>;
 
-    addBid(bid: IAuctionBid): void;
+    addBid(bid: IAuctionBid): IAuctionableWaitingList;
 }

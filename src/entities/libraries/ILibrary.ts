@@ -6,6 +6,7 @@ import {IWaitingList} from "../waitingLists/IWaitingList";
 import {Person} from "../people/person";
 import {DueDate} from "../../valueItems/dueDate";
 import {TimeInterval} from "../../valueItems/timeInterval";
+import {IMoney} from "../../valueItems/money/IMoney";
 
 export interface ILibrary {
     readonly name: string
@@ -24,4 +25,5 @@ export interface ILibrary {
 
     // reserve the next available item
     reserveItem(item: IThing, borrower: IBorrower): IWaitingList
+    bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower?: IBorrower): IWaitingList
 }
