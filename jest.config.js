@@ -4,14 +4,16 @@ module.exports = {
     collectCoverage: true,
     coverageDirectory: "coverage",
     collectCoverageFrom: [
-        "packages/**/*.{ts,js,jsx}"
+        "src/**/*.{ts,tsx}",
+        "!src/**/*d.ts"
     ],
     coveragePathIgnorePatterns: [
         "jest.config.js",
         "/node_modules/",
-        "/dist/",
+        "/dist/"
     ],
     moduleNameMapper: {
         '^@meansofproduction/(.*)$': '<rootDir>/packages/$1/'
-    }
+    },
+    testMatch: [ "**/__tests__/**/*.ts?(x)", "**/?(*.)+(spec|test).ts?(x)" ]
 };

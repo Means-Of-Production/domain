@@ -3,13 +3,13 @@ import {IMoney} from "../../valueItems/money/IMoney"
 import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags"
 import {ThingStatus} from "../../valueItems/thingStatus"
 import {ThingTitle} from "../../valueItems/thingTitle";
-import {Location} from "../../valueItems/location"
+import {PhysicalLocation} from "../../valueItems/physicalLocation"
 
 
 export interface IThing {
     id: string;
     title: ThingTitle;
-    storageLocation: Location;
+    storageLocation: PhysicalLocation;
     imageUrls: string[];
     owner: ILender;
     purchaseCost: IMoney | null;

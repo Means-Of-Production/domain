@@ -3,30 +3,46 @@ import {Person} from "../people/person";
 import {ILender} from "./ILender";
 import {IThing} from "../things/IThing";
 import {EmailAddress} from "../../valueItems/emailAddress";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {ThingStatus} from "../../valueItems/thingStatus";
+import {ReturnNotStarted} from "../../valueItems/exceptions";
+import {LoanStatus} from "../../valueItems/loanStatus";
 
 /*
 Class to represent the lenders in a distributed library
  */
 export class IndividualDistributedLender implements ILender{
-    private readonly _items: Iterable<IThing>
+    private readonly _items: IThing[]
     readonly person: Person
     readonly id: string
-    private readonly _returnLocationOverride: Location | undefined
+    private readonly _returnLocationOverride: PhysicalLocation | undefined
 
-    constructor(id: string, person: Person, emails: EmailAddress[] = [], items: Iterable<IThing>, returnLocationOverride?: Location){
+    constructor(id: string, person: Person, emails: EmailAddress[] = [], items: Iterable<IThing>, returnLocationOverride?: PhysicalLocation){
         this.id = id
         this.person = person
-        this._items = items
+        this._items = []
+        for(const item of items){
+            this._items.push(item)
+        }
         this._returnLocationOverride = returnLocationOverride
     }
 
     startReturn(loan: ILoan): ILoan{
         // ping out the item to accept this return!
+        if(loan.item.status !== ThingStatus.BORROWED){
+            throw new ReturnNotStarted()
+        }
+        loan.dateReturned = new Date()
+        loan.status = LoanStatus.RETURN_STARTED
         return loan
     }
+
     finishReturn(loan: ILoan): ILoan {
-        // todo - see the user actions to determine the status
+        // we need to check if the loan has been accepted by the lender
+        if(loan.status != LoanStatus.WAITING_ON_LENDER_ACCEPTANCE && loan.status != LoanStatus.RETURN_STARTED
+        ){
+            throw new Error(`Item ${loan.item.title.name} has not been given to the lender yet!`)
+        }
         return loan
     }
 
@@ -34,7 +50,12 @@ export class IndividualDistributedLender implements ILender{
         return this._items
     }
 
-    preferredReturnLocation(item: IThing): Location{
+    addItem(item: IThing): IThing {
+        this._items.push(item)
+        return item
+    }
+
+    preferredReturnLocation(item: IThing): PhysicalLocation{
         if (this._returnLocationOverride){ return this._returnLocationOverride}
         return item.storageLocation
     }

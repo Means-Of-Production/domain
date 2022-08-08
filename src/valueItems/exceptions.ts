@@ -1,5 +1,6 @@
 import { ThingStatus} from "./thingStatus";
 import { BorrowerVerificationFlags} from "./borrowerVerificationFlags";
+import {LoanStatus} from "./loanStatus";
 
 export class InsufficentBorrowerVerificationFlag extends Error{
     public readonly flag: BorrowerVerificationFlags
@@ -7,17 +8,6 @@ export class InsufficentBorrowerVerificationFlag extends Error{
     constructor(flag: BorrowerVerificationFlags) {
         super(`User does not have ${flag} but item requires it`)
         this.flag = flag
-    }
-}
-
-export class InsufficientBorrowingCreditAvailableError extends Error{
-    public readonly amountPresent: number
-    public readonly amountRequired: number
-
-    constructor(amountPresent: number, amountRequired: number) {
-        super(`${amountRequired} was needed, but only have ${amountPresent}`);
-        this.amountPresent = amountPresent
-        this.amountRequired = amountRequired
     }
 }
 
@@ -30,12 +20,33 @@ export class InvalidThingStatusToBorrow extends Error{
     }
 }
 
-export class DifferentTypesOfMoney extends Error{
+export class ReturnNotStarted extends Error {}
+
+export class BorrowerNotInGoodStanding extends Error{
 
 }
+export class DifferentTypesOfMoney extends Error{}
 
 export class NotImplemented extends Error{
     constructor() {
         super("Not Implemented");
+    }
+}
+
+export class InvalidThingStateTransition extends Error {
+    constructor(from: ThingStatus, to: ThingStatus) {
+        super(`Invalid Thing state transition requested from ${ThingStatus[from]} to ${ThingStatus[to]}`);
+    }
+}
+
+export class InvalidLoanStateTransition extends Error {
+    constructor(from: LoanStatus, to: LoanStatus) {
+        super(`Invalid Loan state transition requested from ${LoanStatus[from]} to ${LoanStatus[to]}`);
+    }
+}
+
+export class InvalidLibraryConfiguration extends Error {
+    constructor(message: string) {
+        super(message);
     }
 }

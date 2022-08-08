@@ -1,6 +1,4 @@
-import {PersonName} from "../../valueItems/personName";
 import {Person} from "./person";
-import {EmailAddress} from "../../valueItems/emailAddress";
 import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags";
 import {IBorrower} from "./IBorrower"
 import {ILibraryFee} from "../libraries/ILibraryFee";
@@ -11,16 +9,25 @@ export class Borrower implements IBorrower {
     public readonly id: string
     public readonly verificationFlags: BorrowerVerificationFlags[]
     public readonly person: Person;
+    private readonly _fees: ILibraryFee[]
+    readonly library: ILibrary;
 
     constructor(id: string, person: Person, library: ILibrary, verificationFlags: BorrowerVerificationFlags[] = [],
                 fees: ILibraryFee[] = []) {
         this.person = person;
         this.verificationFlags = verificationFlags
         this.library = library
-        this.fees = fees
+        this._fees = fees
         this.id = id
     }
 
-    readonly fees: Iterable<ILibraryFee>;
-    readonly library: ILibrary;
+    get fees(): Iterable<ILibraryFee>{
+        return this._fees
+    }
+
+    applyFee(fee: ILibraryFee): IBorrower {
+        this._fees.push(fee)
+        return this
+    }
+
 }

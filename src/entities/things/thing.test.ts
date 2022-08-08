@@ -1,6 +1,6 @@
 import {Thing} from "./thing";
 import {ThingTitle} from "../../valueItems/thingTitle";
-import {Location} from "../../valueItems/location";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {Person} from "../people/person";
@@ -9,7 +9,7 @@ import {PersonName} from "../../valueItems/personName";
 
 describe("Thing", ()=>{
     it("stores values in constructor", () => {
-        const location = new Location(0, 0)
+        const location = new PhysicalLocation(0, 0)
         const title = new ThingTitle("thingName", "isbn", "upc")
         const lender = new IndividualDistributedLender(
             "lender",
@@ -23,7 +23,7 @@ describe("Thing", ()=>{
            title,
            location,
             lender,
-            ThingStatus.CURRENTLY_BORROWED,
+            ThingStatus.BORROWED,
             "description",
             ["http://example.com/img1.jpg"],
             null,

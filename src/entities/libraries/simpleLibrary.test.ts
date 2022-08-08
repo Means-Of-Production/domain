@@ -1,51 +1,48 @@
-import {PersonName} from "../../valueItems/personName";
-import {Thing} from "../things/thing";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
-import {Borrower} from "../people/borrower";
-import {Loan} from "../loans/loan";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
-import {DistributedLibrary} from "./distributedLibrary";
-import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {Person} from "../people/person";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {USDMoney} from "../../valueItems/money/USDMoney";
+import {PersonName} from "../../valueItems/personName";
+import {SimpleLibrary} from "./simpleLibrary";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
+import {USDMoney} from "../../valueItems/money/USDMoney";
+import {Thing} from "../things/thing";
+import {ThingTitle} from "../../valueItems/thingTitle";
+import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {ThingStatus} from "../../valueItems/thingStatus";
+import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
-import {LibraryFee} from "./libraryFee";
-import {FeeStatus} from "../../valueItems/feeStatus";
-import {LoanStatus} from "../../valueItems/loanStatus";
 import {MoneyFactory} from "../../factories/moneyFactory";
 import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
+import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {LibraryFee} from "./libraryFee";
+import {Loan} from "../loans/loan";
+import {FeeStatus} from "../../valueItems/feeStatus";
+import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
-import {ILender} from "../lenders/ILender";
 import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 
-const loc =  new PhysicalLocation(40.6501, -73.94958)
-
-function createLender(): IndividualDistributedLender {
-    const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
-    return new IndividualDistributedLender("testLender", testPerson, [], [])
+function createLibrary(waitingListFactory: WaitingListFactory | null = null): SimpleLibrary {
+    const person = new Person("1", new PersonName("Test", "McTesterson"))
+    const location = new PhysicalLocation(0, 0)
+    const moneyFactory = new MoneyFactory()
+    if(!waitingListFactory){
+        waitingListFactory = new WaitingListFactory()
+    }
+    return new SimpleLibrary(
+        "testLibrary",
+        person,
+        location,
+        waitingListFactory,
+        new USDMoney(100),
+        [],
+        moneyFactory,
+        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+        new IdFactory(),
+        TimeInterval.fromDays(14)
+    )
 }
 
-function createLibrary(lender: ILender): DistributedLibrary {
-    const person = new Person("1", new PersonName("Test", "McTesterson"))
-    const moneyFactory = new MoneyFactory()
-    const lib = new DistributedLibrary(
-        "testDistributedLibrary",
-        person,
-        new USDMoney(100),
-        new WaitingListFactory(),
-        [],
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
-        moneyFactory,
-        new IdFactory(),
-        TimeInterval.fromDays(12)
-    )
-    lib.addLender(lender)
-
-    return lib
+function createThing(library: SimpleLibrary, purchaseCost: IMoney | null = null) {
+    return new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], purchaseCost);
 }
 
 function getDueDate(numDays: number = 1) : DueDate {
@@ -54,33 +51,27 @@ function getDueDate(numDays: number = 1) : DueDate {
     return new DueDate(then)
 }
 
-function createThing(lender: IndividualDistributedLender, purchaseCost: IMoney | null = null) {
-    const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
-    lender.addItem(thing)
-    return thing
-}
 
-describe("DistributedLibrary", () => {
+describe("Simple Library Tests", () => {
     it("lists items it has", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender);
+        const library = createLibrary();
 
-        const item = createThing(testLender)
+        const item = createThing(library)
+        library.addItem(item)
 
         const res = library.availableTitles
 
         const resArray = Array.from(res)
 
         expect(resArray.length).toEqual(1)
-        expect(resArray[0].name).toEqual(item.title.name)
+        expect(resArray[0].name).toEqual("title")
     })
 
     it("item marked damaged is no longer available", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender)
+        const library = createLibrary()
 
-        const item = new Thing("item", new ThingTitle("title"), loc, testLender, ThingStatus.DAMAGED, "", [], null);
-        testLender.addItem(item)
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, "", [], null);
+        library.addItem(item)
 
         // act
         const availableTitles = Array.from(library.availableTitles)
@@ -94,12 +85,12 @@ describe("DistributedLibrary", () => {
     })
 
     it("borrowed item is no longer available", () => {
-        const lender = createLender()
-        const library = createLibrary(lender)
+        const library = createLibrary()
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(lender)
+        const item = createThing(library)
+        library.addItem(item)
 
         // act
         const loan = library.borrow(item, borrower, new DueDate())
@@ -114,14 +105,14 @@ describe("DistributedLibrary", () => {
     })
 
     it("item borrowed with another title available is still available", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender)
+        const library = createLibrary()
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(testLender)
-        const item2 = new Thing("item2", new ThingTitle("title"), loc, testLender, ThingStatus.READY, "", [], null);
-        testLender.addItem(item2)
+        const item = createThing(library)
+        const item2 = new Thing("item2", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], null);
+        library.addItem(item)
+        library.addItem(item2)
 
         // act
         const loan = library.borrow(item, borrower, new DueDate())
@@ -136,28 +127,28 @@ describe("DistributedLibrary", () => {
     })
 
     it("cannot borrow a damaged item", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender)
+        const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
         const cost = new USDMoney(100)
-        const item = new Thing("item", new ThingTitle("title"), loc, testLender, ThingStatus.DAMAGED, "", [], cost)
-        testLender.addItem(item)
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, "", [], cost)
+
+        library.addItem(item)
 
         // act
         expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrow)
     })
 
     it("cannot borrow if you have too many fees", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender)
+        const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(testLender)
+        const item = createThing(library)
+        library.addItem(item)
 
         const loan = new Loan("loan", item, borrower, new DueDate())
         const fee = new LibraryFee(new USDMoney(120), loan, FeeStatus.OUTSTANDING);
@@ -169,24 +160,22 @@ describe("DistributedLibrary", () => {
     })
 
     it("can borrow and return on time", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender)
+        const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(testLender)
+        const item = createThing(library)
+        library.addItem(item)
 
         const loan = library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
-        expect(loan.dateReturned).toBeNull()
 
         const updatedLoan = library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
-        expect(updatedLoan.dateReturned).not.toBeNull()
 
         const finished = library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
@@ -195,13 +184,13 @@ describe("DistributedLibrary", () => {
     })
 
     it("item borrowed but marked damaged gets RETURNED_DAMAGED", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender)
+        const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(testLender, new USDMoney(25))
+        const item = createThing(library, new USDMoney(25))
+        library.addItem(item)
 
         const loan = library.borrow(item, borrower, getDueDate())
 
@@ -228,13 +217,13 @@ describe("DistributedLibrary", () => {
     })
 
     it("item returned late has loan overdue but item is ready", () => {
-        const testLender = createLender()
-        const library = createLibrary(testLender)
+        const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(testLender, new USDMoney(100))
+        const item = createThing(library, new USDMoney(100))
+        library.addItem(item)
 
         const loan = library.borrow(item, borrower, getDueDate(-10))
 
@@ -257,14 +246,13 @@ describe("DistributedLibrary", () => {
     })
 
     it("returned items with an item on waitingList is reserved", () => {
-        const lender = createLender()
-        const library = createLibrary(lender)
+        const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
         library.addBorrower(borrower)
 
-        const item = createThing(lender)
-        lender.addItem(item)
+        const item = createThing(library)
+        library.addItem(item)
 
         const loan = library.borrow(item, borrower, getDueDate())
         expect(loan).not.toBeNull()

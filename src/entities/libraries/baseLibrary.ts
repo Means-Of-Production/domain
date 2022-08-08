@@ -5,8 +5,21 @@ import {ILoan} from "../loans/ILoan";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
 import {IWaitingList} from "../waitingLists/IWaitingList";
+import {IAuctionableWaitingList} from "../waitingLists/IAuctionableWaitingList";
 import {Person} from "../people/person";
 import {IMoney} from "../../valueItems/money/IMoney";
+import {DueDate} from "../../valueItems/dueDate";
+import {IFeeSchedule} from "../../factories/IFeeSchedule";
+import {ThingStatus} from "../../valueItems/thingStatus";
+import {LoanStatus} from "../../valueItems/loanStatus";
+import {LibraryFee} from "./libraryFee";
+import {FeeStatus} from "../../valueItems/feeStatus";
+import {MoneyFactory} from "../../factories/moneyFactory";
+import {InvalidLibraryConfiguration, ReturnNotStarted} from "../../valueItems/exceptions";
+import {IdFactory} from "../../factories/idFactory";
+import {TimeInterval} from "../../valueItems/timeInterval";
+import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
+import {WaitingListFactory} from "../../factories/waitingListFactory";
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -16,34 +29,52 @@ export abstract class BaseLibrary implements ILibrary{
     readonly waitingListsByItemId: Map<string, IWaitingList>
     readonly administrator: Person;
     readonly maxFinesBeforeSuspension: IMoney
+    readonly feeSchedule: IFeeSchedule
+    readonly moneyFactory: MoneyFactory
+    protected readonly idFactory: IdFactory
+    readonly defaultLoanTime: TimeInterval
+    readonly biddingStrategy?: IBiddingStrategy
 
-    protected constructor(name: string, administrator: Person, borrowers: Iterable<IBorrower>, waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>) {
+    protected constructor(name: string, administrator: Person,
+                          maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule,
+                          moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval,
+                          biddingStrategy?: IBiddingStrategy, waitingListFactory?: IWaitingListFactory
+    ) {
         this.name = name;
-        this.waitingListFactory = waitingListFactory
         this._borrowers = []
         this.administrator = administrator
-        for (const b of borrowers){
-            this._borrowers.push(b)
-        }
         this.waitingListsByItemId= new Map<string, IWaitingList>()
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
+        this.feeSchedule = feeSchedule
+        this.moneyFactory = moneyFactory
+        this.idFactory = idFactory
+        this.defaultLoanTime = defaultLoanTime
+
         this._loans = []
         for(const l of loans){
             this._loans.push(l)
         }
+
+        if(!waitingListFactory){
+            waitingListFactory = new WaitingListFactory(biddingStrategy != undefined, undefined, moneyFactory)
+        } else {
+            if(waitingListFactory.supportsAuctions && !this.biddingStrategy){
+                throw new InvalidLibraryConfiguration("Waiting list supports auctions but no bidding strategy provided!")
+            }
+            if(!waitingListFactory.supportsAuctions && this.biddingStrategy){
+                throw new InvalidLibraryConfiguration("Waiting list does not support auctions but bidding strategy provided!")
+            }
+        }
+        this.waitingListFactory = waitingListFactory
+        this.biddingStrategy = biddingStrategy
     }
 
     abstract get allTitles(): Iterable<ThingTitle>
     abstract get availableTitles(): Iterable<ThingTitle>
 
-    abstract borrow(item: IThing, borrower: IBorrower, until: Date): ILoan
-
-    abstract canBorrow(borrower: IBorrower): boolean
+    abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 
     abstract startReturn(loan:ILoan): ILoan
-    abstract finishReturn(loan: ILoan): ILoan
-
-    abstract markAsDamaged(item: IThing): IThing;
 
     public get borrowers(): Iterable<IBorrower>{
         return this._borrowers
@@ -54,6 +85,16 @@ export abstract class BaseLibrary implements ILibrary{
         return borrower
     }
 
+    canBorrow(borrower: IBorrower): boolean {
+        if(borrower.library.name !== this.name){
+            return false
+        }
+
+        const feeAmounts = Array.from(borrower.fees).filter(f => f.status === FeeStatus.OUTSTANDING).map(f => f.amount)
+        const totalFees = this.moneyFactory.total(feeAmounts)
+        return !totalFees.greaterThan(this.maxFinesBeforeSuspension);
+    }
+
     public reserveItem(item: IThing, borrower: IBorrower): IWaitingList {
         let list: IWaitingList | undefined = this.waitingListsByItemId.get(item.id)
         if(!list){
@@ -62,6 +103,14 @@ export abstract class BaseLibrary implements ILibrary{
         }
         list.add(borrower)
         return list
+    }
+
+    public getLoans(): Iterable<ILoan> {
+        return this._loans
+    }
+    
+    public addLoan(loan: ILoan){
+        this._loans.push(loan)
     }
 
     protected getTitlesFromItems(items: Iterable<IThing>): Iterable<ThingTitle>{
@@ -76,43 +125,65 @@ export abstract class BaseLibrary implements ILibrary{
         return titles
     }
 
-    protected makeLoanId(): string{
-        return "guid"
-    }
-
-    private static compareLoans(a: ILoan, b: ILoan): number {
-        if(a.dueDate && b.dueDate){
-            return b.dueDate > a.dueDate ? 1 : -1
+    public finishReturn(loan: ILoan): ILoan {
+        // this has to call FIRST, so the status can be updated to act here
+        if(loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE || !loan.dateReturned){
+            throw new ReturnNotStarted()
         }
 
-        // consider a null due date to be infinite
-        if(b.dueDate){
-            return 1
-        }
-
-        if(a.dueDate){
-            return -1
-        }
-        return 0
-    }
-
-    protected getBidForCost(item: IThing, borrower: IBorrower, amountToPay: IMoney): IMoney{
-        // get loans for the item
-        const itemLoans = this._loans
-            .filter(l => l.item.id == item.id)
-            .sort(BaseLibrary.compareLoans)
-
-        // find how many times consecutively this borrower has borrowed this item
-        let numPreviousLoans = 0
-        for(const l of itemLoans){
-            if(l.borrower.id == borrower.id){
-                numPreviousLoans += 1
+        if(loan.item.status === ThingStatus.DAMAGED){
+            loan.status = LoanStatus.RETURNED_DAMAGED
+        } else {
+            if (loan.dueDate.date) {
+                if (loan.dateReturned > loan.dueDate.date) {
+                    loan.status = LoanStatus.OVERDUE
+                } else{
+                    loan.status = LoanStatus.RETURNED
+                }
             } else {
-                break;
+                // should we be able to return things without a date?
+                loan.status = LoanStatus.RETURNED
             }
         }
 
-        // multiple effective rate times this
-        return numPreviousLoans > 0 ? amountToPay.multiply(1/numPreviousLoans) : amountToPay
+
+        let feeAmount: IMoney | undefined = undefined
+        if(loan.item.status == ThingStatus.DAMAGED){
+            // apply the fees
+            feeAmount = this.feeSchedule.feesForDamagedItem(loan)
+        }
+
+        if(loan.status == LoanStatus.OVERDUE){
+            // calculate the late fee and apply
+            feeAmount = this.feeSchedule.feesForOverdueItem(loan)
+        }
+        if(feeAmount){
+            const fee = new LibraryFee(feeAmount, loan, FeeStatus.OUTSTANDING)
+            loan.borrower.applyFee(fee)
+        }
+
+        // is there a waiting list for the item?
+        if(this.waitingListsByItemId.has(loan.item.id)){
+            const waitingList = this.waitingListsByItemId.get(loan.item.id);
+            if(waitingList) {
+                waitingList.reserveItemForNextBorrower()
+            }
+        }
+
+        if(loan.item.status === ThingStatus.BORROWED) {
+            loan.item.status = ThingStatus.READY
+        }
+        return loan
+    }
+
+    public bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower: IBorrower): IWaitingList{
+        if(!this.biddingStrategy){
+            throw new InvalidLibraryConfiguration("This library does not support bidding!")
+        }
+        const waitingList = this.reserveItem(item, borrower)
+        const auctionableList = waitingList as IAuctionableWaitingList
+
+        const bid = this.biddingStrategy?.getBidForCost(item, bidder, amount, borrower)
+        return auctionableList.addBid(bid)
     }
 }
