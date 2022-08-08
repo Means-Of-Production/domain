@@ -1,7 +1,5 @@
-import { Thing } from "../entities/things/thing";
 import { IRepository } from "./IRepository";
-import {ILender} from "../entities/lenders/ILender";
+import {IThing} from "../entities/things/IThing";
 
-export interface IThingRepository extends IRepository<Thing>{
-    getThingsForLender(lender: ILender): Thing[]
+export interface IThingRepository extends IRepository<IThing>{
 }

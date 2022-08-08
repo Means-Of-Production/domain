@@ -17,7 +17,6 @@ export interface ILibrary {
 
     canBorrow(borrower: IBorrower): boolean
 
-    // todo this should split into start and finish as well
     borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 
     startReturn(loan: ILoan): ILoan
