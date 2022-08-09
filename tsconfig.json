@@ -5,7 +5,7 @@
         "moduleResolution": "Node",
         "esModuleInterop": true,
         "declaration": true,
-        "outDir": "./dist/esm",
+        "outDir": "./lib/esm",
         "experimentalDecorators": true,
         "strict": true
     },
