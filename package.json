@@ -1,9 +1,11 @@
 {
   "name": "@meansofproduction/domain",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Central domain objects for MeansOfProduction library software",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "lib/esm/index.d.ts",
+  "files": ["lib/**/*"],
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.18.6",
@@ -23,7 +25,8 @@
   },
   "scripts": {
     "test": "jest",
-    "compile": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "prepare" : "npm run build",
     "prepublish": "npm run compile"
   },
   "repository": {
