@@ -1,7 +1,7 @@
 import {IBorrower} from "../people/IBorrower";
 import {IThing} from "../things/IThing";
 import {ReservationStatus} from "../../valueItems/reservationStatus";
-import {InvalidReservationStateTransition, InvalidThingStateTransition} from "../../valueItems/exceptions";
+import {InvalidReservationStateTransitionError} from "../../valueItems/exceptions";
 
 export class Reservation{
     public readonly id: string | undefined
@@ -42,7 +42,7 @@ export class Reservation{
                 break
         }
         if(validNextStatus.indexOf(status) < 0){
-            throw new InvalidReservationStateTransition(this.status, status)
+            throw new InvalidReservationStateTransitionError(this.status, status)
         }
         this._status = status
     }

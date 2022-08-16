@@ -1,5 +1,5 @@
 import {IMoney} from "./IMoney";
-import {DifferentTypesOfMoney} from "../exceptions";
+import {DifferentTypesOfMoneyError} from "../exceptions";
 
 
 export class USDMoney implements IMoney{
@@ -13,28 +13,28 @@ export class USDMoney implements IMoney{
 
     equals(other: IMoney): boolean {
         if(!(other instanceof USDMoney)){
-            throw new DifferentTypesOfMoney()
+            throw new DifferentTypesOfMoneyError()
         }
         return this.amount === other.amount
     }
 
     greaterThan(other: IMoney): boolean {
         if(!(other instanceof USDMoney)){
-            throw new DifferentTypesOfMoney()
+            throw new DifferentTypesOfMoneyError()
         }
         return this.amount > other.amount
     }
 
     lessThan(other: IMoney): boolean {
         if(!(other instanceof USDMoney)){
-            throw new DifferentTypesOfMoney()
+            throw new DifferentTypesOfMoneyError()
         }
         return this.amount < other.amount
     }
 
     add(other: IMoney): IMoney {
         if(!(other instanceof USDMoney)){
-            throw new DifferentTypesOfMoney();
+            throw new DifferentTypesOfMoneyError();
         }
         return new USDMoney(this.amount + other.amount)
     }

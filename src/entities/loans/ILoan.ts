@@ -3,10 +3,10 @@ import {IThing} from "../things/IThing"
 import {PhysicalLocation} from "../../valueItems/physicalLocation"
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {DueDate} from "../../valueItems/dueDate";
+import {IEntity} from "../IEntity";
 
 
-export interface ILoan {
-    readonly id: string | undefined
+export interface ILoan extends IEntity {
     readonly item: IThing
     readonly borrower: IBorrower
     readonly dueDate: DueDate

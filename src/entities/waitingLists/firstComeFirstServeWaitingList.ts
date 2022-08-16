@@ -23,7 +23,7 @@ export class FirstComeFirstServeWaitingList extends BaseWaitingList{
 
     isOnList(borrower: IBorrower): boolean {
         const memberIds = this.members.map(b => b.id);
-        return borrower.id in memberIds
+        return borrower.id != undefined && borrower.id in memberIds
     }
 
     findNextBorrower(): IBorrower | null {

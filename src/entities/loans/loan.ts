@@ -5,7 +5,7 @@ import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ILender} from "../lenders/ILender";
 import {ILoan} from "./ILoan"
 import {DueDate} from "../../valueItems/dueDate";
-import {InvalidLoanStateTransition} from "../../valueItems/exceptions";
+import {InvalidLoanStateTransitionError} from "../../valueItems/exceptions";
 
 export class Loan implements ILoan {
     public readonly id: string | undefined
@@ -73,7 +73,7 @@ export class Loan implements ILoan {
         }
 
         if(validNewStatus.indexOf(status) < 0){
-            throw new InvalidLoanStateTransition(this._status, status);
+            throw new InvalidLoanStateTransitionError(this._status, status);
         }
         this._status = status
     }

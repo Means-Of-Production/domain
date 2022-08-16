@@ -1,7 +1,7 @@
 import {PersonName} from "../../valueItems/personName";
 import {Thing} from "../things/thing";
 import {ThingStatus} from "../../valueItems/thingStatus";
-import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
 import {Borrower} from "../people/borrower";
 import {Loan} from "../loans/loan";
 import {PhysicalLocation} from "../../valueItems/physicalLocation";
@@ -145,7 +145,7 @@ describe("DistributedLibrary", () => {
         testLender.addItem(item)
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrow)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrowError)
     })
 
     it("cannot borrow if you have too many fees", () => {
@@ -163,7 +163,7 @@ describe("DistributedLibrary", () => {
 
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStanding)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStandingError)
     })
 
     it("can borrow and return on time", () => {

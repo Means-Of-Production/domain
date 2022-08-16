@@ -11,7 +11,7 @@ import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
 import {MoneyFactory} from "../../factories/moneyFactory";
 import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
-import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
 import {LibraryFee} from "./libraryFee";
 import {Loan} from "../loans/loan";
 import {FeeStatus} from "../../valueItems/feeStatus";
@@ -136,7 +136,7 @@ describe("Simple Library Tests", () => {
         library.addItem(item)
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrow)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrowError)
     })
 
     it("cannot borrow if you have too many fees", () => {
@@ -154,7 +154,7 @@ describe("Simple Library Tests", () => {
 
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStanding)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStandingError)
     })
 
     it("can borrow and return on time", () => {

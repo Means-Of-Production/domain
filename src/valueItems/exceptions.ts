@@ -3,7 +3,7 @@ import { BorrowerVerificationFlags} from "./borrowerVerificationFlags";
 import {LoanStatus} from "./loanStatus";
 import {ReservationStatus} from "./reservationStatus";
 
-export class InsufficentBorrowerVerificationFlag extends Error{
+export class InsufficentBorrowerVerificationFlagError extends Error{
     public readonly flag: BorrowerVerificationFlags
 
     constructor(flag: BorrowerVerificationFlags) {
@@ -12,7 +12,7 @@ export class InsufficentBorrowerVerificationFlag extends Error{
     }
 }
 
-export class InvalidThingStatusToBorrow extends Error{
+export class InvalidThingStatusToBorrowError extends Error{
     public readonly status: ThingStatus
 
     constructor(status: ThingStatus) {
@@ -21,39 +21,39 @@ export class InvalidThingStatusToBorrow extends Error{
     }
 }
 
-export class ReturnNotStarted extends Error {}
+export class ReturnNotStartedError extends Error {}
 
-export class BorrowerNotInGoodStanding extends Error{
+export class BorrowerNotInGoodStandingError extends Error{
 
 }
-export class DifferentTypesOfMoney extends Error{}
+export class DifferentTypesOfMoneyError extends Error{}
 
-export class NotImplemented extends Error{
-    constructor() {
-        super("Not Implemented");
-    }
-}
-
-export class InvalidThingStateTransition extends Error {
+export class InvalidThingStateTransitionError extends Error {
     constructor(from: ThingStatus, to: ThingStatus) {
         super(`Invalid Thing state transition requested from ${ThingStatus[from]} to ${ThingStatus[to]}`);
     }
 }
 
-export class InvalidLoanStateTransition extends Error {
+export class InvalidLoanStateTransitionError extends Error {
     constructor(from: LoanStatus, to: LoanStatus) {
         super(`Invalid Loan state transition requested from ${LoanStatus[from]} to ${LoanStatus[to]}`);
     }
 }
 
-export class InvalidReservationStateTransition extends Error {
+export class InvalidReservationStateTransitionError extends Error {
     constructor(from: ReservationStatus, to: ReservationStatus) {
         super(`Invalid ReservationStatus requested from ${from} to ${to}`);
     }
 }
 
-export class InvalidLibraryConfiguration extends Error {
+export class InvalidLibraryConfigurationError extends Error {
     constructor(message: string) {
+        super(message);
+    }
+}
+
+export class EntityNotAssignedIdError extends Error {
+    constructor(message: string){
         super(message);
     }
 }

@@ -5,7 +5,7 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "../loans/ILoan";
 import {Loan} from "../loans/loan"
 import {LoanStatus} from "../../valueItems/loanStatus";
-import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {BaseLibrary} from "./baseLibrary";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
@@ -46,12 +46,12 @@ export class DistributedLibrary extends BaseLibrary{
 
     borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): ILoan {
         if (item.status !== ThingStatus.READY) {
-            throw new InvalidThingStatusToBorrow(item.status)
+            throw new InvalidThingStatusToBorrowError(item.status)
         }
 
         // check if borrower in good standing
         if(!this.canBorrow(borrower)){
-            throw new BorrowerNotInGoodStanding()
+            throw new BorrowerNotInGoodStandingError()
         }
 
         // get the lender for this item

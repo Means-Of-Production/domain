@@ -5,7 +5,7 @@ import {IThing} from "../things/IThing";
 import {EmailAddress} from "../../valueItems/emailAddress";
 import {PhysicalLocation} from "../../valueItems/physicalLocation";
 import {ThingStatus} from "../../valueItems/thingStatus";
-import {ReturnNotStarted} from "../../valueItems/exceptions";
+import {ReturnNotStartedError} from "../../valueItems/exceptions";
 import {LoanStatus} from "../../valueItems/loanStatus";
 
 /*
@@ -30,7 +30,7 @@ export class IndividualDistributedLender implements ILender{
     startReturn(loan: ILoan): ILoan{
         // ping out the item to accept this return!
         if(loan.item.status !== ThingStatus.BORROWED){
-            throw new ReturnNotStarted()
+            throw new ReturnNotStartedError()
         }
         loan.dateReturned = new Date()
         loan.status = LoanStatus.RETURN_STARTED
