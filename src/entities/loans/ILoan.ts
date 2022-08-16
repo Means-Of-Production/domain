@@ -6,7 +6,7 @@ import {DueDate} from "../../valueItems/dueDate";
 
 
 export interface ILoan {
-    readonly id: string
+    readonly id: string | undefined
     readonly item: IThing
     readonly borrower: IBorrower
     readonly dueDate: DueDate

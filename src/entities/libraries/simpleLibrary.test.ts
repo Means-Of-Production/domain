@@ -17,7 +17,6 @@ import {Loan} from "../loans/loan";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
-import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 
 function createLibrary(waitingListFactory: WaitingListFactory | null = null): SimpleLibrary {
@@ -36,7 +35,6 @@ function createLibrary(waitingListFactory: WaitingListFactory | null = null): Si
         [],
         moneyFactory,
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
-        new IdFactory(),
         TimeInterval.fromDays(14)
     )
 }

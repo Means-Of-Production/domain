@@ -16,7 +16,6 @@ import {LibraryFee} from "./libraryFee";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {MoneyFactory} from "../../factories/moneyFactory";
 import {InvalidLibraryConfiguration, ReturnNotStarted} from "../../valueItems/exceptions";
-import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
@@ -31,13 +30,12 @@ export abstract class BaseLibrary implements ILibrary{
     readonly maxFinesBeforeSuspension: IMoney
     readonly feeSchedule: IFeeSchedule
     readonly moneyFactory: MoneyFactory
-    protected readonly idFactory: IdFactory
     readonly defaultLoanTime: TimeInterval
     readonly biddingStrategy?: IBiddingStrategy
 
     protected constructor(name: string, administrator: Person,
                           maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule,
-                          moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval,
+                          moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval,
                           biddingStrategy?: IBiddingStrategy, waitingListFactory?: IWaitingListFactory
     ) {
         this.name = name;
@@ -47,7 +45,6 @@ export abstract class BaseLibrary implements ILibrary{
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
         this.feeSchedule = feeSchedule
         this.moneyFactory = moneyFactory
-        this.idFactory = idFactory
         this.defaultLoanTime = defaultLoanTime
 
         this._loans = []

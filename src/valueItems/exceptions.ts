@@ -1,6 +1,7 @@
 import { ThingStatus} from "./thingStatus";
 import { BorrowerVerificationFlags} from "./borrowerVerificationFlags";
 import {LoanStatus} from "./loanStatus";
+import {ReservationStatus} from "./reservationStatus";
 
 export class InsufficentBorrowerVerificationFlag extends Error{
     public readonly flag: BorrowerVerificationFlags
@@ -42,6 +43,12 @@ export class InvalidThingStateTransition extends Error {
 export class InvalidLoanStateTransition extends Error {
     constructor(from: LoanStatus, to: LoanStatus) {
         super(`Invalid Loan state transition requested from ${LoanStatus[from]} to ${LoanStatus[to]}`);
+    }
+}
+
+export class InvalidReservationStateTransition extends Error {
+    constructor(from: ReservationStatus, to: ReservationStatus) {
+        super(`Invalid ReservationStatus requested from ${from} to ${to}`);
     }
 }
 

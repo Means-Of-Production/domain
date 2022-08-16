@@ -8,7 +8,7 @@ import {DueDate} from "../../valueItems/dueDate";
 import {InvalidLoanStateTransition} from "../../valueItems/exceptions";
 
 export class Loan implements ILoan {
-    public readonly id: string
+    public readonly id: string | undefined
     public readonly item: IThing
     public readonly borrower: IBorrower
     public readonly dueDate: DueDate
@@ -16,7 +16,7 @@ export class Loan implements ILoan {
     private _status: LoanStatus
     public readonly returnLocation: PhysicalLocation
 
-    public constructor(id: string, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.BORROWED,
+    public constructor(id: string | undefined, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.BORROWED,
                        returnLocation: PhysicalLocation | null = null, dateReturned: Date | null = null) {
         this.id = id
         this.item = item

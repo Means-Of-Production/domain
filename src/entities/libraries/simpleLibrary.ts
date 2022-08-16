@@ -15,7 +15,6 @@ import {DueDate} from "../../valueItems/dueDate"
 import {MoneyFactory} from "../../factories/moneyFactory"
 import {IFeeSchedule} from "../../factories/IFeeSchedule"
 import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
-import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {QuadraticBiddingStrategy} from "../../services/bidding/quadraticBiddingStrategy";
 
@@ -27,12 +26,12 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
 
     constructor(name: string, admin: Person, location: PhysicalLocation,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
-                feeSchedule: IFeeSchedule, idFactory: IdFactory, defaultLoanTime?: TimeInterval) {
+                feeSchedule: IFeeSchedule, defaultLoanTime?: TimeInterval) {
         if(!defaultLoanTime){
             defaultLoanTime = TimeInterval.fromDays(14)
         }
         const biddingStrategy = new QuadraticBiddingStrategy(loans);
-        super(name, admin, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, idFactory, defaultLoanTime, biddingStrategy, waitingListFactory);
+        super(name, admin, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory);
         this._items = []
         this.location = location
     }
@@ -62,7 +61,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         }
         //make loan
         const loan = new Loan(
-            this.idFactory.makeLoanID(),
+            undefined,
             item,
             borrower,
             until,

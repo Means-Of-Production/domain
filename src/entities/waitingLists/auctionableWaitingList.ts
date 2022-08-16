@@ -8,7 +8,6 @@ import {MoneyFactory} from "../../factories/moneyFactory";
 import {FirstComeFirstServeWaitingList} from "./firstComeFirstServeWaitingList";
 import {BaseWaitingList} from "./baseWaitingList";
 import {Reservation} from "./reservation";
-import {IdFactory} from "../../factories/idFactory";
 import { TimeInterval } from "../../valueItems/timeInterval";
 
 export class AuctionableWaitingList extends BaseWaitingList implements IAuctionableWaitingList {
@@ -20,8 +19,8 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
     private readonly backupList: IWaitingList
     private readonly bidsByForId: Map<string, IAuctionBid[]>
 
-    constructor(item: IThing, ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true, currentReservation: Reservation | null = null, expiredReservations: Reservation[] = [], idFactory: IdFactory = new IdFactory()) {
-        super(item, idFactory, currentReservation, expiredReservations)
+    constructor(item: IThing, ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true, currentReservation: Reservation | null = null, expiredReservations: Reservation[] = []) {
+        super(item, currentReservation, expiredReservations)
         this.backupList = new FirstComeFirstServeWaitingList(item)
         this.bidsByForId = new Map<string, IAuctionBid[]>()
         this.moneyFactory = moneyFactory
