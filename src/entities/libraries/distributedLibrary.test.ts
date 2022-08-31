@@ -1,7 +1,7 @@
 import {PersonName} from "../../valueItems/personName";
 import {Thing} from "../things/thing";
 import {ThingStatus} from "../../valueItems/thingStatus";
-import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
 import {Borrower} from "../people/borrower";
 import {Loan} from "../loans/loan";
 import {PhysicalLocation} from "../../valueItems/physicalLocation";
@@ -19,7 +19,6 @@ import {MoneyFactory} from "../../factories/moneyFactory";
 import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {ILender} from "../lenders/ILender";
-import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
@@ -40,7 +39,6 @@ function createLibrary(lender: ILender): DistributedLibrary {
         [],
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
         moneyFactory,
-        new IdFactory(),
         TimeInterval.fromDays(12)
     )
     lib.addLender(lender)
@@ -147,7 +145,7 @@ describe("DistributedLibrary", () => {
         testLender.addItem(item)
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrow)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrowError)
     })
 
     it("cannot borrow if you have too many fees", () => {
@@ -165,7 +163,7 @@ describe("DistributedLibrary", () => {
 
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStanding)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStandingError)
     })
 
     it("can borrow and return on time", () => {

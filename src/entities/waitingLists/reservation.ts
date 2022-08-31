@@ -1,15 +1,16 @@
 import {IBorrower} from "../people/IBorrower";
 import {IThing} from "../things/IThing";
 import {ReservationStatus} from "../../valueItems/reservationStatus";
+import {InvalidReservationStateTransitionError} from "../../valueItems/exceptions";
 
 export class Reservation{
-    public readonly id: string
+    public readonly id: string | undefined
     public readonly holder: IBorrower
     public readonly item: IThing
     public readonly goodUntil: Date
     private _status: ReservationStatus
 
-    constructor(id: string, holder: IBorrower, item: IThing, goodUntil: Date, status: ReservationStatus) {
+    constructor(id: string | undefined, holder: IBorrower, item: IThing, goodUntil: Date, status: ReservationStatus) {
         this.id = id
         this.holder = holder
         this.item = item
@@ -35,6 +36,14 @@ export class Reservation{
                 break
             case ReservationStatus.EXPIRED:
                 validNextStatus = []
+                break
+            case ReservationStatus.CANCELLED:
+                validNextStatus = []
+                break
         }
+        if(validNextStatus.indexOf(status) < 0){
+            throw new InvalidReservationStateTransitionError(this.status, status)
+        }
+        this._status = status
     }
 }

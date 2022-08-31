@@ -15,8 +15,11 @@ import {LoanStatus} from "../../valueItems/loanStatus";
 import {LibraryFee} from "./libraryFee";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {MoneyFactory} from "../../factories/moneyFactory";
-import {InvalidLibraryConfiguration, ReturnNotStarted} from "../../valueItems/exceptions";
-import {IdFactory} from "../../factories/idFactory";
+import {
+    EntityNotAssignedIdError,
+    InvalidLibraryConfigurationError,
+    ReturnNotStartedError
+} from "../../valueItems/exceptions";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
@@ -25,19 +28,19 @@ export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
     private readonly _loans: ILoan[]
     readonly name: string;
+    readonly id: string | undefined
     readonly waitingListFactory: IWaitingListFactory
     readonly waitingListsByItemId: Map<string, IWaitingList>
     readonly administrator: Person;
     readonly maxFinesBeforeSuspension: IMoney
     readonly feeSchedule: IFeeSchedule
     readonly moneyFactory: MoneyFactory
-    protected readonly idFactory: IdFactory
     readonly defaultLoanTime: TimeInterval
     readonly biddingStrategy?: IBiddingStrategy
 
     protected constructor(name: string, administrator: Person,
                           maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule,
-                          moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval,
+                          moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval,
                           biddingStrategy?: IBiddingStrategy, waitingListFactory?: IWaitingListFactory
     ) {
         this.name = name;
@@ -47,7 +50,6 @@ export abstract class BaseLibrary implements ILibrary{
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
         this.feeSchedule = feeSchedule
         this.moneyFactory = moneyFactory
-        this.idFactory = idFactory
         this.defaultLoanTime = defaultLoanTime
 
         this._loans = []
@@ -59,10 +61,10 @@ export abstract class BaseLibrary implements ILibrary{
             waitingListFactory = new WaitingListFactory(biddingStrategy != undefined, undefined, moneyFactory)
         } else {
             if(waitingListFactory.supportsAuctions && !this.biddingStrategy){
-                throw new InvalidLibraryConfiguration("Waiting list supports auctions but no bidding strategy provided!")
+                throw new InvalidLibraryConfigurationError("Waiting list supports auctions but no bidding strategy provided!")
             }
             if(!waitingListFactory.supportsAuctions && this.biddingStrategy){
-                throw new InvalidLibraryConfiguration("Waiting list does not support auctions but bidding strategy provided!")
+                throw new InvalidLibraryConfigurationError("Waiting list does not support auctions but bidding strategy provided!")
             }
         }
         this.waitingListFactory = waitingListFactory
@@ -96,6 +98,9 @@ export abstract class BaseLibrary implements ILibrary{
     }
 
     public reserveItem(item: IThing, borrower: IBorrower): IWaitingList {
+        if(!item.id){
+            throw new EntityNotAssignedIdError("")
+        }
         let list: IWaitingList | undefined = this.waitingListsByItemId.get(item.id)
         if(!list){
             list = this.waitingListFactory.createList(item)
@@ -128,7 +133,7 @@ export abstract class BaseLibrary implements ILibrary{
     public finishReturn(loan: ILoan): ILoan {
         // this has to call FIRST, so the status can be updated to act here
         if(loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE || !loan.dateReturned){
-            throw new ReturnNotStarted()
+            throw new ReturnNotStartedError()
         }
 
         if(loan.item.status === ThingStatus.DAMAGED){
@@ -163,6 +168,9 @@ export abstract class BaseLibrary implements ILibrary{
         }
 
         // is there a waiting list for the item?
+        if(!loan.item.id){
+            throw new EntityNotAssignedIdError("")
+        }
         if(this.waitingListsByItemId.has(loan.item.id)){
             const waitingList = this.waitingListsByItemId.get(loan.item.id);
             if(waitingList) {
@@ -178,7 +186,7 @@ export abstract class BaseLibrary implements ILibrary{
 
     public bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower: IBorrower): IWaitingList{
         if(!this.biddingStrategy){
-            throw new InvalidLibraryConfiguration("This library does not support bidding!")
+            throw new InvalidLibraryConfigurationError("This library does not support bidding!")
         }
         const waitingList = this.reserveItem(item, borrower)
         const auctionableList = waitingList as IAuctionableWaitingList

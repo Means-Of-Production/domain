@@ -26,7 +26,6 @@ export * from "./entities/waitingLists/IAuctionableWaitingList"
 export * from "./entities/waitingLists/IAuctionBid"
 export * from "./entities/waitingLists/reservation"
 
-export * from "./factories/idFactory"
 export * from "./factories/IFeeSchedule"
 export * from "./factories/IWaitingListFactory"
 export * from "./factories/moneyFactory"

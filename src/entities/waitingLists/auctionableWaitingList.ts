@@ -8,8 +8,8 @@ import {MoneyFactory} from "../../factories/moneyFactory";
 import {FirstComeFirstServeWaitingList} from "./firstComeFirstServeWaitingList";
 import {BaseWaitingList} from "./baseWaitingList";
 import {Reservation} from "./reservation";
-import {IdFactory} from "../../factories/idFactory";
 import { TimeInterval } from "../../valueItems/timeInterval";
+import {EntityNotAssignedIdError} from "../../valueItems/exceptions";
 
 export class AuctionableWaitingList extends BaseWaitingList implements IAuctionableWaitingList {
     readonly ends: Date;
@@ -20,8 +20,8 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
     private readonly backupList: IWaitingList
     private readonly bidsByForId: Map<string, IAuctionBid[]>
 
-    constructor(item: IThing, ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true, currentReservation: Reservation | null = null, expiredReservations: Reservation[] = [], idFactory: IdFactory = new IdFactory()) {
-        super(item, idFactory, currentReservation, expiredReservations)
+    constructor(item: IThing, ends: Date, moneyFactory: MoneyFactory, started: Date, isActive: boolean = true, currentReservation: Reservation | null = null, expiredReservations: Reservation[] = []) {
+        super(item, currentReservation, expiredReservations)
         this.backupList = new FirstComeFirstServeWaitingList(item)
         this.bidsByForId = new Map<string, IAuctionBid[]>()
         this.moneyFactory = moneyFactory
@@ -38,6 +38,9 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
     }
 
     addBid(bid: IAuctionBid): IAuctionableWaitingList {
+        if(!bid.madeFor.id){
+            throw new EntityNotAssignedIdError("");
+        }
         if(!this.bidsByForId.has(bid.madeFor.id)){
             this.bidsByForId.set(bid.madeFor.id, [])
         }
@@ -100,6 +103,9 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
     getLargestAmount(): IMoney {
         const amount = this.moneyFactory.getEmptyMoney();
         const winner = this.getWinningBorrower();
+        if(!winner.id){
+            throw new EntityNotAssignedIdError("")
+        }
         const winnerBids = this.bidsByForId.get(winner.id)
         if(winnerBids){
             for(const bid of winnerBids){
@@ -120,6 +126,9 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
     }
 
     cancel(borrower: IBorrower): IWaitingList {
+        if(!borrower.id){
+            throw new EntityNotAssignedIdError("")
+        }
         this.backupList.cancel(borrower);
 
         if(this.bidsByForId.has(borrower.id)){
@@ -129,6 +138,9 @@ export class AuctionableWaitingList extends BaseWaitingList implements IAuctiona
         // delete any bids for OR by this borrower
         for(const bidList of this.bidsByForId.values()){
             for(const bid of bidList){
+                if(!bid.madeFor.id){
+                    throw new EntityNotAssignedIdError("")
+                }
                 if(bid.madeBy.id == borrower.id){
                     const updatedList = bidList.filter(b => b.madeBy.id != borrower.id)
                     this.bidsByForId.set(bid.madeFor.id, updatedList)
