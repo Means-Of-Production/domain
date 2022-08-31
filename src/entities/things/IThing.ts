@@ -4,10 +4,10 @@ import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFl
 import {ThingStatus} from "../../valueItems/thingStatus"
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {PhysicalLocation} from "../../valueItems/physicalLocation"
+import {IEntity} from "../IEntity";
 
 
-export interface IThing {
-    id: string;
+export interface IThing extends IEntity {
     title: ThingTitle;
     storageLocation: PhysicalLocation;
     imageUrls: string[];

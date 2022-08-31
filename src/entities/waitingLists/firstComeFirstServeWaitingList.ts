@@ -5,14 +5,13 @@ import {BaseWaitingList} from "./baseWaitingList";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {Reservation} from "./reservation";
 import {ReservationStatus} from "../../valueItems/reservationStatus";
-import {IdFactory} from "../../factories/idFactory";
 
 export class FirstComeFirstServeWaitingList extends BaseWaitingList{
     private members: IBorrower[]
     private readonly reservationDays: number
 
-    constructor(item: IThing, members: IBorrower[] = [], reservationDays: number = 3, idFactory: IdFactory = new IdFactory()){
-        super(item, idFactory)
+    constructor(item: IThing, members: IBorrower[] = [], reservationDays: number = 3){
+        super(item)
         this.members = members
         this.reservationDays = reservationDays
     }
@@ -24,7 +23,7 @@ export class FirstComeFirstServeWaitingList extends BaseWaitingList{
 
     isOnList(borrower: IBorrower): boolean {
         const memberIds = this.members.map(b => b.id);
-        return borrower.id in memberIds
+        return borrower.id != undefined && borrower.id in memberIds
     }
 
     findNextBorrower(): IBorrower | null {

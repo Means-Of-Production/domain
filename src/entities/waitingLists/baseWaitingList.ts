@@ -4,20 +4,17 @@ import {IBorrower} from "../people/IBorrower";
 import {Reservation} from "./reservation";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {ThingStatus} from "../../valueItems/thingStatus";
-import {IdFactory} from "../../factories/idFactory";
 import {ReservationStatus} from "../../valueItems/reservationStatus";
 
 export abstract class BaseWaitingList implements IWaitingList {
     private readonly _item: IThing
     private _currentReservation: Reservation | null
     protected _expiredReservations: Reservation[]
-    protected idFactory: IdFactory
 
-    protected constructor(item: IThing, idFactory: IdFactory, currentReservation : Reservation | null = null, expiredReservations: Reservation[] = []) {
+    protected constructor(item: IThing, currentReservation : Reservation | null = null, expiredReservations: Reservation[] = []) {
         this._item = item
         this._currentReservation = currentReservation
         this._expiredReservations = expiredReservations
-        this.idFactory = idFactory
     }
 
     abstract add(borrower: IBorrower): IWaitingList;
@@ -58,7 +55,7 @@ export abstract class BaseWaitingList implements IWaitingList {
         // change item status
         this.item.status = ThingStatus.RESERVED
 
-        const res = new Reservation(this.idFactory.makeReservationID(), next, this.item, goodUntil, ReservationStatus.ASSIGNED)
+        const res = new Reservation(undefined, next, this.item, goodUntil, ReservationStatus.ASSIGNED)
         this.cancel(next)
         this._currentReservation = this.currentReservation
 

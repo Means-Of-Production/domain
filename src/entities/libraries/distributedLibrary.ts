@@ -5,7 +5,7 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {ILoan} from "../loans/ILoan";
 import {Loan} from "../loans/loan"
 import {LoanStatus} from "../../valueItems/loanStatus";
-import {BorrowerNotInGoodStanding, InvalidThingStatusToBorrow} from "../../valueItems/exceptions";
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {BaseLibrary} from "./baseLibrary";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
@@ -13,17 +13,16 @@ import {Person} from "../people/person";
 import {DueDate} from "../../valueItems/dueDate";
 import {IFeeSchedule} from "../../factories/IFeeSchedule";
 import {ILender} from "../lenders/ILender";
-import {MoneyFactory} from "../../factories/moneyFactory";
-import {IdFactory} from "../../factories/idFactory";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {QuadraticBiddingStrategy} from "../../services/bidding/quadraticBiddingStrategy";
+import {MoneyFactory} from "../../factories/moneyFactory";
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, idFactory: IdFactory, defaultLoanTime: TimeInterval) {
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval) {
         const biddingStrategy = new QuadraticBiddingStrategy(loans);
-        super(name,  administrator, maxFees, loans, feeSchedule, moneyFactory, idFactory, defaultLoanTime, biddingStrategy, waitingListFactory)
+        super(name,  administrator, maxFees, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory)
 
         this._lenders = []
     }
@@ -47,12 +46,12 @@ export class DistributedLibrary extends BaseLibrary{
 
     borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): ILoan {
         if (item.status !== ThingStatus.READY) {
-            throw new InvalidThingStatusToBorrow(item.status)
+            throw new InvalidThingStatusToBorrowError(item.status)
         }
 
         // check if borrower in good standing
         if(!this.canBorrow(borrower)){
-            throw new BorrowerNotInGoodStanding()
+            throw new BorrowerNotInGoodStandingError()
         }
 
         // get the lender for this item
@@ -67,7 +66,7 @@ export class DistributedLibrary extends BaseLibrary{
 
         item.status = ThingStatus.BORROWED;
         return new Loan(
-            this.idFactory.makeLoanID(),
+            undefined,
             item,
             borrower,
             until,
@@ -78,7 +77,7 @@ export class DistributedLibrary extends BaseLibrary{
     }
 
     get availableTitles(): Iterable<ThingTitle> {
-        const items = this._lenders.flatMap(l => Array.from(l.items)).filter(i => i.status == ThingStatus.READY);
+        const items = this._lenders.flatMap(l => Array.from(l.items)).filter(i => i.status === ThingStatus.READY);
         return this.getTitlesFromItems(items);
     }
 

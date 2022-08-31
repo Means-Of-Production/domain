@@ -5,7 +5,7 @@ import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFl
 import {ILender} from "../lenders/ILender";
 import {IThing} from "./IThing"
 import {ThingTitle} from "../../valueItems/thingTitle";
-import {InvalidThingStateTransition} from "../../valueItems/exceptions";
+import {InvalidThingStateTransitionError} from "../../valueItems/exceptions";
 
 
 export class Thing implements IThing {
@@ -63,7 +63,7 @@ export class Thing implements IThing {
                 validNextStatus = []
         }
         if(validNextStatus.indexOf(status) < 0){
-            throw new InvalidThingStateTransition(this._status, status)
+            throw new InvalidThingStateTransitionError(this._status, status)
         }
         this._status = status
     }

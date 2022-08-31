@@ -5,10 +5,10 @@ import {ThingTitle} from "../../valueItems/thingTitle";
 import {IWaitingList} from "../waitingLists/IWaitingList";
 import {Person} from "../people/person";
 import {DueDate} from "../../valueItems/dueDate";
-import {TimeInterval} from "../../valueItems/timeInterval";
 import {IMoney} from "../../valueItems/money/IMoney";
+import {IEntity} from "../IEntity";
 
-export interface ILibrary {
+export interface ILibrary extends IEntity{
     readonly name: string
     readonly allTitles: Iterable<ThingTitle>
     readonly borrowers: Iterable<IBorrower>
