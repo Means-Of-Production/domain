@@ -1,30 +1,4 @@
-export * from "./entities/lenders/ILender"
-export * from "./entities/lenders/individualDistributedLender"
-
-export * from "./entities/libraries/baseLibrary"
-export * from "./entities/libraries/distributedLibrary"
-export * from "./entities/libraries/ILibrary"
-export * from "./entities/libraries/ILibraryFee"
-export * from "./entities/libraries/libraryFee"
-export * from "./entities/libraries/simpleLibrary"
-
-export * from "./entities/loans/ILoan"
-export * from "./entities/loans/loan"
-
-export * from "./entities/people/IBorrower"
-export * from "./entities/people/borrower"
-export * from "./entities/people/person"
-
-export * from "./entities/things/IThing"
-export * from "./entities/things/thing"
-
-export * from "./entities/waitingLists/IWaitingList"
-export * from "./entities/waitingLists/auctionableWaitingList"
-export * from "./entities/waitingLists/baseWaitingList"
-export * from "./entities/waitingLists/firstComeFirstServeWaitingList"
-export * from "./entities/waitingLists/IAuctionableWaitingList"
-export * from "./entities/waitingLists/IAuctionBid"
-export * from "./entities/waitingLists/reservation"
+export * from "./entities"
 
 export * from "./factories/IFeeSchedule"
 export * from "./factories/IWaitingListFactory"
