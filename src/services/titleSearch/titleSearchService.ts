@@ -14,12 +14,14 @@ export class TitleSearchService implements ITitleSearchService {
         const libraries = this.libraryRepository.getLibrariesPersonCanUse(person);
 
         const exported = []
-        for(const library of libraries) {
-            for(const item of library.availableTitles){
+        for (const library of libraries) {
+            for (const item of library.availableTitles) {
                 const id = item.hash
-                if(exported.indexOf(id) < 0){
-                    exported.push(id)
-                    yield item
+                if (exported.indexOf(id) < 0) {
+                    if (searchRequest.matches(item)) {
+                        exported.push(id)
+                        yield item
+                    }
                 }
             }
         }

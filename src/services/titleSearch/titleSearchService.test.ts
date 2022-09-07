@@ -25,6 +25,7 @@ describe("thingSearchService", () => {
 
         const person: Person = mock()
         const searchRequest: TitleSearchRequest = mock()
+        when(searchRequest.matches(anything())).thenReturn(true);
 
         // act
         const res = Array.from(underTest.find(instance(person), instance(searchRequest)))
