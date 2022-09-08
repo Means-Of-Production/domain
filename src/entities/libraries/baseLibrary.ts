@@ -2,21 +2,21 @@ import {ILibrary} from "./ILibrary"
 import {IThing} from "../things"
 import {IBorrower, Person} from "../people"
 import {ILoan} from "../loans"
-import {IWaitingListFactory, WaitingListFactory, IFeeSchedule, MoneyFactory} from "../../factories"
-import {IWaitingList, IAuctionableWaitingList} from "../waitingLists"
+import {IFeeSchedule, IWaitingListFactory, MoneyFactory, WaitingListFactory} from "../../factories"
+import {IAuctionableWaitingList, IWaitingList} from "../waitingLists"
 import {LibraryFee} from "./libraryFee"
 import {
-    EntityNotAssignedIdError,
-    InvalidLibraryConfigurationError,
-    ReturnNotStartedError,
-    TimeInterval,
-    ThingStatus,
     DueDate,
+    EntityNotAssignedIdError,
+    FeeStatus,
     IMoney,
-    ThingTitle,
+    InvalidLibraryConfigurationError,
     LoanStatus,
-    FeeStatus
-} from "../../valueItems";
+    ReturnNotStartedError,
+    ThingStatus,
+    ThingTitle,
+    TimeInterval
+} from "../../valueItems"
 import {IBiddingStrategy} from "../../services"
 
 export abstract class BaseLibrary implements ILibrary{
@@ -66,8 +66,15 @@ export abstract class BaseLibrary implements ILibrary{
         this.biddingStrategy = biddingStrategy
     }
 
-    abstract get allTitles(): Iterable<ThingTitle>
-    abstract get availableTitles(): Iterable<ThingTitle>
+    abstract getAllThings(): Iterable<IThing>
+
+    * getAvailableThings(): Iterable<IThing> {
+        for(const thing of this.getAllThings()){
+            if(thing.status === ThingStatus.READY){
+                yield thing
+            }
+        }
+    }
 
     abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 

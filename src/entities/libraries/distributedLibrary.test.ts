@@ -52,12 +52,12 @@ describe("DistributedLibrary", () => {
 
         const item = createThing(testLender)
 
-        const res = library.availableTitles
+        const res = library.getAllThings()
 
         const resArray = Array.from(res)
 
         expect(resArray.length).toEqual(1)
-        expect(resArray[0].name).toEqual(item.title.name)
+        expect(resArray[0].title.name).toEqual(item.title.name)
     })
 
     it("item marked damaged is no longer available", () => {
@@ -68,14 +68,14 @@ describe("DistributedLibrary", () => {
         testLender.addItem(item)
 
         // act
-        const availableTitles = Array.from(library.availableTitles)
+        const availableTitles = Array.from(library.getAvailableThings())
 
         // assert
         expect(availableTitles.length).toEqual(0)
 
-        const allTitles = Array.from(library.allTitles)
+        const allTitles = Array.from(library.getAllThings())
         expect(allTitles.length).toEqual(1)
-        expect(allTitles[0].name).toEqual("title")
+        expect(allTitles[0].title.name).toEqual("title")
     })
 
     it("borrowed item is no longer available", () => {
@@ -90,12 +90,12 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, new DueDate())
 
         expect(loan).not.toBeNull()
-        const availableTitles = Array.from(library.availableTitles)
+        const availableTitles = Array.from(library.getAvailableThings())
         expect(availableTitles.length).toEqual(0)
 
-        const allTitles = Array.from(library.allTitles)
+        const allTitles = Array.from(library.getAllThings())
         expect(allTitles.length).toEqual(1)
-        expect(allTitles[0].name).toEqual("title")
+        expect(allTitles[0].title.name).toEqual("title")
     })
 
     it("item borrowed with another title available is still available", () => {
@@ -112,12 +112,12 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, new DueDate())
 
         expect(loan).not.toBeNull()
-        const availableTitles = Array.from(library.availableTitles)
+        const availableTitles = Array.from(library.getAvailableThings())
         expect(availableTitles.length).toEqual(1)
 
-        const allTitles = Array.from(library.allTitles)
-        expect(allTitles.length).toEqual(1)
-        expect(allTitles[0].name).toEqual("title")
+        const allTitles = Array.from(library.getAllThings())
+        expect(allTitles.length).toEqual(2)
+        expect(allTitles[0].title.name).toEqual("title")
     })
 
     it("cannot borrow a damaged item", () => {

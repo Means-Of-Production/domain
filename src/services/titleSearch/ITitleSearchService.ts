@@ -1,6 +1,6 @@
 import {Person} from "../../entities"
-import {ThingTitle, TitleSearchRequest} from "../../valueItems"
+import {TitleSearchRequest, TitleSearchResult} from "../../valueItems"
 
 export interface ITitleSearchService {
-    find(person: Person, searchRequest: TitleSearchRequest): Iterable<ThingTitle>
+    find(person: Person, searchRequest: TitleSearchRequest): Iterable<TitleSearchResult>
 }

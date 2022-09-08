@@ -1,4 +1,4 @@
-import {ILibrary, Person} from "../../entities"
+import {ILibrary, IThing, Person} from "../../entities"
 import {ILibraryRepository} from "../../repositories"
 import {anything, instance, mock, when} from "ts-mockito"
 import {TitleSearchService} from "./titleSearchService"
@@ -12,11 +12,17 @@ describe("thingSearchService", () => {
         const title2: ThingTitle = mock()
         when(title2.hash).thenReturn("another")
 
+        const thing1: IThing = mock()
+        when(thing1.title).thenReturn(instance(title1))
+
+        const thing2: IThing = mock()
+        when(thing2.title).thenReturn(instance(title2))
+
         const library: ILibrary = mock()
-        when(library.availableTitles).thenReturn([instance(title1), instance(title2)])
+        when(library.getAvailableThings()).thenReturn([instance(thing1), instance(thing2)])
 
         const secondLibrary: ILibrary = mock()
-        when(secondLibrary.availableTitles).thenReturn([instance(title1)])
+        when(secondLibrary.getAvailableThings()).thenReturn([instance(thing1)])
 
         const libraryRepo: ILibraryRepository = mock()
         when(libraryRepo.getLibrariesPersonCanUse(anything())).thenReturn([instance(library), instance(secondLibrary)])

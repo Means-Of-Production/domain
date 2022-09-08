@@ -38,6 +38,10 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return item
     }
 
+    getAllThings(): Iterable<IThing> {
+        return this._items
+    }
+
     get items(): Iterable<IThing>{
         return this._items
     }

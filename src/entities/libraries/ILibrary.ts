@@ -7,10 +7,11 @@ import {IEntity} from "../IEntity"
 
 export interface ILibrary extends IEntity{
     readonly name: string
-    readonly allTitles: Iterable<ThingTitle>
     readonly borrowers: Iterable<IBorrower>
     readonly administrator: Person
-    readonly availableTitles: Iterable<ThingTitle>
+
+    getAllThings(): Iterable<IThing>
+    getAvailableThings(): Iterable<IThing>
 
     canBorrow(borrower: IBorrower): boolean
 

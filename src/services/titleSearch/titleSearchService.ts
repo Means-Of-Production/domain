@@ -1,7 +1,7 @@
 import {ITitleSearchService} from "./ITitleSearchService"
-import {Person} from "../../entities"
+import {IThing, Person} from "../../entities"
 import {ILibraryRepository} from "../../repositories"
-import {ThingTitle, TitleSearchRequest} from "../../valueItems/"
+import {ThingTitle, TitleSearchRequest, TitleSearchResult, LibrarySearchResult} from "../../valueItems/"
 
 export class TitleSearchService implements ITitleSearchService {
     private readonly libraryRepository: ILibraryRepository
@@ -19,20 +19,25 @@ export class TitleSearchService implements ITitleSearchService {
             title.upc == searchRequest.searchText;
     }
 
-    * find(person: Person, searchRequest: TitleSearchRequest): Iterable<ThingTitle> {
+    * find(person: Person, searchRequest: TitleSearchRequest): Iterable<TitleSearchResult> {
         const libraries = this.libraryRepository.getLibrariesPersonCanUse(person);
 
-        const exported = []
+        const results = new Map<ThingTitle, TitleSearchResult>()
         for(const library of libraries) {
-            for(const title of library.availableTitles){
-                const id = title.hash
-                if(exported.indexOf(id) < 0){
-                    if(this.matches(searchRequest, title)) {
-                        exported.push(id)
-                        yield title
-                    }
+            for(const thing of library.getAvailableThings()){
+                let titleResult = results.get(thing.title)
+                if(!titleResult){
+                    titleResult = new TitleSearchResult(thing.title)
+                    results.set(thing.title, titleResult)
+                }
+
+                if(this.matches(searchRequest, thing.title)){
+                    const libRequest = titleResult.getForLibrary(library)
+                    libRequest.addThing(thing)
                 }
             }
         }
+
+        return results
     }
 }

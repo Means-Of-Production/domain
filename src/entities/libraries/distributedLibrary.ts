@@ -2,7 +2,7 @@ import {IBorrower} from "../people"
 import {IThing} from "../things"
 import {ILoan, Loan} from "../loans"
 import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError,
-    TimeInterval, DueDate, ThingTitle, ThingStatus, LoanStatus, IMoney} from "../../valueItems"
+    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney} from "../../valueItems"
 import {BaseLibrary} from "./baseLibrary"
 import {Person} from "../people"
 import {ILender} from "../lenders";
@@ -19,10 +19,12 @@ export class DistributedLibrary extends BaseLibrary{
         this._lenders = []
     }
 
-    get allTitles(): Iterable<ThingTitle> {
-        const items = this._lenders.flatMap(l => Array.from(l.items));
-        return this.getTitlesFromItems(items)
-
+    * getAllThings(): Iterable<IThing> {
+        for(const lender of this._lenders){
+            for(const thing of lender.items){
+                yield thing
+            }
+        }
     }
 
     private getOwnerOfItem(item: IThing): ILender {
@@ -66,11 +68,6 @@ export class DistributedLibrary extends BaseLibrary{
             lender.preferredReturnLocation(item),
             null
         )
-    }
-
-    get availableTitles(): Iterable<ThingTitle> {
-        const items = this._lenders.flatMap(l => Array.from(l.items)).filter(i => i.status === ThingStatus.READY);
-        return this.getTitlesFromItems(items);
     }
 
     finishReturn(loan: ILoan): ILoan {
