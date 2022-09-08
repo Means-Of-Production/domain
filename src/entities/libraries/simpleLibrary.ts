@@ -21,14 +21,14 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     private readonly _items: IThing[];
     readonly location: PhysicalLocation
 
-    constructor(name: string, admin: Person, location: PhysicalLocation,
+    constructor(id: string, name: string, admin: Person, location: PhysicalLocation,
                 waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
                 feeSchedule: IFeeSchedule, defaultLoanTime?: TimeInterval) {
         if(!defaultLoanTime){
             defaultLoanTime = TimeInterval.fromDays(14)
         }
         const biddingStrategy = new QuadraticBiddingStrategy(loans);
-        super(name, admin, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory);
+        super(id, name, admin, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory);
         this._items = []
         this.location = location
     }

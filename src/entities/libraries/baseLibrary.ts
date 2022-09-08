@@ -33,12 +33,13 @@ export abstract class BaseLibrary implements ILibrary{
     readonly defaultLoanTime: TimeInterval
     readonly biddingStrategy?: IBiddingStrategy
 
-    protected constructor(name: string, administrator: Person,
+    protected constructor(id: string, name: string, administrator: Person,
                           maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule,
                           moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval,
                           biddingStrategy?: IBiddingStrategy, waitingListFactory?: IWaitingListFactory
     ) {
-        this.name = name;
+        this.id = id
+        this.name = name
         this._borrowers = []
         this.administrator = administrator
         this.waitingListsByItemId= new Map<string, IWaitingList>()

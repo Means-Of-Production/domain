@@ -27,6 +27,7 @@ function createLibrary(waitingListFactory: WaitingListFactory | null = null): Si
         waitingListFactory = new WaitingListFactory()
     }
     return new SimpleLibrary(
+        "testLib1",
         "testLibrary",
         person,
         location,

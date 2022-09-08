@@ -20,6 +20,7 @@ function createLibrary(lender: ILender): DistributedLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
     const moneyFactory = new MoneyFactory()
     const lib = new DistributedLibrary(
+        "distLib1",
         "testDistributedLibrary",
         person,
         new USDMoney(100),
