@@ -243,6 +243,19 @@ describe("DistributedLibrary", () => {
         expect(fees[0].amount.amount).toBeLessThan(100)
     })
 
+    it("unowned item throws", () => {
+        const lender = createLender()
+        const library = createLibrary(lender)
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const otherLender = createLender()
+        const item = createThing(otherLender)
+
+        expect(() => library.borrow(item, borrower, undefined)).toThrow()
+    })
+
     it("returned items with an item on waitingList is reserved", () => {
         const lender = createLender()
         const library = createLibrary(lender)
