@@ -2,7 +2,7 @@ import {IBorrower} from "../people"
 import {IThing} from "../things"
 import {ILoan, Loan} from "../loans"
 import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError,
-    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney} from "../../valueItems"
+    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney, ILocation, DistributedLocation} from "../../valueItems"
 import {BaseLibrary} from "./baseLibrary"
 import {Person} from "../people"
 import {ILender} from "../lenders";

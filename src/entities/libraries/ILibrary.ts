@@ -1,7 +1,7 @@
 import {IBorrower, Person} from "../people"
 import {IThing} from "../things"
 import {ILoan} from "../loans"
-import {ThingTitle, DueDate, IMoney} from "../../valueItems"
+import {ILocation, DueDate, IMoney} from "../../valueItems"
 import {IWaitingList} from "../waitingLists"
 import {IEntity} from "../IEntity"
 

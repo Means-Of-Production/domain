@@ -8,7 +8,7 @@ import {LibraryFee} from "./libraryFee"
 import {
     DueDate,
     EntityNotAssignedIdError,
-    FeeStatus,
+    FeeStatus, ILocation,
     IMoney,
     InvalidLibraryConfigurationError,
     LoanStatus,
@@ -66,6 +66,7 @@ export abstract class BaseLibrary implements ILibrary{
         this.biddingStrategy = biddingStrategy
     }
 
+    abstract get location(): ILocation
     abstract getAllThings(): Iterable<IThing>
 
     * getAvailableThings(): Iterable<IThing> {

@@ -6,7 +6,8 @@ import {IndividualDistributedLender, ILender} from "../lenders"
 import {WaitingListFactory, MoneyFactory, SimpleTimeBasedFeeSchedule} from "../../factories"
 import {LibraryFee} from "./libraryFee"
 import {TimeInterval, PersonName, ThingStatus, PhysicalLocation,
-    ThingTitle, USDMoney, DueDate, FeeStatus, IMoney, LoanStatus, BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems"
+    ThingTitle, USDMoney, DueDate, FeeStatus, IMoney, LoanStatus, BorrowerNotInGoodStandingError,
+    InvalidThingStatusToBorrowError, Distance, DistributedLocation} from "../../valueItems"
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
 
