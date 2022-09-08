@@ -26,7 +26,8 @@ function createLibrary(lender: ILender): DistributedLibrary {
         [],
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
         moneyFactory,
-        TimeInterval.fromDays(12)
+        TimeInterval.fromDays(12),
+        new DistributedLocation(new PhysicalLocation(0, 0), Distance.fromKilometers(10))
     )
     lib.addLender(lender)
 

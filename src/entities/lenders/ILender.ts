@@ -1,6 +1,6 @@
 import {ILoan} from "../loans";
 import {IThing} from "../things"
-import {PhysicalLocation} from "../../valueItems";
+import {PhysicalLocation} from "../../valueItems"
 import {IEntity} from "../IEntity";
 
 export interface ILender extends IEntity{

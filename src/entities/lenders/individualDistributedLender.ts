@@ -53,6 +53,7 @@ export class IndividualDistributedLender implements ILender{
 
     preferredReturnLocation(item: IThing): PhysicalLocation{
         if (this._returnLocationOverride){ return this._returnLocationOverride}
+
         return item.storageLocation
     }
 }

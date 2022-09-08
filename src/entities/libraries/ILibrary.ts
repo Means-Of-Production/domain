@@ -9,6 +9,7 @@ export interface ILibrary extends IEntity{
     readonly name: string
     readonly borrowers: Iterable<IBorrower>
     readonly administrator: Person
+    readonly location: ILocation
 
     getAllThings(): Iterable<IThing>
     getAvailableThings(): Iterable<IThing>
