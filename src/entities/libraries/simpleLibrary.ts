@@ -1,22 +1,19 @@
-import {IThing} from "../things/IThing";
-import {IBorrower} from "../people/IBorrower";
-import {ILoan} from "../loans/ILoan";
+import {IThing} from "../things";
+import {IBorrower} from "../people";
+import {ILoan, Loan} from "../loans";
 import {BaseLibrary} from "./baseLibrary"
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {Loan} from "../loans/loan";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
-import {ILender} from "../lenders/ILender";
-import {IWaitingListFactory} from "../../factories/IWaitingListFactory"
-import {Person} from "../people/person"
-import {LoanStatus} from "../../valueItems/loanStatus"
-import {IMoney} from "../../valueItems/money/IMoney"
-import {DueDate} from "../../valueItems/dueDate"
-import {MoneyFactory} from "../../factories/moneyFactory"
-import {IFeeSchedule} from "../../factories/IFeeSchedule"
-import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
-import {TimeInterval} from "../../valueItems/timeInterval";
-import {QuadraticBiddingStrategy} from "../../services/bidding/quadraticBiddingStrategy";
+import {ThingTitle, ThingStatus, PhysicalLocation} from "../../valueItems";
+import {ILender} from "../lenders";
+import {IWaitingListFactory} from "../../factories"
+import {Person} from "../people"
+import {LoanStatus} from "../../valueItems"
+import {IMoney} from "../../valueItems"
+import {DueDate} from "../../valueItems"
+import {MoneyFactory} from "../../factories"
+import {IFeeSchedule} from "../../factories"
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems";
+import {TimeInterval} from "../../valueItems";
+import {QuadraticBiddingStrategy} from "../../services";
 
 
 // library which also lends items from a simple, single, location

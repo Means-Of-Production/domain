@@ -16,7 +16,7 @@ import {LibraryFee} from "./libraryFee";
 import {FeeStatus} from "../../valueItems/feeStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {MoneyFactory} from "../../factories/moneyFactory";
-import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
+import {SimpleTimeBasedFeeSchedule} from "../../factories/feeSchedules/simpleTimeBasedFeeSchedule";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {ILender} from "../lenders/ILender";
 import {TimeInterval} from "../../valueItems/timeInterval";

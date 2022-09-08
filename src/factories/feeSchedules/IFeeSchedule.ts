@@ -1,5 +1,5 @@
-import {ILoan} from "../entities/loans/ILoan";
-import {IMoney} from "../valueItems/money/IMoney";
+import {ILoan} from "../../entities";
+import {IMoney} from "../../valueItems";
 
 export interface IFeeSchedule{
     feesForOverdueItem(loan: ILoan): IMoney
