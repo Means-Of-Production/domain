@@ -2,7 +2,7 @@ import {IBorrower} from "../people"
 import {IThing} from "../things"
 import {ILoan, Loan} from "../loans"
 import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError,
-    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney, ILocation, DistributedLocation} from "../../valueItems"
+    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney, ILocation, PhysicalArea} from "../../valueItems"
 import {BaseLibrary} from "./baseLibrary"
 import {Person} from "../people"
 import {ILender} from "../lenders";
@@ -13,7 +13,7 @@ export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
     public readonly location: ILocation
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval, location: DistributedLocation) {
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval, location: PhysicalArea) {
         const biddingStrategy = new QuadraticBiddingStrategy(loans);
         super(name,  administrator, maxFees, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory)
 

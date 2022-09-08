@@ -7,7 +7,7 @@ import {WaitingListFactory, MoneyFactory, SimpleTimeBasedFeeSchedule} from "../.
 import {LibraryFee} from "./libraryFee"
 import {TimeInterval, PersonName, ThingStatus, PhysicalLocation,
     ThingTitle, USDMoney, DueDate, FeeStatus, IMoney, LoanStatus, BorrowerNotInGoodStandingError,
-    InvalidThingStatusToBorrowError, Distance, DistributedLocation} from "../../valueItems"
+    InvalidThingStatusToBorrowError, Distance, PhysicalArea} from "../../valueItems"
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
 
@@ -28,7 +28,7 @@ function createLibrary(lender: ILender): DistributedLibrary {
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
         moneyFactory,
         TimeInterval.fromDays(12),
-        new DistributedLocation(new PhysicalLocation(0, 0), Distance.fromKilometers(10))
+        new PhysicalArea(new PhysicalLocation(0, 0), Distance.fromKilometers(10))
     )
     lib.addLender(lender)
 
