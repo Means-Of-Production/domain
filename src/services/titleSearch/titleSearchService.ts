@@ -19,25 +19,24 @@ export class TitleSearchService implements ITitleSearchService {
             title.upc == searchRequest.searchText;
     }
 
-    * find(person: Person, searchRequest: TitleSearchRequest): Iterable<TitleSearchResult> {
+    find(person: Person, searchRequest: TitleSearchRequest): Iterable<TitleSearchResult> {
         const libraries = this.libraryRepository.getLibrariesPersonCanUse(person);
 
-        const results = new Map<ThingTitle, TitleSearchResult>()
+        const resultsByTitleHash = new Map<string, TitleSearchResult>()
         for(const library of libraries) {
             for(const thing of library.getAvailableThings()){
-                let titleResult = results.get(thing.title)
-                if(!titleResult){
-                    titleResult = new TitleSearchResult(thing.title)
-                    results.set(thing.title, titleResult)
-                }
-
-                if(this.matches(searchRequest, thing.title)){
+                if(this.matches(searchRequest, thing.title)) {
+                    let titleResult = resultsByTitleHash.get(thing.title.hash)
+                    if (!titleResult) {
+                        titleResult = new TitleSearchResult(thing.title)
+                        resultsByTitleHash.set(thing.title.hash, titleResult)
+                    }
                     const libRequest = titleResult.getForLibrary(library)
                     libRequest.addThing(thing)
                 }
             }
         }
 
-        return results
+        return resultsByTitleHash.values()
     }
 }
