@@ -1,7 +1,7 @@
 import {IFeeSchedule} from "./IFeeSchedule";
-import {ILoan} from "../entities/loans/ILoan";
-import {IMoney} from "../valueItems/money/IMoney";
-import {MoneyFactory} from "./moneyFactory";
+import {ILoan} from "../../entities/loans/ILoan";
+import {IMoney} from "../../valueItems/money/IMoney";
+import {MoneyFactory} from "../moneyFactory";
 
 /*
 Basic fee generator that charges late fees based upon the cost split up by a set amount of time (default one year to full cost)

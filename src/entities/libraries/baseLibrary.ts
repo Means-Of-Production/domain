@@ -1,20 +1,20 @@
 import {ILibrary} from "./ILibrary";
-import {IThing} from "../things/IThing";
-import {IBorrower} from "../people/IBorrower";
-import {ILoan} from "../loans/ILoan";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
-import {IWaitingList} from "../waitingLists/IWaitingList";
-import {IAuctionableWaitingList} from "../waitingLists/IAuctionableWaitingList";
-import {Person} from "../people/person";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {DueDate} from "../../valueItems/dueDate";
-import {IFeeSchedule} from "../../factories/IFeeSchedule";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {LoanStatus} from "../../valueItems/loanStatus";
+import {IThing} from "../things";
+import {IBorrower} from "../people";
+import {ILoan} from "../loans";
+import {ThingTitle} from "../../valueItems";
+import {IWaitingListFactory} from "../../factories";
+import {IWaitingList} from "../waitingLists";
+import {IAuctionableWaitingList} from "../waitingLists";
+import {Person} from "../people";
+import {IMoney} from "../../valueItems";
+import {DueDate} from "../../valueItems";
+import {IFeeSchedule} from "../../factories";
+import {ThingStatus} from "../../valueItems";
+import {LoanStatus} from "../../valueItems";
 import {LibraryFee} from "./libraryFee";
-import {FeeStatus} from "../../valueItems/feeStatus";
-import {MoneyFactory} from "../../factories/moneyFactory";
+import {FeeStatus} from "../../valueItems";
+import {MoneyFactory} from "../../factories";
 import {
     EntityNotAssignedIdError,
     InvalidLibraryConfigurationError,

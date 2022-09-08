@@ -1,7 +1,7 @@
 export class TitleSearchRequest {
-    readonly name: string | undefined
+    public readonly searchText: string | undefined
 
-    constructor(name: string | undefined) {
-        this.name = name
+    constructor(searchText: string | undefined = undefined) {
+        this.searchText = searchText
     }
 }

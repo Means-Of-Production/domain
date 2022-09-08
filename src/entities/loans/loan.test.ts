@@ -3,7 +3,7 @@ import {PersonName} from "../../valueItems/personName"
 import {Person} from "../people/person";
 import {USDMoney} from "../../valueItems/money/USDMoney";
 import {MoneyFactory} from "../../factories/moneyFactory";
-import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
+import {SimpleTimeBasedFeeSchedule} from "../../factories/feeSchedules/simpleTimeBasedFeeSchedule";
 import {Thing} from "../things/thing";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {IndividualDistributedLender} from "../lenders/individualDistributedLender";

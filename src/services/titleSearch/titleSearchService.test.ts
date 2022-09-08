@@ -24,10 +24,10 @@ describe("thingSearchService", () => {
         const underTest = new TitleSearchService(instance(libraryRepo))
 
         const person: Person = mock()
-        const searchRequest: TitleSearchRequest = mock()
+        const searchRequest = new TitleSearchRequest();
 
         // act
-        const res = Array.from(underTest.find(instance(person), instance(searchRequest)))
+        const res = Array.from(underTest.find(instance(person), searchRequest))
 
         expect(res).not.toBeNull()
         expect(res.length).toEqual(2)
