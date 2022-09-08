@@ -23,6 +23,7 @@ import {
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
+import {ILocation} from "../../valueItems"
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -73,6 +74,7 @@ export abstract class BaseLibrary implements ILibrary{
 
     abstract get allTitles(): Iterable<ThingTitle>
     abstract get availableTitles(): Iterable<ThingTitle>
+    abstract get location(): ILocation
 
     abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 

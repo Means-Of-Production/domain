@@ -1,6 +1,6 @@
 import {IBorrower} from "../people/IBorrower"
 import {IThing} from "../things/IThing"
-import {PhysicalLocation} from "../../valueItems/physicalLocation"
+import {PhysicalLocation} from "../../valueItems/location"
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {DueDate} from "../../valueItems/dueDate";
 import {IEntity} from "../IEntity";

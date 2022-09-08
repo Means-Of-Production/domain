@@ -1,25 +1,16 @@
-import {PersonName} from "../../valueItems/personName";
-import {Thing} from "../things/thing";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
-import {Borrower} from "../people/borrower";
-import {Loan} from "../loans/loan";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {PersonName, ThingStatus, ThingTitle, USDMoney, FeeStatus, LoanStatus, IMoney, TimeInterval,
+    Distance, DistributedLocation, PhysicalLocation, DueDate} from "../../valueItems";
+import {Thing} from "../things";
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems";
+import {Borrower, Person} from "../people";
+import {Loan} from "../loans";
 import {DistributedLibrary} from "./distributedLibrary";
-import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
-import {Person} from "../people/person";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {USDMoney} from "../../valueItems/money/USDMoney";
-import {WaitingListFactory} from "../../factories/waitingListFactory";
-import {DueDate} from "../../valueItems/dueDate";
+import {IndividualDistributedLender} from "../lenders";
+import {WaitingListFactory} from "../../factories";
 import {LibraryFee} from "./libraryFee";
-import {FeeStatus} from "../../valueItems/feeStatus";
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {MoneyFactory} from "../../factories/moneyFactory";
-import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {ILender} from "../lenders/ILender";
-import {TimeInterval} from "../../valueItems/timeInterval";
+import {MoneyFactory} from "../../factories";
+import {SimpleTimeBasedFeeSchedule} from "../../factories";
+import {ILender} from "../lenders";
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
 
@@ -39,7 +30,8 @@ function createLibrary(lender: ILender): DistributedLibrary {
         [],
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
         moneyFactory,
-        TimeInterval.fromDays(12)
+        TimeInterval.fromDays(12),
+        new DistributedLocation(new PhysicalLocation(0, 0), Distance.fromKilometers(10))
     )
     lib.addLender(lender)
 

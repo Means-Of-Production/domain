@@ -1,12 +1,10 @@
-import {IBorrower} from "../people/IBorrower";
-import {IThing} from "../things/IThing";
-import {ILoan} from "../loans/ILoan";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {IWaitingList} from "../waitingLists/IWaitingList";
-import {Person} from "../people/person";
-import {DueDate} from "../../valueItems/dueDate";
-import {IMoney} from "../../valueItems/money/IMoney";
+import {IBorrower} from "../people";
+import {IThing} from "../things";
+import {ILoan} from "../loans";
+import {IWaitingList} from "../waitingLists";
+import {Person} from "../people";
 import {IEntity} from "../IEntity";
+import {ILocation, IMoney, DueDate, ThingTitle} from "../../valueItems"
 
 export interface ILibrary extends IEntity{
     readonly name: string
@@ -14,6 +12,7 @@ export interface ILibrary extends IEntity{
     readonly borrowers: Iterable<IBorrower>
     readonly administrator: Person
     readonly availableTitles: Iterable<ThingTitle>
+    readonly location: ILocation
 
     canBorrow(borrower: IBorrower): boolean
 

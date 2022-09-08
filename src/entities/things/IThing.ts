@@ -1,9 +1,5 @@
-import {ILender} from "../lenders/ILender"
-import {IMoney} from "../../valueItems/money/IMoney"
-import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags"
-import {ThingStatus} from "../../valueItems/thingStatus"
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {PhysicalLocation} from "../../valueItems/physicalLocation"
+import {ILender} from "../lenders"
+import {ThingStatus, ThingTitle, BorrowerVerificationFlags, IMoney, PhysicalLocation} from "../../valueItems"
 import {IEntity} from "../IEntity";
 
 

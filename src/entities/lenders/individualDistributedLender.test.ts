@@ -6,7 +6,7 @@ import {instance, mock, when} from "ts-mockito";
 import {IThing} from "../things/IThing";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {PhysicalLocation} from "../../valueItems/location";
 
 const person = new Person("person", new PersonName("Bob", "Jones"))
 

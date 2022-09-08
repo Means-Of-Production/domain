@@ -5,7 +5,7 @@ import {WaitingListFactory} from "../../factories/waitingListFactory";
 import {USDMoney} from "../../valueItems/money/USDMoney";
 import {Thing} from "../things/thing";
 import {ThingTitle} from "../../valueItems/thingTitle";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {PhysicalLocation} from "../../valueItems/location";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";

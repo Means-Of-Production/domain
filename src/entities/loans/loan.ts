@@ -1,11 +1,15 @@
-import {IThing} from "../things/IThing";
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {IBorrower} from "../people/IBorrower";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
-import {ILender} from "../lenders/ILender";
+import {IThing} from "../things";
+import {IBorrower} from "../people";
+import {
+    ILocation,
+    PhysicalLocation,
+    DueDate,
+    InvalidLoanStateTransitionError,
+    LoanStatus,
+    InvalidLocationTypeError
+} from "../../valueItems"
+import {ILender} from "../lenders";
 import {ILoan} from "./ILoan"
-import {DueDate} from "../../valueItems/dueDate";
-import {InvalidLoanStateTransitionError} from "../../valueItems/exceptions";
 
 export class Loan implements ILoan {
     public readonly id: string | undefined
