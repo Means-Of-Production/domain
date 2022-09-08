@@ -1,28 +1,23 @@
-import {ILibrary} from "./ILibrary";
-import {IThing} from "../things";
-import {IBorrower} from "../people";
-import {ILoan} from "../loans";
-import {ThingTitle} from "../../valueItems";
-import {IWaitingListFactory} from "../../factories";
-import {IWaitingList} from "../waitingLists";
-import {IAuctionableWaitingList} from "../waitingLists";
-import {Person} from "../people";
-import {IMoney} from "../../valueItems";
-import {DueDate} from "../../valueItems";
-import {IFeeSchedule} from "../../factories";
-import {ThingStatus} from "../../valueItems";
-import {LoanStatus} from "../../valueItems";
-import {LibraryFee} from "./libraryFee";
-import {FeeStatus} from "../../valueItems";
-import {MoneyFactory} from "../../factories";
+import {ILibrary} from "./ILibrary"
+import {IThing} from "../things"
+import {IBorrower, Person} from "../people"
+import {ILoan} from "../loans"
+import {IWaitingListFactory, WaitingListFactory, IFeeSchedule, MoneyFactory} from "../../factories"
+import {IWaitingList, IAuctionableWaitingList} from "../waitingLists"
+import {LibraryFee} from "./libraryFee"
 import {
     EntityNotAssignedIdError,
     InvalidLibraryConfigurationError,
-    ReturnNotStartedError
-} from "../../valueItems/exceptions";
-import {TimeInterval} from "../../valueItems/timeInterval";
-import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
-import {WaitingListFactory} from "../../factories/waitingListFactory";
+    ReturnNotStartedError,
+    TimeInterval,
+    ThingStatus,
+    DueDate,
+    IMoney,
+    ThingTitle,
+    LoanStatus,
+    FeeStatus
+} from "../../valueItems";
+import {IBiddingStrategy} from "../../services"
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]

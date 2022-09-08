@@ -1,21 +1,13 @@
-import {IMoney} from "../../valueItems";
-import {IBorrower} from "../people";
-import {IThing} from "../things";
-import {ThingStatus} from "../../valueItems";
-import {ILoan} from "../loans";
-import {Loan} from "../loans"
-import {LoanStatus} from "../../valueItems";
-import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems";
-import {ThingTitle} from "../../valueItems";
-import {BaseLibrary} from "./baseLibrary";
-import {IWaitingListFactory} from "../../factories";
-import {Person} from "../people";
-import {DueDate} from "../../valueItems";
-import {IFeeSchedule} from "../../factories";
+import {IBorrower} from "../people"
+import {IThing} from "../things"
+import {ILoan, Loan} from "../loans"
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError,
+    TimeInterval, DueDate, ThingTitle, ThingStatus, LoanStatus, IMoney} from "../../valueItems"
+import {BaseLibrary} from "./baseLibrary"
+import {Person} from "../people"
 import {ILender} from "../lenders";
-import {TimeInterval} from "../../valueItems";
-import {QuadraticBiddingStrategy} from "../../services";
-import {MoneyFactory} from "../../factories";
+import {QuadraticBiddingStrategy} from "../../services"
+import {MoneyFactory, IFeeSchedule, IWaitingListFactory} from "../../factories"
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]

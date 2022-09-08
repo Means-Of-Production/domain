@@ -1,25 +1,12 @@
-import {PersonName} from "../../valueItems/personName";
-import {Thing} from "../things/thing";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
-import {Borrower} from "../people/borrower";
-import {Loan} from "../loans/loan";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
-import {DistributedLibrary} from "./distributedLibrary";
-import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
-import {Person} from "../people/person";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {USDMoney} from "../../valueItems/money/USDMoney";
-import {WaitingListFactory} from "../../factories/waitingListFactory";
-import {DueDate} from "../../valueItems/dueDate";
-import {LibraryFee} from "./libraryFee";
-import {FeeStatus} from "../../valueItems/feeStatus";
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {MoneyFactory} from "../../factories/moneyFactory";
-import {SimpleTimeBasedFeeSchedule} from "../../factories/feeSchedules/simpleTimeBasedFeeSchedule";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {ILender} from "../lenders/ILender";
-import {TimeInterval} from "../../valueItems/timeInterval";
+import {Thing} from "../things";
+import {Borrower, Person} from "../people"
+import {Loan} from "../loans"
+import {DistributedLibrary} from "./distributedLibrary"
+import {IndividualDistributedLender, ILender} from "../lenders"
+import {WaitingListFactory, MoneyFactory, SimpleTimeBasedFeeSchedule} from "../../factories"
+import {LibraryFee} from "./libraryFee"
+import {TimeInterval, PersonName, ThingStatus, PhysicalLocation,
+    ThingTitle, USDMoney, DueDate, FeeStatus, IMoney, LoanStatus, BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems"
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
 

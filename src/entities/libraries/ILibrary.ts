@@ -1,12 +1,9 @@
-import {IBorrower} from "../people/IBorrower";
-import {IThing} from "../things/IThing";
-import {ILoan} from "../loans/ILoan";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {IWaitingList} from "../waitingLists/IWaitingList";
-import {Person} from "../people/person";
-import {DueDate} from "../../valueItems/dueDate";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {IEntity} from "../IEntity";
+import {IBorrower, Person} from "../people"
+import {IThing} from "../things"
+import {ILoan} from "../loans"
+import {ThingTitle, DueDate, IMoney} from "../../valueItems"
+import {IWaitingList} from "../waitingLists"
+import {IEntity} from "../IEntity"
 
 export interface ILibrary extends IEntity{
     readonly name: string
