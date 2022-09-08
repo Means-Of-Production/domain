@@ -1,28 +1,23 @@
-import {ILibrary} from "./ILibrary";
-import {IThing} from "../things/IThing";
-import {IBorrower} from "../people/IBorrower";
-import {ILoan} from "../loans/ILoan";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
-import {IWaitingList} from "../waitingLists/IWaitingList";
-import {IAuctionableWaitingList} from "../waitingLists/IAuctionableWaitingList";
-import {Person} from "../people/person";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {DueDate} from "../../valueItems/dueDate";
-import {IFeeSchedule} from "../../factories/IFeeSchedule";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {LibraryFee} from "./libraryFee";
-import {FeeStatus} from "../../valueItems/feeStatus";
-import {MoneyFactory} from "../../factories/moneyFactory";
+import {ILibrary} from "./ILibrary"
+import {IThing} from "../things"
+import {IBorrower, Person} from "../people"
+import {ILoan} from "../loans"
+import {IFeeSchedule, IWaitingListFactory, MoneyFactory, WaitingListFactory} from "../../factories"
+import {IAuctionableWaitingList, IWaitingList} from "../waitingLists"
+import {LibraryFee} from "./libraryFee"
 import {
+    DueDate,
     EntityNotAssignedIdError,
+    FeeStatus, ILocation,
+    IMoney,
     InvalidLibraryConfigurationError,
-    ReturnNotStartedError
-} from "../../valueItems/exceptions";
-import {TimeInterval} from "../../valueItems/timeInterval";
-import {IBiddingStrategy} from "../../services/bidding/IBiddingStrategy";
-import {WaitingListFactory} from "../../factories/waitingListFactory";
+    LoanStatus,
+    ReturnNotStartedError,
+    ThingStatus,
+    ThingTitle,
+    TimeInterval
+} from "../../valueItems"
+import {IBiddingStrategy} from "../../services"
 
 export abstract class BaseLibrary implements ILibrary{
     private readonly _borrowers: IBorrower[]
@@ -71,8 +66,16 @@ export abstract class BaseLibrary implements ILibrary{
         this.biddingStrategy = biddingStrategy
     }
 
-    abstract get allTitles(): Iterable<ThingTitle>
-    abstract get availableTitles(): Iterable<ThingTitle>
+    abstract get location(): ILocation
+    abstract getAllThings(): Iterable<IThing>
+
+    * getAvailableThings(): Iterable<IThing> {
+        for(const thing of this.getAllThings()){
+            if(thing.status === ThingStatus.READY){
+                yield thing
+            }
+        }
+    }
 
     abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
 

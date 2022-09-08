@@ -12,8 +12,5 @@ module.exports = {
         "/node_modules/",
         "/dist/"
     ],
-    moduleNameMapper: {
-        '^@meansofproduction/(.*)$': '<rootDir>/packages/$1/'
-    },
     testMatch: [ "**/__tests__/**/*.ts?(x)", "**/?(*.)+(spec|test).ts?(x)" ]
 };

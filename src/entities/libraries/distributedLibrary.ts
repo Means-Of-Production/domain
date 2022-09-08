@@ -1,36 +1,32 @@
-import {IMoney} from "../../valueItems/money/IMoney";
-import {IBorrower} from "../people/IBorrower";
-import {IThing} from "../things/IThing";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {ILoan} from "../loans/ILoan";
-import {Loan} from "../loans/loan"
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {BaseLibrary} from "./baseLibrary";
-import {IWaitingListFactory} from "../../factories/IWaitingListFactory";
-import {Person} from "../people/person";
-import {DueDate} from "../../valueItems/dueDate";
-import {IFeeSchedule} from "../../factories/IFeeSchedule";
-import {ILender} from "../lenders/ILender";
-import {TimeInterval} from "../../valueItems/timeInterval";
-import {QuadraticBiddingStrategy} from "../../services/bidding/quadraticBiddingStrategy";
-import {MoneyFactory} from "../../factories/moneyFactory";
+import {IBorrower} from "../people"
+import {IThing} from "../things"
+import {ILoan, Loan} from "../loans"
+import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError,
+    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney, ILocation, PhysicalArea} from "../../valueItems"
+import {BaseLibrary} from "./baseLibrary"
+import {Person} from "../people"
+import {ILender} from "../lenders";
+import {QuadraticBiddingStrategy} from "../../services"
+import {MoneyFactory, IFeeSchedule, IWaitingListFactory} from "../../factories"
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
+    public readonly location: ILocation
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval) {
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval, location: PhysicalArea) {
         const biddingStrategy = new QuadraticBiddingStrategy(loans);
         super(name,  administrator, maxFees, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory)
 
         this._lenders = []
+        this.location = location
     }
 
-    get allTitles(): Iterable<ThingTitle> {
-        const items = this._lenders.flatMap(l => Array.from(l.items));
-        return this.getTitlesFromItems(items)
-
+    * getAllThings(): Iterable<IThing> {
+        for(const lender of this._lenders){
+            for(const thing of lender.items){
+                yield thing
+            }
+        }
     }
 
     private getOwnerOfItem(item: IThing): ILender {
@@ -74,11 +70,6 @@ export class DistributedLibrary extends BaseLibrary{
             lender.preferredReturnLocation(item),
             null
         )
-    }
-
-    get availableTitles(): Iterable<ThingTitle> {
-        const items = this._lenders.flatMap(l => Array.from(l.items)).filter(i => i.status === ThingStatus.READY);
-        return this.getTitlesFromItems(items);
     }
 
     finishReturn(loan: ILoan): ILoan {

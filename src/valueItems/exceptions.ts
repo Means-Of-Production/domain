@@ -57,3 +57,9 @@ export class EntityNotAssignedIdError extends Error {
         super(message);
     }
 }
+
+export class InvalidLocationTypeError extends Error {
+    constructor(requiredLocationType: string, given: string) {
+        super(`Requires a location type of ${requiredLocationType}, but was given ${given}`)
+    }
+}

@@ -1,5 +1,5 @@
-import {PhysicalLocation} from "../valueItems/physicalLocation";
+import {PhysicalLocation} from "../valueItems/location";
 
 export interface IGeocoderService{
-    getLocation(searchString: string): PhysicalLocation
+    getCurrentLocation(searchString: string): PhysicalLocation
 }

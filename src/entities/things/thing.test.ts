@@ -1,6 +1,6 @@
 import {Thing} from "./thing";
 import {ThingTitle} from "../../valueItems/thingTitle";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {PhysicalLocation} from "../../valueItems/location";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
 import {Person} from "../people/person";

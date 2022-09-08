@@ -1,8 +1,6 @@
-import {IBorrower} from "../people/IBorrower"
-import {IThing} from "../things/IThing"
-import {PhysicalLocation} from "../../valueItems/physicalLocation"
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {DueDate} from "../../valueItems/dueDate";
+import {IBorrower} from "../people"
+import {IThing} from "../things"
+import {ILocation, LoanStatus, DueDate} from "../../valueItems"
 import {IEntity} from "../IEntity";
 
 
@@ -11,7 +9,7 @@ export interface ILoan extends IEntity {
     readonly borrower: IBorrower
     readonly dueDate: DueDate
     dateReturned: Date | null
-    readonly returnLocation: PhysicalLocation
+    readonly returnLocation: ILocation
     readonly active: boolean
     status: LoanStatus
     readonly permanentLoan: boolean
