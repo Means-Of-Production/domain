@@ -18,10 +18,10 @@ export class Loan implements ILoan {
     public readonly dueDate: DueDate
     private _dateReturned: Date | null
     private _status: LoanStatus
-    public readonly returnLocation: PhysicalLocation
+    public readonly returnLocation: ILocation
 
     public constructor(id: string | undefined, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.BORROWED,
-                       returnLocation: PhysicalLocation | null = null, dateReturned: Date | null = null) {
+                       returnLocation: ILocation | null = null, dateReturned: Date | null = null) {
         this.id = id
         this.item = item
         this.borrower = borrower
