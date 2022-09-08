@@ -1,5 +1,5 @@
 import {ThingStatus} from "../../valueItems/thingStatus"
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {PhysicalLocation} from "../../valueItems/location";
 import {IMoney} from "../../valueItems/money/IMoney"
 import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags";
 import {ILender} from "../lenders/ILender";

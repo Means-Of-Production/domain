@@ -12,7 +12,7 @@ import {SimpleLibrary} from "../libraries/simpleLibrary";
 import {WaitingListFactory} from "../../factories/waitingListFactory";
 import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {PhysicalLocation} from "../../valueItems/location";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {TimeInterval} from "../../valueItems/timeInterval";
 

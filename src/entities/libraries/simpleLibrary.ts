@@ -5,7 +5,7 @@ import {BaseLibrary} from "./baseLibrary"
 import {ThingTitle} from "../../valueItems/thingTitle";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {Loan} from "../loans/loan";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {PhysicalLocation} from "../../valueItems/location";
 import {ILender} from "../lenders/ILender";
 import {IWaitingListFactory} from "../../factories/IWaitingListFactory"
 import {Person} from "../people/person"

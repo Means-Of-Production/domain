@@ -16,15 +16,18 @@ import {ILender} from "../lenders/ILender";
 import {TimeInterval} from "../../valueItems/timeInterval";
 import {QuadraticBiddingStrategy} from "../../services/bidding/quadraticBiddingStrategy";
 import {MoneyFactory} from "../../factories/moneyFactory";
+import {DistributedLocation, ILocation} from "../../valueItems"
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
+    public readonly location: ILocation
 
-    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval) {
+    constructor(name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval, location: DistributedLocation) {
         const biddingStrategy = new QuadraticBiddingStrategy(loans);
         super(name,  administrator, maxFees, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory)
 
         this._lenders = []
+        this.location = location
     }
 
     get allTitles(): Iterable<ThingTitle> {

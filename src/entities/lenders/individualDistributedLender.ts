@@ -3,7 +3,7 @@ import {Person} from "../people/person";
 import {ILender} from "./ILender";
 import {IThing} from "../things/IThing";
 import {EmailAddress} from "../../valueItems/emailAddress";
-import {PhysicalLocation} from "../../valueItems/physicalLocation";
+import {ILocation, PhysicalLocation} from "../../valueItems";
 import {ThingStatus} from "../../valueItems/thingStatus";
 import {ReturnNotStartedError} from "../../valueItems/exceptions";
 import {LoanStatus} from "../../valueItems/loanStatus";
@@ -57,6 +57,7 @@ export class IndividualDistributedLender implements ILender{
 
     preferredReturnLocation(item: IThing): PhysicalLocation{
         if (this._returnLocationOverride){ return this._returnLocationOverride}
+
         return item.storageLocation
     }
 }
