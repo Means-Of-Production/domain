@@ -1,18 +1,18 @@
-import {IBorrower} from "../people";
-import {IThing} from "../things";
-import {ILoan} from "../loans";
-import {IWaitingList} from "../waitingLists";
-import {Person} from "../people";
-import {IEntity} from "../IEntity";
-import {ILocation, IMoney, DueDate, ThingTitle} from "../../valueItems"
+import {IBorrower, Person} from "../people"
+import {IThing} from "../things"
+import {ILoan} from "../loans"
+import {ILocation, DueDate, IMoney} from "../../valueItems"
+import {IWaitingList} from "../waitingLists"
+import {IEntity} from "../IEntity"
 
 export interface ILibrary extends IEntity{
     readonly name: string
-    readonly allTitles: Iterable<ThingTitle>
     readonly borrowers: Iterable<IBorrower>
     readonly administrator: Person
-    readonly availableTitles: Iterable<ThingTitle>
     readonly location: ILocation
+
+    getAllThings(): Iterable<IThing>
+    getAvailableThings(): Iterable<IThing>
 
     canBorrow(borrower: IBorrower): boolean
 

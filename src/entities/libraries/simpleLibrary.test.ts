@@ -10,7 +10,7 @@ import {ThingStatus} from "../../valueItems/thingStatus";
 import {Borrower} from "../people/borrower";
 import {DueDate} from "../../valueItems/dueDate";
 import {MoneyFactory} from "../../factories/moneyFactory";
-import {SimpleTimeBasedFeeSchedule} from "../../factories/simpleTimeBasedFeeSchedule";
+import {SimpleTimeBasedFeeSchedule} from "../../factories/feeSchedules/simpleTimeBasedFeeSchedule";
 import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems/exceptions";
 import {LibraryFee} from "./libraryFee";
 import {Loan} from "../loans/loan";

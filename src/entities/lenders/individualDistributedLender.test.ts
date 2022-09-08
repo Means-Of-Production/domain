@@ -1,12 +1,9 @@
-import {IndividualDistributedLender} from "./individualDistributedLender";
-import {Person} from "../people/person";
-import {PersonName} from "../../valueItems/personName";
-import {ILoan} from "../loans/ILoan";
-import {instance, mock, when} from "ts-mockito";
-import {IThing} from "../things/IThing";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {LoanStatus} from "../../valueItems/loanStatus";
-import {PhysicalLocation} from "../../valueItems/location";
+import {IndividualDistributedLender} from "./individualDistributedLender"
+import {Person} from "../people"
+import {ILoan} from "../loans"
+import {instance, mock, when} from "ts-mockito"
+import {IThing} from "../things"
+import {LoanStatus, PhysicalLocation, ThingStatus, PersonName} from "../../valueItems"
 
 const person = new Person("person", new PersonName("Bob", "Jones"))
 

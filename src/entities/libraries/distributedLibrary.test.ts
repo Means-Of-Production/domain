@@ -1,16 +1,13 @@
-import {PersonName, ThingStatus, ThingTitle, USDMoney, FeeStatus, LoanStatus, IMoney, TimeInterval,
-    Distance, DistributedLocation, PhysicalLocation, DueDate} from "../../valueItems";
 import {Thing} from "../things";
-import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems";
-import {Borrower, Person} from "../people";
-import {Loan} from "../loans";
-import {DistributedLibrary} from "./distributedLibrary";
-import {IndividualDistributedLender} from "../lenders";
-import {WaitingListFactory} from "../../factories";
-import {LibraryFee} from "./libraryFee";
-import {MoneyFactory} from "../../factories";
-import {SimpleTimeBasedFeeSchedule} from "../../factories";
-import {ILender} from "../lenders";
+import {Borrower, Person} from "../people"
+import {Loan} from "../loans"
+import {DistributedLibrary} from "./distributedLibrary"
+import {IndividualDistributedLender, ILender} from "../lenders"
+import {WaitingListFactory, MoneyFactory, SimpleTimeBasedFeeSchedule} from "../../factories"
+import {LibraryFee} from "./libraryFee"
+import {TimeInterval, PersonName, ThingStatus, PhysicalLocation,
+    ThingTitle, USDMoney, DueDate, FeeStatus, IMoney, LoanStatus, BorrowerNotInGoodStandingError,
+    InvalidThingStatusToBorrowError, Distance, PhysicalArea} from "../../valueItems"
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
 
@@ -31,7 +28,7 @@ function createLibrary(lender: ILender): DistributedLibrary {
         new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
         moneyFactory,
         TimeInterval.fromDays(12),
-        new DistributedLocation(new PhysicalLocation(0, 0), Distance.fromKilometers(10))
+        new PhysicalArea(new PhysicalLocation(0, 0), Distance.fromKilometers(10))
     )
     lib.addLender(lender)
 
@@ -57,12 +54,12 @@ describe("DistributedLibrary", () => {
 
         const item = createThing(testLender)
 
-        const res = library.availableTitles
+        const res = library.getAllThings()
 
         const resArray = Array.from(res)
 
         expect(resArray.length).toEqual(1)
-        expect(resArray[0].name).toEqual(item.title.name)
+        expect(resArray[0].title.name).toEqual(item.title.name)
     })
 
     it("item marked damaged is no longer available", () => {
@@ -73,14 +70,14 @@ describe("DistributedLibrary", () => {
         testLender.addItem(item)
 
         // act
-        const availableTitles = Array.from(library.availableTitles)
+        const availableTitles = Array.from(library.getAvailableThings())
 
         // assert
         expect(availableTitles.length).toEqual(0)
 
-        const allTitles = Array.from(library.allTitles)
+        const allTitles = Array.from(library.getAllThings())
         expect(allTitles.length).toEqual(1)
-        expect(allTitles[0].name).toEqual("title")
+        expect(allTitles[0].title.name).toEqual("title")
     })
 
     it("borrowed item is no longer available", () => {
@@ -95,12 +92,12 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, new DueDate())
 
         expect(loan).not.toBeNull()
-        const availableTitles = Array.from(library.availableTitles)
+        const availableTitles = Array.from(library.getAvailableThings())
         expect(availableTitles.length).toEqual(0)
 
-        const allTitles = Array.from(library.allTitles)
+        const allTitles = Array.from(library.getAllThings())
         expect(allTitles.length).toEqual(1)
-        expect(allTitles[0].name).toEqual("title")
+        expect(allTitles[0].title.name).toEqual("title")
     })
 
     it("item borrowed with another title available is still available", () => {
@@ -117,12 +114,12 @@ describe("DistributedLibrary", () => {
         const loan = library.borrow(item, borrower, new DueDate())
 
         expect(loan).not.toBeNull()
-        const availableTitles = Array.from(library.availableTitles)
+        const availableTitles = Array.from(library.getAvailableThings())
         expect(availableTitles.length).toEqual(1)
 
-        const allTitles = Array.from(library.allTitles)
-        expect(allTitles.length).toEqual(1)
-        expect(allTitles[0].name).toEqual("title")
+        const allTitles = Array.from(library.getAllThings())
+        expect(allTitles.length).toEqual(2)
+        expect(allTitles[0].title.name).toEqual("title")
     })
 
     it("cannot borrow a damaged item", () => {
@@ -244,6 +241,19 @@ describe("DistributedLibrary", () => {
         expect(fees.length).toEqual(1)
         expect(fees[0].amount.amount).toBeGreaterThan(0)
         expect(fees[0].amount.amount).toBeLessThan(100)
+    })
+
+    it("unowned item throws", () => {
+        const lender = createLender()
+        const library = createLibrary(lender)
+
+        const borrower = new Borrower("libraryMember", library.administrator, library, [])
+        library.addBorrower(borrower)
+
+        const otherLender = createLender()
+        const item = createThing(otherLender)
+
+        expect(() => library.borrow(item, borrower, undefined)).toThrow()
     })
 
     it("returned items with an item on waitingList is reserved", () => {

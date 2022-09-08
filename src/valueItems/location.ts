@@ -51,7 +51,7 @@ export class PhysicalLocation implements ILocation {
 /**
  * This doesn't have an exact location, but is tied to a geography area
  */
-export class DistributedLocation implements ILocation{
+export class PhysicalArea implements ILocation{
     public readonly centerPoint: PhysicalLocation
     public readonly radius: Distance
     

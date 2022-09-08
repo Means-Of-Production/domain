@@ -1,12 +1,8 @@
-import {ILoan} from "../loans/ILoan";
-import {Person} from "../people/person";
-import {ILender} from "./ILender";
-import {IThing} from "../things/IThing";
-import {EmailAddress} from "../../valueItems/emailAddress";
-import {ILocation, PhysicalLocation} from "../../valueItems";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {ReturnNotStartedError} from "../../valueItems/exceptions";
-import {LoanStatus} from "../../valueItems/loanStatus";
+import {ILoan} from "../loans"
+import {Person} from "../people"
+import {ILender} from "./ILender"
+import {IThing} from "../things"
+import {EmailAddress, PhysicalLocation, ThingStatus, ReturnNotStartedError, LoanStatus} from "../../valueItems"
 
 /*
 Class to represent the lenders in a distributed library

@@ -1,6 +1,5 @@
-import {IMoney} from "../../valueItems/money/IMoney";
-import {ILoan} from "../loans/ILoan";
-import {FeeStatus} from "../../valueItems/feeStatus";
+import {IMoney, FeeStatus} from "../../valueItems"
+import {ILoan} from "../loans"
 
 export interface ILibraryFee {
     readonly status: FeeStatus
