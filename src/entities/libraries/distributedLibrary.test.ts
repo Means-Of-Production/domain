@@ -13,7 +13,7 @@ const loc =  new PhysicalLocation(40.6501, -73.94958)
 
 function createLender(): IndividualDistributedLender {
     const testPerson = new Person("1", new PersonName("Testy", "McTesterson"))
-    return new IndividualDistributedLender("testLender", testPerson, [], [])
+    return new IndividualDistributedLender("testLender", testPerson)
 }
 
 function createLibrary(lender: ILender): DistributedLibrary {
@@ -43,7 +43,7 @@ function getDueDate(numDays: number = 1) : DueDate {
 }
 
 function createThing(lender: IndividualDistributedLender, purchaseCost: IMoney | null = null) {
-    const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, "", [], purchaseCost);
+    const thing = new Thing("item", new ThingTitle("title"), loc, lender, ThingStatus.READY, [], purchaseCost);
     lender.addItem(thing)
     return thing
 }
@@ -67,7 +67,7 @@ describe("DistributedLibrary", () => {
         const testLender = createLender()
         const library = createLibrary(testLender)
 
-        const item = new Thing("item", new ThingTitle("title"), loc, testLender, ThingStatus.DAMAGED, "", [], null);
+        const item = new Thing("item", new ThingTitle("title"), loc, testLender, ThingStatus.DAMAGED, [], null);
         testLender.addItem(item)
 
         // act
@@ -108,7 +108,7 @@ describe("DistributedLibrary", () => {
         library.addBorrower(borrower)
 
         const item = createThing(testLender)
-        const item2 = new Thing("item2", new ThingTitle("title"), loc, testLender, ThingStatus.READY, "", [], null);
+        const item2 = new Thing("item2", new ThingTitle("title"), loc, testLender, ThingStatus.READY, [], null);
         testLender.addItem(item2)
 
         // act
@@ -131,7 +131,7 @@ describe("DistributedLibrary", () => {
         library.addBorrower(borrower)
 
         const cost = new USDMoney(100)
-        const item = new Thing("item", new ThingTitle("title"), loc, testLender, ThingStatus.DAMAGED, "", [], cost)
+        const item = new Thing("item", new ThingTitle("title"), loc, testLender, ThingStatus.DAMAGED, [], cost)
         testLender.addItem(item)
 
         // act

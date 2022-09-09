@@ -1,10 +1,7 @@
-import {Thing} from "./thing";
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {PhysicalLocation} from "../../valueItems/location";
-import {ThingStatus} from "../../valueItems/thingStatus";
-import {IndividualDistributedLender} from "../lenders/individualDistributedLender";
-import {Person} from "../people/person";
-import {PersonName} from "../../valueItems/personName";
+import {Thing} from "./thing"
+import {ThingTitle, PhysicalLocation, ThingStatus, PersonName} from "../../valueItems"
+import {IndividualDistributedLender} from "../lenders"
+import {Person} from "../people"
 
 
 describe("Thing", ()=>{
@@ -13,9 +10,7 @@ describe("Thing", ()=>{
         const title = new ThingTitle("thingName", "isbn", "upc")
         const lender = new IndividualDistributedLender(
             "lender",
-            new Person("person", new PersonName("Testy", "McTesterson")),
-            [],
-            []
+            new Person("person", new PersonName("Testy", "McTesterson"))
         )
 
         const res = new Thing(
@@ -24,10 +19,8 @@ describe("Thing", ()=>{
            location,
             lender,
             ThingStatus.BORROWED,
-            "description",
-            ["http://example.com/img1.jpg"],
-            null,
-            []
+            ["https://example.com/img1.jpg"],
+            null
         )
 
         expect(res).not.toBeNull()

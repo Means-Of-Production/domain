@@ -41,7 +41,7 @@ function createLibrary(waitingListFactory: WaitingListFactory | null = null): Si
 }
 
 function createThing(library: SimpleLibrary, purchaseCost: IMoney | null = null) {
-    return new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], purchaseCost);
+    return new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.READY, [], purchaseCost);
 }
 
 function getDueDate(numDays: number = 1) : DueDate {
@@ -69,7 +69,7 @@ describe("Simple Library Tests", () => {
     it("item marked damaged is no longer available", () => {
         const library = createLibrary()
 
-        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, "", [], null);
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, [], null);
         library.addItem(item)
 
         // act
@@ -109,7 +109,7 @@ describe("Simple Library Tests", () => {
         library.addBorrower(borrower)
 
         const item = createThing(library)
-        const item2 = new Thing("item2", new ThingTitle("title"), library.location, library, ThingStatus.READY, "", [], null);
+        const item2 = new Thing("item2", new ThingTitle("title"), library.location, library, ThingStatus.READY, [], null);
         library.addItem(item)
         library.addItem(item2)
 
@@ -132,7 +132,7 @@ describe("Simple Library Tests", () => {
         library.addBorrower(borrower)
 
         const cost = new USDMoney(100)
-        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, "", [], cost)
+        const item = new Thing("item", new ThingTitle("title"), library.location, library, ThingStatus.DAMAGED, [], cost)
 
         library.addItem(item)
 

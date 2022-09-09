@@ -1,16 +1,11 @@
-import {ThingStatus} from "../../valueItems/thingStatus"
-import {PhysicalLocation} from "../../valueItems/location";
-import {IMoney} from "../../valueItems/money/IMoney"
-import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags";
-import {ILender} from "../lenders/ILender";
+import {ThingStatus, PhysicalLocation, BorrowerVerificationFlags, ThingTitle,
+    InvalidThingStateTransitionError, IMoney} from "../../valueItems"
+import {ILender} from "../lenders";
 import {IThing} from "./IThing"
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {InvalidThingStateTransitionError} from "../../valueItems/exceptions";
 
 
 export class Thing implements IThing {
     readonly id: string
-    readonly description: string
     readonly storageLocation: PhysicalLocation
     readonly imageUrls: string[]
     private _status: ThingStatus = ThingStatus.READY
@@ -26,14 +21,12 @@ export class Thing implements IThing {
         storageLocation: PhysicalLocation,
         owner: ILender,
         currentStatus: ThingStatus = ThingStatus.READY,
-        description: string = "",
         imageUrls: string[] = [],
-        purchaseCost: IMoney | null,
+        purchaseCost: IMoney | null = null,
         requiredBorrowerFlags: BorrowerVerificationFlags[] = []
     ) {
         this.id = id
         this.title = title
-        this.description = description
         this.imageUrls = imageUrls
         this._status = currentStatus
         this.owner = owner

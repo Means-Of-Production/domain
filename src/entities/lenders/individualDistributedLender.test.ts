@@ -9,7 +9,7 @@ const person = new Person("person", new PersonName("Bob", "Jones"))
 
 describe("Individual Distributed Lender", () => {
     it("throws if attempting to return non-borrowed item", () => {
-        const underTest = new IndividualDistributedLender("test", person, [], [])
+        const underTest = new IndividualDistributedLender("test", person)
 
         const item = mock<IThing>();
         when(item.status).thenReturn(ThingStatus.READY)
@@ -20,7 +20,7 @@ describe("Individual Distributed Lender", () => {
     })
 
     it("sets date on starting return", () => {
-        const underTest = new IndividualDistributedLender("test", person, [], [])
+        const underTest = new IndividualDistributedLender("test", person)
 
         const item = mock<IThing>();
         when(item.status).thenReturn(ThingStatus.BORROWED)
@@ -34,7 +34,7 @@ describe("Individual Distributed Lender", () => {
     })
 
     it("throws if attempts to finish a return which hasnt notified lender", () => {
-        const underTest = new IndividualDistributedLender("test", person, [], [])
+        const underTest = new IndividualDistributedLender("test", person)
 
         const loan: ILoan = mock<ILoan>()
         when(loan.status).thenReturn(LoanStatus.BORROWED)
@@ -49,7 +49,8 @@ describe("Individual Distributed Lender", () => {
         const item = mock<IThing>()
         when(item.storageLocation).thenReturn(itemDefault)
 
-        const underTest = new IndividualDistributedLender("test", person, [], [instance(item)], myHouse)
+        const underTest = new IndividualDistributedLender("test", person, myHouse)
+        underTest.addItem(instance(item))
 
         const res = underTest.preferredReturnLocation(instance(item))
         expect(res).toEqual(myHouse)
@@ -61,7 +62,8 @@ describe("Individual Distributed Lender", () => {
         const item = mock<IThing>()
         when(item.storageLocation).thenReturn(itemDefault)
 
-        const underTest = new IndividualDistributedLender("test", person, [], [instance(item)])
+        const underTest = new IndividualDistributedLender("test", person)
+        underTest.addItem(instance(item))
 
         const res = underTest.preferredReturnLocation(instance(item))
         expect(res).toEqual(itemDefault)

@@ -22,11 +22,11 @@ const testLib = new SimpleLibrary("testLib1", "testLibrary", testPerson, new Phy
 const testBorrower = new Borrower("testBorrower", testPerson, testLib)
 
 const testTitle = new ThingTitle("test")
-const testLender = new IndividualDistributedLender("lender", new Person("test", new PersonName("Testy", "McTesterson")),[], [])
+const testLender = new IndividualDistributedLender("lender", new Person("test", new PersonName("Testy", "McTesterson")))
 
 describe("Loan", () => {
     it("can move from Borrowed to return started", () => {
-        const thing = new Thing("test", testTitle, new PhysicalLocation(0, 0), testLender, ThingStatus.BORROWED, "", [], null, [])
+        const thing = new Thing("test", testTitle, new PhysicalLocation(0, 0), testLender, ThingStatus.BORROWED, [], null, [])
         const underTest = new Loan("test", thing, testBorrower, new DueDate())
 
         expect(underTest.status).toEqual(LoanStatus.BORROWED)
