@@ -27,10 +27,14 @@ export class LibrarySearchResult {
 
 export class TitleSearchResult {
     public readonly title: ThingTitle
-    private readonly libraryResults: Map<string, LibrarySearchResult>
+    private readonly _libraryResults: Map<string, LibrarySearchResult>
 
     public get numCopies(): number {
-        return Array.from(this.libraryResults.values()).map(lr => lr.numCopies).reduce((acc, n) => {return acc + n}, 0)
+        return Array.from(this._libraryResults.values()).map(lr => lr.numCopies).reduce((acc, n) => {return acc + n}, 0)
+    }
+
+    public get libraryResults(): Iterable<LibrarySearchResult>{
+        return this._libraryResults.values()
     }
 
     public getForLibrary(library: ILibrary): LibrarySearchResult{
@@ -38,16 +42,16 @@ export class TitleSearchResult {
             throw new EntityNotAssignedIdError(`Library ${library.name} has not yet been saved!`)
         }
 
-        let result = this.libraryResults.get(library.id)
+        let result = this._libraryResults.get(library.id)
         if(!result) {
             result = new LibrarySearchResult(library)
-            this.libraryResults.set(library.id, result)
+            this._libraryResults.set(library.id, result)
         }
         return result
     }
 
     constructor(title: ThingTitle) {
         this.title = title
-        this.libraryResults = new Map<string, LibrarySearchResult>()
+        this._libraryResults = new Map<string, LibrarySearchResult>()
     }
 }

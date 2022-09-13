@@ -51,4 +51,48 @@ describe("thingSearchService", () => {
         const resTitle2Lib1 = res[1].getForLibrary(instance(library))
         expect(Array.from(resTitle2Lib1.things).length).toEqual(1)
     })
+
+    it("iterates all library results", () => {
+        const title1 = new ThingTitle("hash1")
+
+        const title2: ThingTitle = new ThingTitle("another")
+
+        const thing1: IThing = mock()
+        when(thing1.title).thenReturn(title1)
+
+        const thing2: IThing = mock()
+        when(thing2.title).thenReturn(title2)
+
+        const library: ILibrary = mock()
+        when(library.id).thenReturn("first")
+        when(library.getAvailableThings()).thenReturn([instance(thing1), instance(thing2)])
+
+        const thing3: IThing = mock()
+        when(thing3.title).thenReturn(title1)
+
+        const secondLibrary: ILibrary = mock()
+        when(secondLibrary.id).thenReturn("second")
+        when(secondLibrary.getAvailableThings()).thenReturn([instance(thing3)])
+
+        const libraryRepo: ILibraryRepository = mock()
+        when(libraryRepo.getLibrariesPersonCanUse(anything())).thenReturn([instance(library), instance(secondLibrary)])
+
+        const underTest = new TitleSearchService(instance(libraryRepo))
+
+        const person: Person = mock()
+        const searchRequest = new TitleSearchRequest();
+
+        // act
+        const resGen = underTest.find(instance(person), searchRequest)
+        const res = Array.from(resGen)
+
+        expect(res).not.toBeNull()
+        expect(res.length).toEqual(2)
+
+        const libraryResultsTitleOne = Array.from(res[0].libraryResults)
+        expect(libraryResultsTitleOne.length).toEqual(2)
+
+        const libraryResultsTitleTwo = Array.from(res[1].libraryResults)
+        expect(libraryResultsTitleTwo.length).toEqual(1)
+    })
 })
