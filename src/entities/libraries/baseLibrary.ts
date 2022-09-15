@@ -2,7 +2,13 @@ import {ILibrary} from "./ILibrary"
 import {IThing} from "../things"
 import {IBorrower, Person} from "../people"
 import {ILoan} from "../loans"
-import {IFeeSchedule, IWaitingListFactory, MoneyFactory, WaitingListFactory} from "../../factories"
+import {
+    IFeeSchedule,
+    IWaitingListFactory,
+    MoneyFactory,
+    NoFeeSchedule,
+    WaitingListFactory
+} from "../../factories"
 import {IAuctionableWaitingList, IWaitingList} from "../waitingLists"
 import {LibraryFee} from "./libraryFee"
 import {
@@ -11,7 +17,7 @@ import {
     FeeStatus, ILocation,
     IMoney,
     InvalidLibraryConfigurationError,
-    LoanStatus,
+    LoanStatus, MOPServer,
     ReturnNotStartedError,
     ThingStatus,
     ThingTitle,
@@ -32,11 +38,18 @@ export abstract class BaseLibrary implements ILibrary{
     readonly moneyFactory: MoneyFactory
     readonly defaultLoanTime: TimeInterval
     readonly biddingStrategy?: IBiddingStrategy
+    readonly mopServer: MOPServer
+    readonly publicURL: URL | undefined
 
     protected constructor(id: string, name: string, administrator: Person,
-                          maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule,
-                          moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval,
-                          biddingStrategy?: IBiddingStrategy, waitingListFactory?: IWaitingListFactory
+                          maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>,
+                          moneyFactory: MoneyFactory,
+                          mopServer: MOPServer,
+                          defaultLoanTime?: TimeInterval,
+                          feeSchedule?: IFeeSchedule,
+                          biddingStrategy?: IBiddingStrategy,
+                          waitingListFactory?: IWaitingListFactory,
+                          publicURL?: URL
     ) {
         this.id = id
         this.name = name
@@ -44,9 +57,17 @@ export abstract class BaseLibrary implements ILibrary{
         this.administrator = administrator
         this.waitingListsByItemId= new Map<string, IWaitingList>()
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
+        if(!feeSchedule){
+            feeSchedule = new NoFeeSchedule(moneyFactory)
+        }
         this.feeSchedule = feeSchedule
         this.moneyFactory = moneyFactory
+        if(!defaultLoanTime){
+            defaultLoanTime = TimeInterval.fromDays(14)
+        }
         this.defaultLoanTime = defaultLoanTime
+        this.mopServer = mopServer
+        this.publicURL = publicURL
 
         this._loans = []
         for(const l of loans){
@@ -195,7 +216,7 @@ export abstract class BaseLibrary implements ILibrary{
         const waitingList = this.reserveItem(item, borrower)
         const auctionableList = waitingList as IAuctionableWaitingList
 
-        const bid = this.biddingStrategy?.getBidForCost(item, bidder, amount, borrower)
+        const bid = this.biddingStrategy?.getBidForCost(item, bidder, amount, this, borrower)
         return auctionableList.addBid(bid)
     }
 }

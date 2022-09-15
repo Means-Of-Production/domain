@@ -5,9 +5,11 @@ import {DistributedLibrary} from "./distributedLibrary"
 import {IndividualDistributedLender, ILender} from "../lenders"
 import {WaitingListFactory, MoneyFactory, SimpleTimeBasedFeeSchedule} from "../../factories"
 import {LibraryFee} from "./libraryFee"
-import {TimeInterval, PersonName, ThingStatus, PhysicalLocation,
+import {
+    TimeInterval, PersonName, ThingStatus, PhysicalLocation,
     ThingTitle, USDMoney, DueDate, FeeStatus, IMoney, LoanStatus, BorrowerNotInGoodStandingError,
-    InvalidThingStatusToBorrowError, Distance, PhysicalArea} from "../../valueItems"
+    InvalidThingStatusToBorrowError, Distance, PhysicalArea, MOPServer
+} from "../../valueItems"
 
 const loc =  new PhysicalLocation(40.6501, -73.94958)
 
@@ -26,10 +28,11 @@ function createLibrary(lender: ILender): DistributedLibrary {
         new USDMoney(100),
         new WaitingListFactory(),
         [],
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
         moneyFactory,
-        TimeInterval.fromDays(12),
-        new PhysicalArea(new PhysicalLocation(0, 0), Distance.fromKilometers(10))
+        new PhysicalArea(new PhysicalLocation(0, 0), Distance.fromKilometers(10)),
+        MOPServer.localhost,
+        new SimpleTimeBasedFeeSchedule(moneyFactory),
+        TimeInterval.fromDays(12)
     )
     lib.addLender(lender)
 

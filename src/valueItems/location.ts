@@ -64,6 +64,9 @@ export class PhysicalArea implements ILocation{
 /**
  * Shows that this thing exists ONLY online, and has no physical boundary
  */
-export class Virtual implements ILocation {
-    
+export class VirtualLocation implements ILocation {
+    public readonly URL: URL
+    constructor(url: URL) {
+        this.URL = url
+    }
 }

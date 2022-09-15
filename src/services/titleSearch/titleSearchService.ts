@@ -10,10 +10,12 @@ export class TitleSearchService implements ITitleSearchService {
         this.libraryRepository = libraryRepository
     }
 
-    private matches(searchRequest: TitleSearchRequest, title: ThingTitle): boolean {
+    private matches(searchRequest: TitleSearchRequest, thing: IThing): boolean {
+        // TODO improve this by using a library like FUSE to search the items and titles
         if(!searchRequest.searchText){
             return true;
         }
+        const title = thing.title
         return title.name.includes(searchRequest.searchText) ||
             title.isbn == searchRequest.searchText ||
             title.upc == searchRequest.searchText;
@@ -25,7 +27,7 @@ export class TitleSearchService implements ITitleSearchService {
         const resultsByTitleHash = new Map<string, TitleSearchResult>()
         for(const library of libraries) {
             for(const thing of library.getAvailableThings()){
-                if(this.matches(searchRequest, thing.title)) {
+                if(this.matches(searchRequest, thing)) {
                     let titleResult = resultsByTitleHash.get(thing.title.hash)
                     if (!titleResult) {
                         titleResult = new TitleSearchResult(thing.title)

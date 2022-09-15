@@ -18,6 +18,7 @@ import {FeeStatus} from "../../valueItems/feeStatus";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {TimeInterval} from "../../valueItems/timeInterval";
+import {MOPServer} from "../../valueItems"
 
 function createLibrary(waitingListFactory: WaitingListFactory | null = null): SimpleLibrary {
     const person = new Person("1", new PersonName("Test", "McTesterson"))
@@ -35,7 +36,8 @@ function createLibrary(waitingListFactory: WaitingListFactory | null = null): Si
         new USDMoney(100),
         [],
         moneyFactory,
-        new SimpleTimeBasedFeeSchedule(moneyFactory.getEmptyMoney(), moneyFactory),
+        MOPServer.localhost,
+        new SimpleTimeBasedFeeSchedule(moneyFactory),
         TimeInterval.fromDays(14)
     )
 }
