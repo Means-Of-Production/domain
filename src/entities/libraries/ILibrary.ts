@@ -25,12 +25,12 @@ export interface ILibrary extends IEntity{
 
     canBorrow(borrower: IBorrower): boolean
 
-    borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
+    borrow(thing: IThing, borrower: IBorrower, until: DueDate): ILoan
 
     startReturn(loan: ILoan): ILoan
     finishReturn(loan: ILoan): ILoan
 
     // reserve the next available item
-    reserveItem(item: IThing, borrower: IBorrower): IWaitingList
-    bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower?: IBorrower): IWaitingList
+    reserveItem(thing: IThing, borrower: IBorrower): IWaitingList
+    bidToSkipToFrontOfList(thing: IThing, bidder: IBorrower, amount: IMoney, borrower?: IBorrower): IWaitingList
 }

@@ -1,9 +1,10 @@
-export class MOPServer {
-    public readonly URL: URL
+import {VirtualLocation} from "./location"
+
+export class MOPServer extends VirtualLocation {
     public readonly version: string
 
     constructor(url: URL, version: string) {
-        this.URL = url
+        super(url)
         this.version = version
     }
 
