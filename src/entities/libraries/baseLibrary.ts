@@ -6,7 +6,7 @@ import {
     IFeeSchedule,
     IWaitingListFactory,
     MoneyFactory,
-    SimpleTimeBasedFeeSchedule,
+    NoFeeSchedule,
     WaitingListFactory
 } from "../../factories"
 import {IAuctionableWaitingList, IWaitingList} from "../waitingLists"
@@ -58,7 +58,7 @@ export abstract class BaseLibrary implements ILibrary{
         this.waitingListsByItemId= new Map<string, IWaitingList>()
         this.maxFinesBeforeSuspension = maxFinesBeforeSuspension
         if(!feeSchedule){
-            feeSchedule = new SimpleTimeBasedFeeSchedule(moneyFactory)
+            feeSchedule = new NoFeeSchedule(moneyFactory)
         }
         this.feeSchedule = feeSchedule
         this.moneyFactory = moneyFactory

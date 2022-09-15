@@ -1,6 +1,6 @@
 import {IFeeSchedule} from "./IFeeSchedule";
-import {ILoan} from "../../entities/loans/ILoan";
-import {IMoney} from "../../valueItems/money/IMoney";
+import {ILoan} from "../../entities";
+import {IMoney} from "../../valueItems";
 import {MoneyFactory} from "../moneyFactory";
 
 /*
