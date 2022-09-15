@@ -9,7 +9,7 @@ import {ILibrary} from "../../entities"
  * Simple form of bidding - the bid is the amount you put in for yourself or another
  */
 export class RegularBiddingStrategy implements IBiddingStrategy {
-    getBidForCost(item: IThing, bidder: IBorrower, amountToPay: IMoney, library: ILibrary, beneficiary?: IBorrower): AuctionBid {
+    getBidForCost(thing: IThing, bidder: IBorrower, amountToPay: IMoney, library: ILibrary, beneficiary?: IBorrower): AuctionBid {
         if(!beneficiary){
             beneficiary = bidder
         }
