@@ -1,21 +1,26 @@
 import {IBorrower} from "../people"
 import {IThing} from "../things"
 import {ILoan, Loan} from "../loans"
-import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError,
-    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney, ILocation, PhysicalArea} from "../../valueItems"
+import {
+    BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError,
+    TimeInterval, DueDate, ThingStatus, LoanStatus, IMoney, ILocation, PhysicalArea, MOPServer
+} from "../../valueItems"
 import {BaseLibrary} from "./baseLibrary"
 import {Person} from "../people"
 import {ILender} from "../lenders";
-import {QuadraticBiddingStrategy} from "../../services"
+import {IBiddingStrategy, QuadraticBiddingStrategy} from "../../services"
 import {MoneyFactory, IFeeSchedule, IWaitingListFactory} from "../../factories"
 
 export class DistributedLibrary extends BaseLibrary{
     private readonly _lenders: ILender[]
     public readonly location: ILocation
 
-    constructor(id: string, name: string, administrator: Person, maxFees: IMoney, waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, feeSchedule: IFeeSchedule, moneyFactory: MoneyFactory, defaultLoanTime: TimeInterval, location: PhysicalArea) {
-        const biddingStrategy = new QuadraticBiddingStrategy(loans);
-        super(id, name,  administrator, maxFees, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory)
+    constructor(id: string, name: string, administrator: Person, maxFees: IMoney,
+                waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
+                location: PhysicalArea, mopServer: MOPServer,
+                feeSchedule?: IFeeSchedule, defaultLoanTime?: TimeInterval,
+                biddingStrategy?: IBiddingStrategy) {
+        super(id, name,  administrator, maxFees, loans, moneyFactory, mopServer, defaultLoanTime, feeSchedule, biddingStrategy, waitingListFactory)
 
         this._lenders = []
         this.location = location

@@ -1,7 +1,7 @@
 import { IRepository } from "./IRepository";
-import {IBorrower} from "../entities/people/IBorrower";
-import {ILoan} from "../entities/loans/ILoan";
+import {Person, ILoan, IBorrower} from "../entities"
 
 export interface ILoanRepository extends IRepository<ILoan>{
-    getForBorrower(borrower: IBorrower): Iterable<ILoan>;
+    getForBorrower(borrower: IBorrower): Iterable<ILoan>
+    getForPerson(person: Person): Iterable<ILoan>
 }

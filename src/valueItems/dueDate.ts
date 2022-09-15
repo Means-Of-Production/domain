@@ -43,4 +43,9 @@ export class DueDate{
         if(a.equals(b)){ return 0}
         return a.isLaterThan(b)? 1: -1
     }
+
+    public static parse(s: string): DueDate {
+        const date = Date.parse(s)
+        return new DueDate(new Date(date))
+    }
 }
