@@ -5,31 +5,23 @@ import {IBorrower} from "../../entities/people/IBorrower";
 import {IMoney} from "../../valueItems/money/IMoney";
 import {IBiddingStrategy} from "./IBiddingStrategy";
 import {AuctionBid} from "../../valueItems/auctionBid";
+import {ILibrary} from "../../entities"
 
 /**
  * Form of bidding where the amount a bid is worth decreases the longer it has been held by the same person
  */
 export class QuadraticBiddingStrategy implements IBiddingStrategy {
-    private readonly loans: ILoan[]
-
-    constructor(loans: Iterable<ILoan>) {
-        this.loans = []
-        for(const loan of loans){
-            this.loans.push(loan)
-        }
-    }
-
     private static compareLoans(a: ILoan, b: ILoan): number {
         return DueDate.compare(a.dueDate, b.dueDate)
     }
 
-    getBidForCost(item: IThing, bidder: IBorrower, amountToPay: IMoney, beneficiary?: IBorrower): AuctionBid {
+    getBidForCost(item: IThing, bidder: IBorrower, amountToPay: IMoney, library: ILibrary, beneficiary?: IBorrower): AuctionBid {
         if(!beneficiary){
             beneficiary = bidder
         }
 
         // get loans for the item
-        const itemLoans = this.loans
+        const itemLoans = Array.from(library.getLoans())
             .filter(l => l.item.id == item.id)
             .sort(QuadraticBiddingStrategy.compareLoans)
 

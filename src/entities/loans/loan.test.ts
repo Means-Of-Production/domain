@@ -15,10 +15,11 @@ import {DueDate} from "../../valueItems/dueDate";
 import {PhysicalLocation} from "../../valueItems/location";
 import {LoanStatus} from "../../valueItems/loanStatus";
 import {TimeInterval} from "../../valueItems/timeInterval";
+import {MOPServer} from "../../valueItems"
 
 const testPerson = new Person("bob", new PersonName("Doug", "Jones"))
-const feeSchedule = new SimpleTimeBasedFeeSchedule(new USDMoney(0), new MoneyFactory())
-const testLib = new SimpleLibrary("testLib1", "testLibrary", testPerson, new PhysicalLocation(0, 0), new WaitingListFactory(), new USDMoney(0), [], new MoneyFactory(), feeSchedule, TimeInterval.fromDays(14));
+const feeSchedule = new SimpleTimeBasedFeeSchedule(new MoneyFactory())
+const testLib = new SimpleLibrary("testLib1", "testLibrary", testPerson, new PhysicalLocation(0, 0), new WaitingListFactory(), new USDMoney(0), [], new MoneyFactory(), MOPServer.localhost, feeSchedule, TimeInterval.fromDays(14));
 const testBorrower = new Borrower("testBorrower", testPerson, testLib)
 
 const testTitle = new ThingTitle("test")

@@ -2,7 +2,7 @@ import {IThing} from "../things";
 import {IBorrower} from "../people";
 import {ILoan, Loan} from "../loans";
 import {BaseLibrary} from "./baseLibrary"
-import {ThingTitle, ThingStatus, PhysicalLocation} from "../../valueItems";
+import {ThingTitle, ThingStatus, PhysicalLocation, MOPServer} from "../../valueItems"
 import {ILender} from "../lenders";
 import {IWaitingListFactory} from "../../factories"
 import {Person} from "../people"
@@ -13,7 +13,7 @@ import {MoneyFactory} from "../../factories"
 import {IFeeSchedule} from "../../factories"
 import {BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError} from "../../valueItems";
 import {TimeInterval} from "../../valueItems";
-import {QuadraticBiddingStrategy} from "../../services";
+import {IBiddingStrategy, QuadraticBiddingStrategy} from "../../services"
 
 
 // library which also lends items from a simple, single, location
@@ -22,13 +22,16 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
     readonly location: PhysicalLocation
 
     constructor(id: string, name: string, admin: Person, location: PhysicalLocation,
-                waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
-                feeSchedule: IFeeSchedule, defaultLoanTime?: TimeInterval) {
+                waitingListFactory: IWaitingListFactory, maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>,
+                moneyFactory: MoneyFactory,
+                mopServer: MOPServer,
+                feeSchedule?: IFeeSchedule,
+                defaultLoanTime?: TimeInterval,
+                biddingStrategy?: IBiddingStrategy) {
         if(!defaultLoanTime){
             defaultLoanTime = TimeInterval.fromDays(14)
         }
-        const biddingStrategy = new QuadraticBiddingStrategy(loans);
-        super(id, name, admin, maxFinesBeforeSuspension, loans, feeSchedule, moneyFactory, defaultLoanTime, biddingStrategy, waitingListFactory);
+        super(id, name, admin, maxFinesBeforeSuspension, loans, moneyFactory, mopServer, defaultLoanTime, feeSchedule, biddingStrategy, waitingListFactory);
         this._items = []
         this.location = location
     }

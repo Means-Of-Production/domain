@@ -11,8 +11,11 @@ export class SimpleTimeBasedFeeSchedule implements IFeeSchedule{
     public readonly defaultItemCost: IMoney
     public readonly moneyFactory: MoneyFactory
 
-    constructor(defaultItemCost: IMoney, moneyFactory: MoneyFactory, numYears: number = 1){
+    constructor(moneyFactory: MoneyFactory, defaultItemCost?: IMoney, numYears: number = 1){
         this.numYears = numYears
+        if(!defaultItemCost){
+            defaultItemCost = moneyFactory.getEmptyMoney()
+        }
         this.defaultItemCost = defaultItemCost
         this.moneyFactory = moneyFactory
     }
