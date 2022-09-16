@@ -12,11 +12,10 @@ export class LoanSearchService implements ILoanSearchService {
     * getLoansForPerson(person: Person): Iterable<ILoan> {
         for (const library of this.libraryRepository.getLibrariesPersonCanUse(person)) {
             for (const loan of library.getLoans()) {
-                if (loan.borrower.person.id == person.id) {
+                if (loan.borrower.person.equals(person)) {
                     yield loan
                 }
             }
         }
     }
-
 }

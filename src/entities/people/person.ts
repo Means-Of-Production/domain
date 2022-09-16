@@ -1,5 +1,4 @@
-import {PersonName} from "../../valueItems/personName"
-import {EmailAddress} from "../../valueItems/emailAddress";
+import {PersonName, EmailAddress} from "../../valueItems"
 
 export class Person {
     public readonly id: string
@@ -10,6 +9,13 @@ export class Person {
         this.id = id
         this.name = name
         this.emails = emails
+    }
+
+    public equals(other: Person) : boolean{
+        if(!other){
+            return false
+        }
+        return this.id === other.id
     }
 }
 
