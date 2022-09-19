@@ -1,16 +1,19 @@
-import {ILoan} from "../../entities/loans/ILoan";
-import {DueDate} from "../../valueItems/dueDate";
-import {IThing} from "../../entities/things/IThing";
-import {IBorrower} from "../../entities/people/IBorrower";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {IBiddingStrategy} from "./IBiddingStrategy";
-import {AuctionBid} from "../../valueItems/auctionBid";
+import {ILoan, IThing, IBorrower} from "../../entities"
+import {IBiddingStrategy} from "./IBiddingStrategy"
+import {AuctionBid, IMoney, DueDate} from "../../valueItems"
 import {ILibrary} from "../../entities"
+import {ILoanRepository} from "../../repositories"
 
 /**
  * Form of bidding where the amount a bid is worth decreases the longer it has been held by the same person
  */
 export class QuadraticBiddingStrategy implements IBiddingStrategy {
+    private readonly loanRepository: ILoanRepository
+
+    constructor(loanRepository: ILoanRepository) {
+        this.loanRepository = loanRepository
+    }
+
     private static compareLoans(a: ILoan, b: ILoan): number {
         return DueDate.compare(a.dueDate, b.dueDate)
     }
@@ -21,7 +24,7 @@ export class QuadraticBiddingStrategy implements IBiddingStrategy {
         }
 
         // get loans for the item
-        const itemLoans = Array.from(library.getLoans())
+        const itemLoans = Array.from(this.loanRepository.getLoansForLibrary(library))
             .filter(l => l.item.id == item.id)
             .sort(QuadraticBiddingStrategy.compareLoans)
 

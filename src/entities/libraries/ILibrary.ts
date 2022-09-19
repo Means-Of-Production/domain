@@ -21,7 +21,6 @@ export interface ILibrary extends IEntity{
 
     getAllThings(): Iterable<IThing>
     getAvailableThings(): Iterable<IThing>
-    getLoans(): Iterable<ILoan>
 
     canBorrow(borrower: IBorrower): boolean
 

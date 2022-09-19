@@ -1,7 +1,5 @@
-import {IThing} from "../../entities/things/IThing";
-import {IBorrower} from "../../entities/people/IBorrower";
-import {IMoney} from "../../valueItems/money/IMoney";
-import {AuctionBid} from "../../valueItems/auctionBid";
+import {IThing, IBorrower} from "../../entities"
+import {IMoney, AuctionBid} from "../../valueItems"
 import {ILibrary} from "../../entities"
 
 /**
