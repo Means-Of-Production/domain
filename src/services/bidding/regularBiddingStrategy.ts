@@ -12,5 +12,4 @@ export class RegularBiddingStrategy implements IBiddingStrategy {
         }
         return new AuctionBid(amountToPay, amountToPay, bidder, beneficiary);
     }
-
 }
