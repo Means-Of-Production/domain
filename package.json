@@ -1,6 +1,6 @@
 {
   "name": "@meansofproduction/domain",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Central domain objects for MeansOfProduction library software",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
