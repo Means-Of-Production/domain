@@ -8,7 +8,7 @@ export abstract class BaseEntity implements IEntity {
     }
 
     equals(other: IEntity): boolean {
-        if(!other || !other.id){
+        if((!other) || (!other.id)){
             return false
         }
         return this.id === other.id

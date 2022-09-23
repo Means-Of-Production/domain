@@ -288,4 +288,15 @@ describe("DistributedLibrary", () => {
         expect(finished.status).toEqual(LoanStatus.RETURNED)
         expect(finished.item.status).toEqual(ThingStatus.RESERVED)
     })
+
+    it("equals the same id", () => {
+        const lender = createLender()
+        const lib1 = createLibrary(lender)
+        const lib2 = createLibrary(lender)
+
+        expect(lib1.id).toEqual(lib2.id)
+        const res = lib1.equals(lib2)
+
+        expect(res).toBeTruthy()
+    })
 })

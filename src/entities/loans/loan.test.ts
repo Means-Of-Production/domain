@@ -37,4 +37,27 @@ describe("Loan", () => {
 
         expect(underTest.status).toEqual(LoanStatus.RETURN_STARTED)
     })
+
+    it("equals if id is equal", () => {
+        const thing = new Thing("test", testTitle, new PhysicalLocation(0, 0), testLender, ThingStatus.BORROWED, "", [], null, [])
+
+        const loan1 = new Loan("loan", thing, testBorrower, new DueDate())
+        const loan2 = new Loan("loan", thing, testBorrower, new DueDate())
+
+        const res = loan1.equals(loan2)
+
+        expect(res).toBeTruthy()
+        expect(loan1.id).toEqual(loan2.id)
+    })
+
+    it("does not equal if id is not set", () => {
+        const thing = new Thing("test", testTitle, new PhysicalLocation(0, 0), testLender, ThingStatus.BORROWED, "", [], null, [])
+
+        const loan1 = new Loan(undefined, thing, testBorrower, new DueDate())
+        const loan2 = new Loan(undefined, thing, testBorrower, new DueDate())
+
+        const res = loan1.equals(loan2)
+
+        expect(res).not.toBeTruthy()
+    })
 })
