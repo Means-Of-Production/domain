@@ -24,12 +24,11 @@ import {
     TimeInterval
 } from "../../valueItems"
 import {IBiddingStrategy} from "../../services"
+import {BaseEntity} from "../BaseEntity"
 
-export abstract class BaseLibrary implements ILibrary{
+export abstract class BaseLibrary extends BaseEntity implements ILibrary{
     private readonly _borrowers: IBorrower[]
-    private readonly _loans: ILoan[]
     readonly name: string;
-    readonly id: string | undefined
     readonly waitingListFactory: IWaitingListFactory
     readonly waitingListsByItemId: Map<string, IWaitingList>
     readonly administrator: Person;
@@ -42,7 +41,7 @@ export abstract class BaseLibrary implements ILibrary{
     readonly publicURL: URL | undefined
 
     protected constructor(id: string, name: string, administrator: Person,
-                          maxFinesBeforeSuspension: IMoney, loans: Iterable<ILoan>,
+                          maxFinesBeforeSuspension: IMoney,
                           moneyFactory: MoneyFactory,
                           mopServer: MOPServer,
                           defaultLoanTime?: TimeInterval,
@@ -51,7 +50,7 @@ export abstract class BaseLibrary implements ILibrary{
                           waitingListFactory?: IWaitingListFactory,
                           publicURL?: URL
     ) {
-        this.id = id
+        super(id)
         this.name = name
         this._borrowers = []
         this.administrator = administrator
@@ -68,11 +67,6 @@ export abstract class BaseLibrary implements ILibrary{
         this.defaultLoanTime = defaultLoanTime
         this.mopServer = mopServer
         this.publicURL = publicURL
-
-        this._loans = []
-        for(const l of loans){
-            this._loans.push(l)
-        }
 
         if(!waitingListFactory){
             waitingListFactory = new WaitingListFactory(biddingStrategy != undefined, undefined, moneyFactory)
@@ -133,14 +127,6 @@ export abstract class BaseLibrary implements ILibrary{
         }
         list.add(borrower)
         return list
-    }
-
-    public getLoans(): Iterable<ILoan> {
-        return this._loans
-    }
-    
-    public addLoan(loan: ILoan){
-        this._loans.push(loan)
     }
 
     protected getTitlesFromItems(items: Iterable<IThing>): Iterable<ThingTitle>{

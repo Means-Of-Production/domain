@@ -1,4 +1,5 @@
 export * from "./IEntity"
+export * from "./BaseEntity"
 export * from "./lenders"
 export * from "./libraries"
 export * from "./loans"

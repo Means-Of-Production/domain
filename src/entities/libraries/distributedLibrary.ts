@@ -8,7 +8,7 @@ import {
 import {BaseLibrary} from "./baseLibrary"
 import {Person} from "../people"
 import {ILender} from "../lenders";
-import {IBiddingStrategy, QuadraticBiddingStrategy} from "../../services"
+import {IBiddingStrategy} from "../../services"
 import {MoneyFactory, IFeeSchedule, IWaitingListFactory} from "../../factories"
 
 export class DistributedLibrary extends BaseLibrary{
@@ -16,11 +16,11 @@ export class DistributedLibrary extends BaseLibrary{
     public readonly location: ILocation
 
     constructor(id: string, name: string, administrator: Person, maxFees: IMoney,
-                waitingListFactory: IWaitingListFactory, loans: Iterable<ILoan>, moneyFactory: MoneyFactory,
+                waitingListFactory: IWaitingListFactory, moneyFactory: MoneyFactory,
                 location: PhysicalArea, mopServer: MOPServer,
                 feeSchedule?: IFeeSchedule, defaultLoanTime?: TimeInterval,
                 biddingStrategy?: IBiddingStrategy) {
-        super(id, name,  administrator, maxFees, loans, moneyFactory, mopServer, defaultLoanTime, feeSchedule, biddingStrategy, waitingListFactory)
+        super(id, name,  administrator, maxFees, moneyFactory, mopServer, defaultLoanTime, feeSchedule, biddingStrategy, waitingListFactory)
 
         this._lenders = []
         this.location = location

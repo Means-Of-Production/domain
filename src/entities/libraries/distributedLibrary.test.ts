@@ -27,7 +27,6 @@ function createLibrary(lender: ILender): DistributedLibrary {
         person,
         new USDMoney(100),
         new WaitingListFactory(),
-        [],
         moneyFactory,
         new PhysicalArea(new PhysicalLocation(0, 0), Distance.fromKilometers(10)),
         MOPServer.localhost,

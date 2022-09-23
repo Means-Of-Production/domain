@@ -1,24 +1,23 @@
-import {Person} from "./person";
-import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags";
+import {Person} from "./person"
+import {BorrowerVerificationFlags} from "../../valueItems"
 import {IBorrower} from "./IBorrower"
-import {ILibraryFee} from "../libraries/ILibraryFee";
-import {ILibrary} from "../libraries/ILibrary";
+import {ILibraryFee, ILibrary} from "../libraries"
+import {BaseEntity} from "../BaseEntity"
 
 // this is effectively the library card
-export class Borrower implements IBorrower {
-    public readonly id: string
+export class Borrower extends BaseEntity implements IBorrower {
     public readonly verificationFlags: BorrowerVerificationFlags[]
     public readonly person: Person;
     private readonly _fees: ILibraryFee[]
     readonly library: ILibrary;
 
-    constructor(id: string, person: Person, library: ILibrary, verificationFlags: BorrowerVerificationFlags[] = [],
+    constructor(id: string | undefined, person: Person, library: ILibrary, verificationFlags: BorrowerVerificationFlags[] = [],
                 fees: ILibraryFee[] = []) {
+        super(id)
         this.person = person;
         this.verificationFlags = verificationFlags
         this.library = library
         this._fees = fees
-        this.id = id
     }
 
     get fees(): Iterable<ILibraryFee>{

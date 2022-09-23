@@ -1,18 +1,16 @@
 import {IThing} from "../things";
 import {IBorrower} from "../people";
 import {
-    ILocation,
     PhysicalLocation,
     DueDate,
     InvalidLoanStateTransitionError,
     LoanStatus,
-    InvalidLocationTypeError
 } from "../../valueItems"
 import {ILender} from "../lenders";
 import {ILoan} from "./ILoan"
+import {BaseEntity} from "../BaseEntity"
 
-export class Loan implements ILoan {
-    public readonly id: string | undefined
+export class Loan extends BaseEntity implements ILoan {
     public readonly item: IThing
     public readonly borrower: IBorrower
     public readonly dueDate: DueDate
@@ -22,7 +20,7 @@ export class Loan implements ILoan {
 
     public constructor(id: string | undefined, item: IThing, borrower: IBorrower, dueDate: DueDate, status: LoanStatus = LoanStatus.BORROWED,
                        returnLocation: PhysicalLocation | null = null, dateReturned: Date | null = null) {
-        this.id = id
+        super(id)
         this.item = item
         this.borrower = borrower
         this.dueDate = dueDate

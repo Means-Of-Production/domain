@@ -31,7 +31,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         if(!defaultLoanTime){
             defaultLoanTime = TimeInterval.fromDays(14)
         }
-        super(id, name, admin, maxFinesBeforeSuspension, loans, moneyFactory, mopServer, defaultLoanTime, feeSchedule, biddingStrategy, waitingListFactory);
+        super(id, name, admin, maxFinesBeforeSuspension, moneyFactory, mopServer, defaultLoanTime, feeSchedule, biddingStrategy, waitingListFactory);
         this._items = []
         this.location = location
     }
@@ -75,7 +75,6 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         )
 
         item.status = ThingStatus.BORROWED
-        this.addLoan(loan)
         return loan
     }
 

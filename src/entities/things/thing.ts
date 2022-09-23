@@ -1,15 +1,10 @@
-import {ThingStatus} from "../../valueItems/thingStatus"
-import {PhysicalLocation} from "../../valueItems/location";
-import {IMoney} from "../../valueItems/money/IMoney"
-import {BorrowerVerificationFlags} from "../../valueItems/borrowerVerificationFlags";
-import {ILender} from "../lenders/ILender";
+import {ThingStatus, PhysicalLocation, IMoney, BorrowerVerificationFlags, ThingTitle, InvalidThingStateTransitionError} from "../../valueItems"
+import {ILender} from "../lenders";
+import {BaseEntity} from "../BaseEntity";
 import {IThing} from "./IThing"
-import {ThingTitle} from "../../valueItems/thingTitle";
-import {InvalidThingStateTransitionError} from "../../valueItems/exceptions";
 
 
-export class Thing implements IThing {
-    readonly id: string
+export class Thing extends BaseEntity implements IThing{
     readonly description: string
     readonly storageLocation: PhysicalLocation
     readonly imageUrls: string[]
@@ -31,7 +26,7 @@ export class Thing implements IThing {
         purchaseCost: IMoney | null,
         requiredBorrowerFlags: BorrowerVerificationFlags[] = []
     ) {
-        this.id = id
+        super(id)
         this.title = title
         this.description = description
         this.imageUrls = imageUrls
