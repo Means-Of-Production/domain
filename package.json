@@ -1,6 +1,6 @@
 {
   "name": "@meansofproduction/domain",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Central domain objects for MeansOfProduction library software",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
@@ -27,7 +27,7 @@
     "test": "jest",
     "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "prepare" : "npm run build",
-    "prepublish": "npm run compile"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
