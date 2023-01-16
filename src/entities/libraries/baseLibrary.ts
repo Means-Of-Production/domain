@@ -99,9 +99,9 @@ export abstract class BaseLibrary implements ILibrary{
         }
     }
 
-    abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): ILoan
+    abstract borrow(item: IThing, borrower: IBorrower, until: DueDate): Promise<ILoan>
 
-    abstract startReturn(loan:ILoan): ILoan
+    abstract startReturn(loan: ILoan): Promise<ILoan>
 
     public get borrowers(): Iterable<IBorrower>{
         return this._borrowers
@@ -122,7 +122,7 @@ export abstract class BaseLibrary implements ILibrary{
         return !totalFees.greaterThan(this.maxFinesBeforeSuspension);
     }
 
-    public reserveItem(item: IThing, borrower: IBorrower): IWaitingList {
+    public async reserveItem(item: IThing, borrower: IBorrower): Promise<IWaitingList> {
         if(!item.id){
             throw new EntityNotAssignedIdError("")
         }
@@ -155,7 +155,7 @@ export abstract class BaseLibrary implements ILibrary{
         return titles
     }
 
-    public finishReturn(loan: ILoan): ILoan {
+    public async finishReturn(loan: ILoan): Promise<ILoan> {
         // this has to call FIRST, so the status can be updated to act here
         if(loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE || !loan.dateReturned){
             throw new ReturnNotStartedError()
@@ -209,14 +209,14 @@ export abstract class BaseLibrary implements ILibrary{
         return loan
     }
 
-    public bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower: IBorrower): IWaitingList{
+    public async bidToSkipToFrontOfList(item: IThing, bidder: IBorrower, amount: IMoney, borrower: IBorrower): Promise<IWaitingList>{
         if(!this.biddingStrategy){
             throw new InvalidLibraryConfigurationError("This library does not support bidding!")
         }
-        const waitingList = this.reserveItem(item, borrower)
+        const waitingList = await this.reserveItem(item, borrower)
         const auctionableList = waitingList as IAuctionableWaitingList
 
-        const bid = this.biddingStrategy?.getBidForCost(item, bidder, amount, this, borrower)
+        const bid = await this.biddingStrategy?.getBidForCost(item, bidder, amount, this, borrower)
         return auctionableList.addBid(bid)
     }
 }

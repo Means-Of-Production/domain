@@ -18,13 +18,13 @@ export class QuadraticBiddingStrategy implements IBiddingStrategy {
         return DueDate.compare(a.dueDate, b.dueDate)
     }
 
-    getBidForCost(item: IThing, bidder: IBorrower, amountToPay: IMoney, library: ILibrary, beneficiary?: IBorrower): AuctionBid {
+    async getBidForCost(item: IThing, bidder: IBorrower, amountToPay: IMoney, library: ILibrary, beneficiary?: IBorrower): Promise<AuctionBid> {
         if(!beneficiary){
             beneficiary = bidder
         }
 
         // get loans for the item
-        const itemLoans = Array.from(this.loanRepository.getLoansForLibrary(library))
+        const itemLoans = Array.from(await this.loanRepository.getLoansForLibrary(library))
             .filter(l => l.item.id == item.id)
             .sort(QuadraticBiddingStrategy.compareLoans)
 

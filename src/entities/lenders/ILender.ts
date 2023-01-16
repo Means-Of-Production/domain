@@ -6,6 +6,6 @@ import {IEntity} from "../IEntity";
 export interface ILender extends IEntity{
     readonly items: Iterable<IThing>
     preferredReturnLocation(item: IThing): ILocation
-    startReturn(loan: ILoan): ILoan
-    finishReturn(loan: ILoan): ILoan
+    startReturn(loan: ILoan): Promise<ILoan>
+    finishReturn(loan: ILoan): Promise<ILoan>
 }

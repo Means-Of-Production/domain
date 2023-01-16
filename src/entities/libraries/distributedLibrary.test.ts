@@ -138,7 +138,7 @@ describe("DistributedLibrary", () => {
         testLender.addItem(item)
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrowError)
+        expect(async () => await library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).rejects.toBeInstanceOf(InvalidThingStatusToBorrowError)
     })
 
     it("cannot borrow if you have too many fees", () => {
@@ -156,10 +156,10 @@ describe("DistributedLibrary", () => {
 
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStandingError)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).rejects.toBeInstanceOf(BorrowerNotInGoodStandingError)
     })
 
-    it("can borrow and return on time", () => {
+    it("can borrow and return on time", async () => {
         const testLender = createLender()
         const library = createLibrary(testLender)
 
@@ -168,24 +168,24 @@ describe("DistributedLibrary", () => {
 
         const item = createThing(testLender)
 
-        const loan = library.borrow(item, borrower, getDueDate())
+        const loan = await library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
         expect(loan.dateReturned).toBeNull()
 
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
         expect(updatedLoan.dateReturned).not.toBeNull()
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED)
         expect(finished.item.status).toEqual(ThingStatus.READY)
     })
 
-    it("item borrowed but marked damaged gets RETURNED_DAMAGED", () => {
+    it("item borrowed but marked damaged gets RETURNED_DAMAGED", async() => {
         const testLender = createLender()
         const library = createLibrary(testLender)
 
@@ -194,19 +194,19 @@ describe("DistributedLibrary", () => {
 
         const item = createThing(testLender, new USDMoney(25))
 
-        const loan = library.borrow(item, borrower, getDueDate())
+        const loan = await library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         // ACT
         updatedLoan.item.status = ThingStatus.DAMAGED
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
 
         // assert
         expect(finished).not.toBeNull()
@@ -218,7 +218,7 @@ describe("DistributedLibrary", () => {
         expect(fees[0].amount.amount).toEqual(item.purchaseCost?.amount)
     })
 
-    it("item returned late has loan overdue but item is ready", () => {
+    it("item returned late has loan overdue but item is ready", async () => {
         const testLender = createLender()
         const library = createLibrary(testLender)
 
@@ -227,16 +227,16 @@ describe("DistributedLibrary", () => {
 
         const item = createThing(testLender, new USDMoney(100))
 
-        const loan = library.borrow(item, borrower, getDueDate(-10))
+        const loan = await library.borrow(item, borrower, getDueDate(-10))
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.OVERDUE)
         expect(finished.item.status).toEqual(ThingStatus.READY)
@@ -257,10 +257,10 @@ describe("DistributedLibrary", () => {
         const otherLender = createLender()
         const item = createThing(otherLender)
 
-        expect(() => library.borrow(item, borrower, undefined)).toThrow()
+        expect(() => library.borrow(item, borrower, undefined)).rejects.not.toBeNull()
     })
 
-    it("returned items with an item on waitingList is reserved", () => {
+    it("returned items with an item on waitingList is reserved", async () => {
         const lender = createLender()
         const library = createLibrary(lender)
 
@@ -270,7 +270,7 @@ describe("DistributedLibrary", () => {
         const item = createThing(lender)
         lender.addItem(item)
 
-        const loan = library.borrow(item, borrower, getDueDate())
+        const loan = await library.borrow(item, borrower, getDueDate())
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
@@ -280,11 +280,11 @@ describe("DistributedLibrary", () => {
         expect(waitingList).not.toBeNull()
 
         // return
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED)
         expect(finished.item.status).toEqual(ThingStatus.RESERVED)

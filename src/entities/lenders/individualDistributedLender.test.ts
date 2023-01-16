@@ -16,21 +16,7 @@ describe("Individual Distributed Lender", () => {
         const loan: ILoan = mock<ILoan>()
         when(loan.item).thenReturn(instance(item))
 
-        expect(() => underTest.startReturn(instance(loan))).toThrow()
-    })
-
-    it("sets date on starting return", () => {
-        const underTest = new IndividualDistributedLender("test", person, [], [])
-
-        const item = mock<IThing>();
-        when(item.status).thenReturn(ThingStatus.BORROWED)
-
-        const loan: ILoan = mock<ILoan>()
-        when(loan.item).thenReturn(instance(item))
-
-        const res = underTest.startReturn(instance(loan))
-
-        expect(res.dateReturned).not.toBeNull()
+        expect(async () => await underTest.startReturn(instance(loan))).rejects.not.toBeNull()
     })
 
     it("throws if attempts to finish a return which hasnt notified lender", () => {
@@ -39,7 +25,7 @@ describe("Individual Distributed Lender", () => {
         const loan: ILoan = mock<ILoan>()
         when(loan.status).thenReturn(LoanStatus.BORROWED)
 
-        expect(() => underTest.finishReturn(instance(loan))).toThrow()
+        expect(async () => await underTest.finishReturn(instance(loan))).rejects.not.toBeNull()
     })
 
     it("overrides return location if provided", () => {

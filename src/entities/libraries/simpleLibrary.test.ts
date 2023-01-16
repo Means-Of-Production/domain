@@ -139,7 +139,7 @@ describe("Simple Library Tests", () => {
         library.addItem(item)
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(InvalidThingStatusToBorrowError)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).rejects.toBeInstanceOf(InvalidThingStatusToBorrowError)
     })
 
     it("cannot borrow if you have too many fees", () => {
@@ -157,10 +157,10 @@ describe("Simple Library Tests", () => {
 
 
         // act
-        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).toThrow(BorrowerNotInGoodStandingError)
+        expect(() => library.borrow(item, borrower, new DueDate(new Date(2022, 12, 12, 0,0,0, 0)))).rejects.toBeInstanceOf(BorrowerNotInGoodStandingError)
     })
 
-    it("can borrow and return on time", () => {
+    it("can borrow and return on time", async () => {
         const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
@@ -169,22 +169,22 @@ describe("Simple Library Tests", () => {
         const item = createThing(library)
         library.addItem(item)
 
-        const loan = library.borrow(item, borrower, getDueDate())
+        const loan = await library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED)
         expect(finished.item.status).toEqual(ThingStatus.READY)
     })
 
-    it("item borrowed but marked damaged gets RETURNED_DAMAGED", () => {
+    it("item borrowed but marked damaged gets RETURNED_DAMAGED", async () => {
         const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
@@ -193,19 +193,19 @@ describe("Simple Library Tests", () => {
         const item = createThing(library, new USDMoney(25))
         library.addItem(item)
 
-        const loan = library.borrow(item, borrower, getDueDate())
+        const loan = await library.borrow(item, borrower, getDueDate())
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
         // ACT
         updatedLoan.item.status = ThingStatus.DAMAGED
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
 
         // assert
         expect(finished).not.toBeNull()
@@ -217,7 +217,7 @@ describe("Simple Library Tests", () => {
         expect(fees[0].amount.amount).toEqual(item.purchaseCost?.amount)
     })
 
-    it("item returned late has loan overdue but item is ready", () => {
+    it("item returned late has loan overdue but item is ready", async() => {
         const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
@@ -226,16 +226,16 @@ describe("Simple Library Tests", () => {
         const item = createThing(library, new USDMoney(100))
         library.addItem(item)
 
-        const loan = library.borrow(item, borrower, getDueDate(-10))
+        const loan = await library.borrow(item, borrower, getDueDate(-10))
 
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.OVERDUE)
         expect(finished.item.status).toEqual(ThingStatus.READY)
@@ -246,7 +246,7 @@ describe("Simple Library Tests", () => {
         expect(fees[0].amount.amount).toBeLessThan(100)
     })
 
-    it("returned items with an item on waitingList is reserved", () => {
+    it("returned items with an item on waitingList is reserved", async() => {
         const library = createLibrary()
 
         const borrower = new Borrower("libraryMember", library.administrator, library, [])
@@ -255,21 +255,21 @@ describe("Simple Library Tests", () => {
         const item = createThing(library)
         library.addItem(item)
 
-        const loan = library.borrow(item, borrower, getDueDate())
+        const loan = await library.borrow(item, borrower, getDueDate())
         expect(loan).not.toBeNull()
         expect(loan.item.status).toEqual(ThingStatus.BORROWED)
 
         // add a reservation to this
         const secondBorrower = new Borrower("waitingPerson", new Person("someoneElse", new PersonName("Bob", "McGree")), library)
-        const waitingList = library.reserveItem(item, secondBorrower)
+        const waitingList = await library.reserveItem(item, secondBorrower)
         expect(waitingList).not.toBeNull()
 
         // return
-        const updatedLoan = library.startReturn(loan)
+        const updatedLoan = await library.startReturn(loan)
         expect(updatedLoan).not.toBeNull()
         expect(updatedLoan.status).toEqual(LoanStatus.WAITING_ON_LENDER_ACCEPTANCE)
 
-        const finished = library.finishReturn(updatedLoan)
+        const finished = await library.finishReturn(updatedLoan)
         expect(finished).not.toBeNull()
         expect(finished.status).toEqual(LoanStatus.RETURNED)
         expect(finished.item.status).toEqual(ThingStatus.RESERVED)
