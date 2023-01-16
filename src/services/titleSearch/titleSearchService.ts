@@ -21,8 +21,8 @@ export class TitleSearchService implements ITitleSearchService {
             title.upc == searchRequest.searchText;
     }
 
-    find(person: Person, searchRequest: TitleSearchRequest): Iterable<TitleSearchResult> {
-        const libraries = this.libraryRepository.getLibrariesPersonCanUse(person);
+    async find(person: Person, searchRequest: TitleSearchRequest): Promise<Iterable<TitleSearchResult>> {
+        const libraries = await this.libraryRepository.getLibrariesPersonCanUse(person);
 
         const resultsByTitleHash = new Map<string, TitleSearchResult>()
         for(const library of libraries) {

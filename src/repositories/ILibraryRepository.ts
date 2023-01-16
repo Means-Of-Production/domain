@@ -4,5 +4,5 @@ import {Person} from "../entities/people/person";
 
 
 export interface ILibraryRepository extends IRepository<ILibrary>{
-    getLibrariesPersonCanUse(person: Person): Iterable<ILibrary>;
+    getLibrariesPersonCanUse(person: Person): Promise<Iterable<ILibrary>>;
 }

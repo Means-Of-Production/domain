@@ -5,7 +5,7 @@ import {TitleSearchService} from "./titleSearchService"
 import {TitleSearchRequest, ThingTitle} from "../../valueItems"
 
 describe("thingSearchService", () => {
-    it("removes duplicate titles", () => {
+    it("removes duplicate titles", async () => {
         const title1 = new ThingTitle("hash1")
 
         const title2: ThingTitle = new ThingTitle("another")
@@ -28,7 +28,7 @@ describe("thingSearchService", () => {
         when(secondLibrary.getAvailableThings()).thenReturn([instance(thing3)])
 
         const libraryRepo: ILibraryRepository = mock()
-        when(libraryRepo.getLibrariesPersonCanUse(anything())).thenReturn([instance(library), instance(secondLibrary)])
+        when(libraryRepo.getLibrariesPersonCanUse(anything())).thenResolve([instance(library), instance(secondLibrary)])
 
         const underTest = new TitleSearchService(instance(libraryRepo))
 
@@ -36,7 +36,7 @@ describe("thingSearchService", () => {
         const searchRequest = new TitleSearchRequest();
 
         // act
-        const resGen = underTest.find(instance(person), searchRequest)
+        const resGen = await underTest.find(instance(person), searchRequest)
         const res = Array.from(resGen)
 
         expect(res).not.toBeNull()
@@ -52,7 +52,7 @@ describe("thingSearchService", () => {
         expect(Array.from(resTitle2Lib1.things).length).toEqual(1)
     })
 
-    it("iterates all library results", () => {
+    it("iterates all library results", async () => {
         const title1 = new ThingTitle("hash1")
 
         const title2: ThingTitle = new ThingTitle("another")
@@ -75,7 +75,7 @@ describe("thingSearchService", () => {
         when(secondLibrary.getAvailableThings()).thenReturn([instance(thing3)])
 
         const libraryRepo: ILibraryRepository = mock()
-        when(libraryRepo.getLibrariesPersonCanUse(anything())).thenReturn([instance(library), instance(secondLibrary)])
+        when(libraryRepo.getLibrariesPersonCanUse(anything())).thenResolve([instance(library), instance(secondLibrary)])
 
         const underTest = new TitleSearchService(instance(libraryRepo))
 
@@ -83,7 +83,7 @@ describe("thingSearchService", () => {
         const searchRequest = new TitleSearchRequest();
 
         // act
-        const resGen = underTest.find(instance(person), searchRequest)
+        const resGen = await underTest.find(instance(person), searchRequest)
         const res = Array.from(resGen)
 
         expect(res).not.toBeNull()
