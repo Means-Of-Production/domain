@@ -2,7 +2,14 @@ import {ILoan} from "../loans"
 import {Person} from "../people"
 import {ILender} from "./ILender"
 import {IThing} from "../things"
-import {EmailAddress, PhysicalLocation, ThingStatus, ReturnNotStartedError, LoanStatus} from "../../valueItems"
+import {
+    EmailAddress,
+    PhysicalLocation,
+    ThingStatus,
+    ReturnNotStartedError,
+    LoanStatus,
+    ILocation
+} from "../../valueItems"
 
 /*
 Class to represent the lenders in a distributed library
@@ -23,7 +30,7 @@ export class IndividualDistributedLender implements ILender{
         this._returnLocationOverride = returnLocationOverride
     }
 
-    startReturn(loan: ILoan): ILoan{
+    async startReturn(loan: ILoan): Promise<ILoan>{
         // ping out the item to accept this return!
         if(loan.item.status !== ThingStatus.BORROWED){
             throw new ReturnNotStartedError()
@@ -33,7 +40,7 @@ export class IndividualDistributedLender implements ILender{
         return loan
     }
 
-    finishReturn(loan: ILoan): ILoan {
+    async finishReturn(loan: ILoan): Promise<ILoan> {
         // we need to check if the loan has been accepted by the lender
         if(loan.status != LoanStatus.WAITING_ON_LENDER_ACCEPTANCE && loan.status != LoanStatus.RETURN_STARTED
         ){
@@ -51,7 +58,7 @@ export class IndividualDistributedLender implements ILender{
         return item
     }
 
-    preferredReturnLocation(item: IThing): PhysicalLocation{
+    preferredReturnLocation(item: IThing): ILocation{
         if (this._returnLocationOverride){ return this._returnLocationOverride}
 
         return item.storageLocation

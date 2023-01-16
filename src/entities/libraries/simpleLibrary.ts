@@ -49,7 +49,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return this._items
     }
 
-    borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): ILoan {
+    async borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): Promise<ILoan> {
         // check if available
         if(item.status !== ThingStatus.READY){
             throw new InvalidThingStatusToBorrowError(item.status)
@@ -93,7 +93,7 @@ export class SimpleLibrary extends BaseLibrary implements ILender{
         return this.location
     }
 
-    public startReturn(loan: ILoan): ILoan {
+    public async startReturn(loan: ILoan): Promise<ILoan> {
         // simple library does not have an acceptance step, only the library starts returns!
         loan.status = LoanStatus.RETURN_STARTED
         loan.status = LoanStatus.WAITING_ON_LENDER_ACCEPTANCE
