@@ -26,7 +26,7 @@ export class TitleSearchService implements ITitleSearchService {
 
         const resultsByTitleHash = new Map<string, TitleSearchResult>()
         for(const library of libraries) {
-            for(const thing of library.getAvailableThings()){
+            for(const thing of await library.getAvailableThings()){
                 if(this.matches(searchRequest, thing)) {
                     let titleResult = resultsByTitleHash.get(thing.title.hash)
                     if (!titleResult) {

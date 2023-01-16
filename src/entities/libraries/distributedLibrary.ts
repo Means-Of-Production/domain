@@ -8,7 +8,7 @@ import {
 import {BaseLibrary} from "./baseLibrary"
 import {Person} from "../people"
 import {ILender} from "../lenders";
-import {IBiddingStrategy, QuadraticBiddingStrategy} from "../../services"
+import {IBiddingStrategy} from "../../services"
 import {MoneyFactory, IFeeSchedule, IWaitingListFactory} from "../../factories"
 
 export class DistributedLibrary extends BaseLibrary{
@@ -45,7 +45,7 @@ export class DistributedLibrary extends BaseLibrary{
         throw new Error(`Cannot find an owner for ${item.title.name}`)
     }
 
-    borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): ILoan {
+    async borrow(item: IThing, borrower: IBorrower, until: DueDate | undefined): Promise<ILoan> {
         if (item.status !== ThingStatus.READY) {
             throw new InvalidThingStatusToBorrowError(item.status)
         }
@@ -77,13 +77,13 @@ export class DistributedLibrary extends BaseLibrary{
         )
     }
 
-    finishReturn(loan: ILoan): ILoan {
+    async finishReturn(loan: ILoan): Promise<ILoan> {
         const owner = this.getOwnerOfItem(loan.item);
-        const fromOwner = owner.finishReturn(loan);
+        const fromOwner = await owner.finishReturn(loan);
         return super.finishReturn(fromOwner);
     }
 
-    startReturn(loan: ILoan): ILoan {
+    async startReturn(loan: ILoan): Promise<ILoan> {
         // TODO check the borrower is somewhere near where they should be!
         const owner = this.getOwnerOfItem(loan.item);
         const updated = owner.startReturn(loan);

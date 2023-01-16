@@ -30,7 +30,7 @@ export class IndividualDistributedLender implements ILender{
         this._returnLocationOverride = returnLocationOverride
     }
 
-    startReturn(loan: ILoan): ILoan{
+    async startReturn(loan: ILoan): Promise<ILoan>{
         // ping out the item to accept this return!
         if(loan.item.status !== ThingStatus.BORROWED){
             throw new ReturnNotStartedError()
@@ -40,7 +40,7 @@ export class IndividualDistributedLender implements ILender{
         return loan
     }
 
-    finishReturn(loan: ILoan): ILoan {
+    async finishReturn(loan: ILoan): Promise<ILoan> {
         // we need to check if the loan has been accepted by the lender
         if(loan.status != LoanStatus.WAITING_ON_LENDER_ACCEPTANCE && loan.status != LoanStatus.RETURN_STARTED
         ){
