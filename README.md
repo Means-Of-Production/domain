@@ -87,7 +87,6 @@ In plain words, it means I give you the item, with the condition you don't sell 
 
 
 # Long Term Org ideas
-## DAOify this organization
 ### Tokens would be granted for 
 - providing identify verification for self or others
 -     this can also aid in modelling lending risk long term
@@ -107,11 +106,5 @@ In plain words, it means I give you the item, with the condition you don't sell 
 ## Onboarding for existing libraries
 Many local or free libraries exist.  We should make it so not only can our software support their needs - but that we can offer an "all-library" view of items available anywhere a member has membership
 
-## Faircoin integration
-For fees
-
 ## Insurance of distributed lenders
 ### Risk modeling of borrowers
-
-## Large scale distributed Kubernetes cluster
-This will run over WireGuard VPN - we'll require 2 clusters.  One is to provide the VPN to the public, and also act as the general admin (able to approve or revoke general VPN certs for who can join the cluster).  The second uses the VPN provided by the first, and allows anyone to join their computer to a cluster to provide cloud resources and give a crowd sourced alternative to AWS and the like.
