@@ -1,4 +1,4 @@
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { v4 as uuidv4, validate as uuidValidate } from "uuid";
 
 export class ID {
   public readonly id: string;
@@ -9,7 +9,7 @@ export class ID {
 
   static parse(value: string): ID {
     if (!uuidValidate(value)) {
-      throw new Error('Invalid UUID');
+      throw new Error("Invalid UUID");
     }
     return new ID(value);
   }

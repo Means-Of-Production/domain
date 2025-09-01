@@ -1,5 +1,5 @@
-import { ID } from './id';
-import { Money } from './money';
+import { ID } from "./id";
+import { Money } from "./money";
 
 export class AuctionBid {
   public readonly amount_bid: Money;
@@ -7,7 +7,12 @@ export class AuctionBid {
   public readonly made_by_id: ID;
   public readonly made_for_id: ID;
 
-  constructor(params: { amount_bid: Money; amount_paid: Money; made_by_id: ID; made_for_id: ID }) {
+  constructor(params: {
+    amount_bid: Money;
+    amount_paid: Money;
+    made_by_id: ID;
+    made_for_id: ID;
+  }) {
     this.amount_bid = params.amount_bid;
     this.amount_paid = params.amount_paid;
     this.made_by_id = params.made_by_id;
@@ -30,7 +35,7 @@ export class AuctionBid {
       this.amount_paid.toJSON().amount,
       this.made_by_id.toString(),
       this.made_for_id.toString(),
-    ].join('|');
+    ].join("|");
     let hash = 0;
     for (let i = 0; i < s.length; i++) {
       const chr = s.charCodeAt(i);

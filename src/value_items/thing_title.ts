@@ -25,7 +25,7 @@ export class ThingTitle {
   }
 
   hash(): number {
-    const s = this.name.replace(/_/g, '-').toLowerCase();
+    const s = this.name.replace(/_/g, "-").toLowerCase();
     let hash = 0;
     for (let i = 0; i < s.length; i++) {
       const chr = s.charCodeAt(i);

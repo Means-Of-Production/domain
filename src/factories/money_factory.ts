@@ -1,4 +1,4 @@
-import { Currency, Money } from '../value_items/money';
+import { Currency, Money } from "../value_items/money";
 
 export class MoneyFactory {
   default_currency: Currency = Currency.EUR;
@@ -10,6 +10,9 @@ export class MoneyFactory {
 
   total(amounts: Money[]): Money {
     if (!amounts || amounts.length === 0) return this.empty();
-    return amounts.reduce((acc, cur) => acc.add(cur), this.empty(amounts[0].currency));
+    return amounts.reduce(
+      (acc, cur) => acc.add(cur),
+      this.empty(amounts[0].currency),
+    );
   }
 }

@@ -1,5 +1,5 @@
-import { Location } from './location';
-import { Distance } from './distance';
+import { Location } from "./location";
+import { Distance } from "./distance";
 
 export class PhysicalLocation implements Location {
   public readonly latitude?: number | null;
@@ -30,8 +30,10 @@ export class PhysicalLocation implements Location {
 
   equals(other: unknown): boolean {
     if (!(other instanceof PhysicalLocation)) return false;
-    if (this.latitude && other.latitude && this.latitude !== other.latitude) return false;
-    if (this.longitude && other.longitude && this.longitude !== other.longitude) return false;
+    if (this.latitude && other.latitude && this.latitude !== other.latitude)
+      return false;
+    if (this.longitude && other.longitude && this.longitude !== other.longitude)
+      return false;
     return (
       this.street_address === other.street_address &&
       this.city === other.city &&
@@ -46,10 +48,12 @@ export class PhysicalLocation implements Location {
 
   distance(other: PhysicalLocation): Distance {
     if (this.latitude == null || this.longitude == null) {
-      throw new Error('This location does not have latitude and longitude set');
+      throw new Error("This location does not have latitude and longitude set");
     }
     if (other.latitude == null || other.longitude == null) {
-      throw new Error('The other location does not have latitude and longitude set');
+      throw new Error(
+        "The other location does not have latitude and longitude set",
+      );
     }
 
     // Haversine formula
@@ -63,7 +67,9 @@ export class PhysicalLocation implements Location {
 
     const dlon = lon2 - lon1;
     const dlat = lat2 - lat1;
-    const a = Math.sin(dlat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2) ** 2;
+    const a =
+      Math.sin(dlat / 2) ** 2 +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distanceKm = earthRadius * c;
 

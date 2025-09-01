@@ -1,12 +1,12 @@
-import { Entity } from '../entity';
-import { Borrower } from '../borrower';
-import { LibraryFee } from './library_fee';
-import { Loan } from '../loan';
-import { MOPServer } from '../mop_server';
-import { Person } from '../people/person';
-import { Thing } from '../thing';
-import { WaitingList } from '../waiting_lists/waiting_list';
-import { MoneyFactory, WaitingListFactory } from '../../factories';
+import { Entity } from "../entity";
+import { Borrower } from "../borrower";
+import { LibraryFee } from "./library_fee";
+import { Loan } from "../loan";
+import { MOPServer } from "../mop_server";
+import { Person } from "../people/person";
+import { Thing } from "../thing";
+import { WaitingList } from "../waiting_lists/waiting_list";
+import { MoneyFactory, WaitingListFactory } from "../../factories";
 import {
   ID,
   DueDate,
@@ -17,7 +17,7 @@ import {
   ThingStatus,
   ThingTitle,
   WaitingListType,
-} from '../../value_items';
+} from "../../value_items";
 
 export abstract class Library extends Entity {
   library_id: ID;
@@ -72,10 +72,16 @@ export abstract class Library extends Entity {
     return result;
   }
 
-  abstract borrow(thing: Thing, borrower: Borrower, until: DueDate): Promise<Loan>;
+  abstract borrow(
+    thing: Thing,
+    borrower: Borrower,
+    until: DueDate,
+  ): Promise<Loan>;
   abstract start_return(loan: Loan): Promise<Loan>;
 
-  get borrowers(): Iterable<Borrower> { return this._borrowers; }
+  get borrowers(): Iterable<Borrower> {
+    return this._borrowers;
+  }
 
   add_borrower(borrower: Borrower): Borrower {
     this._borrowers.push(borrower);
@@ -83,18 +89,19 @@ export abstract class Library extends Entity {
   }
 
   can_borrow(borrower: Borrower): boolean {
-    if (!borrower.library_id || !borrower.library_id.equals(this.entity_id)) return false;
+    if (!borrower.library_id || !borrower.library_id.equals(this.entity_id))
+      return false;
 
     const fee_amounts = Array.from(borrower.fees)
-      .filter(f => f.status === FeeStatus.OUTSTANDING)
-      .map(f => f.amount);
+      .filter((f) => f.status === FeeStatus.OUTSTANDING)
+      .map((f) => f.amount);
     const total_fees = this.money_factory.total(fee_amounts);
     return total_fees.lessThanOrEqual(this.max_fines_before_suspension);
   }
 
   async reserve_item(item: Thing, borrower: Borrower): Promise<WaitingList> {
     if (!item.entity_id) {
-      throw new Error('EntityNotAssignedIdError');
+      throw new Error("EntityNotAssignedIdError");
     }
     const key = item.entity_id.toString();
     let waiting_list = this.waiting_lists_by_item_id.get(key);
@@ -106,20 +113,27 @@ export abstract class Library extends Entity {
     return waiting_list;
   }
 
-  get_loans(): Iterable<Loan> { return this._loans; }
-  add_loan(loan: Loan): void { this._loans.push(loan); }
+  get_loans(): Iterable<Loan> {
+    return this._loans;
+  }
+  add_loan(loan: Loan): void {
+    this._loans.push(loan);
+  }
 
   static get_titles_from_items(items: Iterable<Thing>): Iterable<ThingTitle> {
     const titles: ThingTitle[] = [];
     for (const item of items) {
-      if (!titles.some(t => t.equals(item.title))) titles.push(item.title);
+      if (!titles.some((t) => t.equals(item.title))) titles.push(item.title);
     }
     return titles;
   }
 
   async finish_library_return(loan: Loan, borrower: Borrower): Promise<Loan> {
-    if (loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE || !loan.time_returned) {
-      throw new Error('ReturnNotStartedError');
+    if (
+      loan.status !== LoanStatus.WAITING_ON_LENDER_ACCEPTANCE ||
+      !loan.time_returned
+    ) {
+      throw new Error("ReturnNotStartedError");
     }
 
     if (loan.item.status === ThingStatus.DAMAGED) {
@@ -139,11 +153,15 @@ export abstract class Library extends Entity {
     let fee_amount: Money | null = null;
     if (loan.item.status === ThingStatus.DAMAGED) {
       // prefer camelCase per FeeSchedule interface; fall back if implementation uses snake_case
-      const calculator = (this.fee_schedule as any).feeForDamagedItem ?? (this.fee_schedule as any).fee_for_damaged_item;
+      const calculator =
+        (this.fee_schedule as any).feeForDamagedItem ??
+        (this.fee_schedule as any).fee_for_damaged_item;
       if (calculator) fee_amount = calculator.call(this.fee_schedule, loan);
     }
     if (loan.status === LoanStatus.OVERDUE) {
-      const calculator = (this.fee_schedule as any).feeForOverdueItem ?? (this.fee_schedule as any).fee_for_overdue_item;
+      const calculator =
+        (this.fee_schedule as any).feeForOverdueItem ??
+        (this.fee_schedule as any).fee_for_overdue_item;
       if (calculator) fee_amount = calculator.call(this.fee_schedule, loan);
     }
 
@@ -159,7 +177,7 @@ export abstract class Library extends Entity {
     }
 
     const itemIdStr = loan.item.entity_id?.toString();
-    if (!itemIdStr) throw new Error('EntityNotAssignedIdError');
+    if (!itemIdStr) throw new Error("EntityNotAssignedIdError");
 
     const waiting_list = this.waiting_lists_by_item_id.get(itemIdStr);
     if (waiting_list) {

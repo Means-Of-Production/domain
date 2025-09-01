@@ -20,24 +20,33 @@ export class DueDate {
     if (!this.date) return false;
     const otherDate = other instanceof DueDate ? other.date : other;
     if (!otherDate) return true; // other is empty -> we are considered earlier
-    return this.stripTime(this.date).getTime() < this.stripTime(otherDate).getTime();
+    return (
+      this.stripTime(this.date).getTime() < this.stripTime(otherDate).getTime()
+    );
   }
 
   greaterThan(other: DueDate): boolean {
     if (!this.date) return true;
     if (!other.date) return true;
-    return this.stripTime(this.date).getTime() > this.stripTime(other.date).getTime();
+    return (
+      this.stripTime(this.date).getTime() > this.stripTime(other.date).getTime()
+    );
   }
 
   equals(other: unknown): boolean {
     if (!(other instanceof DueDate)) return false;
     if (!this.date && !other.date) return true;
     if (!!this.date !== !!other.date) return false;
-    return this.stripTime(this.date!).getTime() === this.stripTime(other.date!).getTime();
+    return (
+      this.stripTime(this.date!).getTime() ===
+      this.stripTime(other.date!).getTime()
+    );
   }
 
   private stripTime(d: Date): Date {
     // Interpret as UTC day by using UTC components
-    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    return new Date(
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
+    );
   }
 }

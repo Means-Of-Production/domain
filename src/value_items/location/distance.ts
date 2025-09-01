@@ -2,7 +2,7 @@ export class Distance {
   public readonly kilometers: number;
 
   constructor(kilometers: number) {
-    if (kilometers < 0) throw new Error('kilometers must be >= 0');
+    if (kilometers < 0) throw new Error("kilometers must be >= 0");
     this.kilometers = kilometers;
   }
 

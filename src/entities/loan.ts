@@ -1,6 +1,6 @@
-import { Entity } from './entity';
-import { Thing } from './thing';
-import { ID, DueDate, LoanStatus, Location } from '../value_items';
+import { Entity } from "./entity";
+import { Thing } from "./thing";
+import { ID, DueDate, LoanStatus, Location } from "../value_items";
 
 export class Loan extends Entity {
   loan_id: ID;
@@ -44,7 +44,11 @@ export class Loan extends Entity {
   }
 
   get status(): LoanStatus {
-    if (this.due_date && !this.due_date.isAfterNow() && this._status === LoanStatus.BORROWED) {
+    if (
+      this.due_date &&
+      !this.due_date.isAfterNow() &&
+      this._status === LoanStatus.BORROWED
+    ) {
       this._status = LoanStatus.OVERDUE;
     }
     return this._status;
@@ -77,13 +81,14 @@ export class Loan extends Entity {
         ];
         break;
       case LoanStatus.RETURNED_DAMAGED:
-      case LoanStatus.RETURNED:
         valid_new_statuses = [];
         break;
     }
 
     if (!valid_new_statuses.includes(value)) {
-      throw new Error(`Cannot change loan status from '${this._status}' to '${value}'.`);
+      throw new Error(
+        `Cannot change loan status from '${this._status}' to '${value}'.`,
+      );
     }
     this._status = value;
   }

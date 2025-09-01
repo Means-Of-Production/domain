@@ -13,7 +13,7 @@ export class TitleSearchRequest {
   }
 
   hash(): number {
-    const s = (this.search_text ?? '').toString();
+    const s = (this.search_text ?? "").toString();
     let hash = 0;
     for (let i = 0; i < s.length; i++) {
       const chr = s.charCodeAt(i);

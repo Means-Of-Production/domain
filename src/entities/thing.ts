@@ -1,6 +1,6 @@
-import { Entity } from './entity';
-import { ID, Location, Money, ThingStatus, ThingTitle } from '../value_items';
-import { InvalidThingStateTransitionError } from '../value_items/exceptions';
+import { Entity } from "./entity";
+import { ID, Location, Money, ThingStatus, ThingTitle } from "../value_items";
+import { InvalidThingStateTransitionError } from "../value_items";
 
 export class Thing extends Entity {
   thing_id: ID;
@@ -46,7 +46,11 @@ export class Thing extends Entity {
       if (this._status === ThingStatus.READY) {
         valid_next_statuses = [ThingStatus.BORROWED, ThingStatus.RESERVED];
       } else if (this._status === ThingStatus.BORROWED) {
-        valid_next_statuses = [ThingStatus.READY, ThingStatus.RESERVED, ThingStatus.DAMAGED];
+        valid_next_statuses = [
+          ThingStatus.READY,
+          ThingStatus.RESERVED,
+          ThingStatus.DAMAGED,
+        ];
       } else if (this._status === ThingStatus.RESERVED) {
         valid_next_statuses = [ThingStatus.READY, ThingStatus.BORROWED];
       } else if (this._status === ThingStatus.DAMAGED) {

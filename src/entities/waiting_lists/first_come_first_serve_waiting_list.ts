@@ -1,6 +1,6 @@
-import { WaitingList, Reservation } from './waiting_list';
-import { Borrower } from '../borrower';
-import { ReservationStatus } from '../../value_items/reservation_status';
+import { WaitingList, Reservation } from "./waiting_list";
+import { Borrower } from "../borrower";
+import { ReservationStatus } from "../../value_items";
 
 export class FirstComeFirstServeWaitingList extends WaitingList {
   members: Borrower[] = [];
@@ -13,7 +13,7 @@ export class FirstComeFirstServeWaitingList extends WaitingList {
   }
 
   is_on_list(borrower: Borrower): boolean {
-    const member_ids = this.members.map(b => b.entity_id.toString());
+    const member_ids = this.members.map((b) => b.entity_id.toString());
     return member_ids.includes(borrower.entity_id.toString());
   }
 
@@ -41,7 +41,9 @@ export class FirstComeFirstServeWaitingList extends WaitingList {
   }
 
   cancel(borrower: Borrower): this {
-    this.members = this.members.filter(b => !b.entity_id.equals(borrower.entity_id));
+    this.members = this.members.filter(
+      (b) => !b.entity_id.equals(borrower.entity_id),
+    );
     return this;
   }
 }

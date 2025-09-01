@@ -1,16 +1,28 @@
-import { Library } from './library';
-import { Lender } from '../lenders/lender';
-import { Borrower } from '../borrower';
-import { Loan } from '../loan';
-import { Thing } from '../thing';
-import { ID, DueDate, LoanStatus, ThingStatus, ThingTitle, Location } from '../../value_items';
-import { BorrowerNotInGoodStandingError, InvalidThingStatusToBorrowError } from '../../value_items/exceptions';
+import { Library } from "./library";
+import { Lender } from "../lenders/lender";
+import { Borrower } from "../borrower";
+import { Loan } from "../loan";
+import { Thing } from "../thing";
+import {
+  ID,
+  DueDate,
+  LoanStatus,
+  ThingStatus,
+  ThingTitle,
+  Location,
+} from "../../value_items";
+import {
+  BorrowerNotInGoodStandingError,
+  InvalidThingStatusToBorrowError,
+} from "../../value_items";
 
 export class SimpleLibrary extends Library implements Lender {
   private _items: Thing[] = [];
   location!: Location; // PhysicalLocation in Python, but keep generic Location interface
 
-  get entity_id(): ID { return this.library_id; }
+  get entity_id(): ID {
+    return this.library_id;
+  }
 
   add_item(item: Thing): Thing {
     this._items.push(item);
@@ -25,7 +37,11 @@ export class SimpleLibrary extends Library implements Lender {
     return this._items;
   }
 
-  async borrow(thing: Thing, borrower: Borrower, until?: DueDate | null): Promise<Loan> {
+  async borrow(
+    thing: Thing,
+    borrower: Borrower,
+    until?: DueDate | null,
+  ): Promise<Loan> {
     if (thing.status !== ThingStatus.READY) {
       throw new InvalidThingStatusToBorrowError(thing.status as any);
     }
@@ -60,7 +76,9 @@ export class SimpleLibrary extends Library implements Lender {
   }
 
   get available_titles(): Iterable<ThingTitle> {
-    const available_items = Array.from(this.items).filter(i => i.status === ThingStatus.READY);
+    const available_items = Array.from(this.items).filter(
+      (i) => i.status === ThingStatus.READY,
+    );
     return Library.get_titles_from_items(available_items);
   }
 

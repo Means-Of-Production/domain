@@ -1,6 +1,6 @@
-import { Location } from './location';
-import { PhysicalLocation } from './physical_location';
-import { Distance } from './distance';
+import { Location } from "./location";
+import { PhysicalLocation } from "./physical_location";
+import { Distance } from "./distance";
 
 export class PhysicalArea implements Location {
   public readonly center_point: PhysicalLocation;
