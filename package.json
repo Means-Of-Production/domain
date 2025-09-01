@@ -3,11 +3,18 @@
   "version": "0.0.1",
   "description": "Means of Production domain model (TypeScript)",
   "license": "MIT",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p .",
     "clean": "rm -rf dist",
@@ -21,10 +28,11 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "typescript": "^5.5.4",
-    "vitest": "^1.6.0",
     "@types/node": "^22.5.1",
-    "@types/uuid": "^9.0.7"
+    "@types/uuid": "^9.0.7",
+    "@vitest/coverage-v8": "^3.2.4",
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "decimal.js": "^10.4.3",

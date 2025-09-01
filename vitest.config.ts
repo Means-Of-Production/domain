@@ -6,7 +6,7 @@ export default defineConfig({
     globals: true,
     include: ['tests/**/*.test.ts'],
     coverage: {
-      reporter: ['text', 'html'],
+      reporter: ['text', 'html', "lcov"],
     },
   },
 });
