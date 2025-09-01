@@ -1,4 +1,4 @@
-import { ID } from '../value_items';
+import { ID } from "../value_items";
 
 export abstract class Entity {
   // In TS we expose an abstract getter similar to Python's abstract property

@@ -1,15 +1,23 @@
-import { Library } from './library';
-import { Borrower } from '../borrower';
-import { Loan } from '../loan';
-import { Thing } from '../thing';
-import { Lender } from '../lenders/lender';
-import { ID, DueDate, LoanStatus, PhysicalArea, ThingStatus } from '../../value_items';
+import { Library } from "./library";
+import { Borrower } from "../borrower";
+import { Loan } from "../loan";
+import { Thing } from "../thing";
+import { Lender } from "../lenders/lender";
+import {
+  ID,
+  DueDate,
+  LoanStatus,
+  PhysicalArea,
+  ThingStatus,
+} from "../../value_items";
 
 export class DistributedLibrary extends Library {
   area!: PhysicalArea;
   private _lenders: Lender[] = [];
 
-  get entity_id(): ID { return this.library_id; }
+  get entity_id(): ID {
+    return this.library_id;
+  }
 
   get all_things(): Iterable<Thing> {
     const items: Thing[] = [];
@@ -22,7 +30,11 @@ export class DistributedLibrary extends Library {
   get_owner_of_item(item: Thing): Lender {
     for (const lender of this._lenders) {
       for (const lender_item of lender.items) {
-        if (item.entity_id && lender_item.entity_id && item.entity_id.equals(lender_item.entity_id)) {
+        if (
+          item.entity_id &&
+          lender_item.entity_id &&
+          item.entity_id.equals(lender_item.entity_id)
+        ) {
           return lender;
         }
       }
@@ -30,16 +42,21 @@ export class DistributedLibrary extends Library {
     throw new Error(`Cannot find an owner for ${item.title.name}`);
   }
 
-  async borrow(thing: Thing, borrower: Borrower, until?: DueDate | null): Promise<Loan> {
+  async borrow(
+    thing: Thing,
+    borrower: Borrower,
+    until?: DueDate | null,
+  ): Promise<Loan> {
     if (thing.status !== ThingStatus.READY) {
       throw new Error(String(thing.status));
     }
     if (!this.can_borrow(borrower)) {
-      throw new Error('BorrowerNotInGoodStandingError');
+      throw new Error("BorrowerNotInGoodStandingError");
     }
 
     const lender = this.get_owner_of_item(thing);
-    if (!lender) throw new Error(`Cannot find owner of item ${thing.entity_id}`);
+    if (!lender)
+      throw new Error(`Cannot find owner of item ${thing.entity_id}`);
 
     if (!until) {
       const now = new Date();

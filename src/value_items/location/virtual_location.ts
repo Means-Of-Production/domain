@@ -1,5 +1,5 @@
-import { Location } from './location';
-import { URL } from '../url';
+import { Location } from "./location";
+import { URL } from "../url";
 
 export class VirtualLocation implements Location {
   public readonly url: URL;

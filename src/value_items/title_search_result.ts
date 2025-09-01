@@ -1,6 +1,6 @@
-import { ID } from './id';
-import { ThingTitle } from './thing_title';
-import { EntityNotAssignedIdError } from './exceptions';
+import { ID } from "./id";
+import { ThingTitle } from "./thing_title";
+import { EntityNotAssignedIdError } from "./exceptions";
 
 export class LibrarySearchResult<TLibrary, TThing> {
   public readonly library: TLibrary;
@@ -24,9 +24,13 @@ export class LibrarySearchResult<TLibrary, TThing> {
   }
 }
 
-export class TitleSearchResult<TLibrary extends { entity_id?: ID; name?: string }, TThing> {
+export class TitleSearchResult<
+  TLibrary extends { entity_id?: ID; name?: string },
+  TThing,
+> {
   public readonly title: ThingTitle;
-  private _libraryResults: Map<string, LibrarySearchResult<TLibrary, TThing>> = new Map();
+  private _libraryResults: Map<string, LibrarySearchResult<TLibrary, TThing>> =
+    new Map();
 
   constructor(params: { title: ThingTitle }) {
     this.title = params.title;
@@ -45,7 +49,9 @@ export class TitleSearchResult<TLibrary extends { entity_id?: ID; name?: string 
   getForLibrary(library: TLibrary): LibrarySearchResult<TLibrary, TThing> {
     const id = library.entity_id;
     if (!id) {
-      throw new EntityNotAssignedIdError(`Library ${library.name ?? ''} has not yet been saved!`);
+      throw new EntityNotAssignedIdError(
+        `Library ${library.name ?? ""} has not yet been saved!`,
+      );
     }
     const key = id.toString();
     let result = this._libraryResults.get(key);

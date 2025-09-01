@@ -1,5 +1,5 @@
-import { VirtualLocation } from './location/virtual_location';
-import { URL } from './url';
+import { VirtualLocation } from "./location/virtual_location";
+import { URL } from "./url";
 
 export class MOPServer extends VirtualLocation {
   public readonly version: string;
@@ -10,6 +10,9 @@ export class MOPServer extends VirtualLocation {
   }
 
   static localhost(): MOPServer {
-    return new MOPServer({ url: URL.parse('https://localhost'), version: '0.0.0' });
+    return new MOPServer({
+      url: URL.parse("https://localhost"),
+      version: "0.0.0",
+    });
   }
 }

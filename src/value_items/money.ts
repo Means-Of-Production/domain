@@ -1,10 +1,10 @@
-import Decimal from 'decimal.js';
-import { CurrencyMismatchException } from './exceptions';
+import Decimal from "decimal.js";
+import { CurrencyMismatchException } from "./exceptions";
 
 export enum Currency {
-  EUR = 'Euro',
-  USD = 'US Dollar',
-  HOUR = 'Labor Token',
+  EUR = "Euro",
+  USD = "US Dollar",
+  HOUR = "Labor Token",
 }
 
 export class Money {
@@ -12,7 +12,11 @@ export class Money {
   public readonly currency: Currency;
   public readonly symbol?: string;
 
-  constructor(params: { amount: Decimal.Value; currency: Currency; symbol?: string | null }) {
+  constructor(params: {
+    amount: Decimal.Value;
+    currency: Currency;
+    symbol?: string | null;
+  }) {
     this.amount = new Decimal(params.amount);
     this.currency = params.currency;
     this.symbol = params.symbol ?? undefined;
@@ -20,7 +24,9 @@ export class Money {
 
   get dollars(): Decimal {
     if (this.currency !== Currency.USD) {
-      throw new CurrencyMismatchException('Can only convert to dollars if currency is USD');
+      throw new CurrencyMismatchException(
+        "Can only convert to dollars if currency is USD",
+      );
     }
     return this.amount;
   }
@@ -52,13 +58,23 @@ export class Money {
 
   add(other: Money): Money {
     if (this.currency !== other.currency) {
-      throw new CurrencyMismatchException('Can only add Money objects with the same currency');
+      throw new CurrencyMismatchException(
+        "Can only add Money objects with the same currency",
+      );
     }
-    return new Money({ amount: this.amount.plus(other.amount), currency: this.currency, symbol: this.symbol });
+    return new Money({
+      amount: this.amount.plus(other.amount),
+      currency: this.currency,
+      symbol: this.symbol,
+    });
   }
 
   mul(multiplier: number): Money {
-    return new Money({ amount: this.amount.mul(multiplier), currency: this.currency, symbol: this.symbol });
+    return new Money({
+      amount: this.amount.mul(multiplier),
+      currency: this.currency,
+      symbol: this.symbol,
+    });
   }
 
   private ensureSameCurrency(other: Money): void {

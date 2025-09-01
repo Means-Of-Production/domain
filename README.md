@@ -1,7 +1,9 @@
 # domain
+
 Latest version of the library domain
 
 ## Module format
+
 This package is published as ECMAScript Modules (ESM). The package.json has `"type": "module"` and the TypeScript compiler outputs native ESM to `dist/` with declarations alongside.
 
 - Node.js 20+ is required.
