@@ -47,7 +47,7 @@ function makeSimpleLibrary(name: string) {
     fee_schedule: new TestFeeSchedule(),
     default_loan_time: { days: 14 },
     mop_server: MOPServer.localhost(),
-    public_url: URL.parse("https://example.com") as any,
+    public_url: URL.parse("https://example.com"),
   });
   lib.location = new PhysicalLocation({
     street_address: "1 Main",

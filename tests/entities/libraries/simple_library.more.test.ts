@@ -136,7 +136,7 @@ describe("SimpleLibrary (expanded tests)", () => {
       fees: [],
       apply_fee: () => borrower,
     };
-    (lib as any).can_borrow = () => true;
+    lib.can_borrow = () => true;
     const loan = await lib.borrow(
       thing,
       borrower,

@@ -30,7 +30,7 @@ export abstract class Library extends Entity {
   money_factory: MoneyFactory = new MoneyFactory();
   default_loan_time: { days: number };
   mop_server: MOPServer;
-  public_url?: string | null;
+  public_url?: URL | null;
 
   protected _borrowers: Borrower[] = [];
   protected _loans: Loan[] = [];
@@ -44,7 +44,7 @@ export abstract class Library extends Entity {
     fee_schedule: FeeSchedule;
     default_loan_time: { days: number };
     mop_server: MOPServer;
-    public_url?: string | null;
+    public_url?: URL | null;
   }) {
     super();
     this.library_id = params.library_id;
@@ -154,14 +154,12 @@ export abstract class Library extends Entity {
     if (loan.item.status === ThingStatus.DAMAGED) {
       // prefer camelCase per FeeSchedule interface; fall back if implementation uses snake_case
       const calculator =
-        (this.fee_schedule as any).feeForDamagedItem ??
-        (this.fee_schedule as any).fee_for_damaged_item;
+        this.fee_schedule.feeForDamagedItem
       if (calculator) fee_amount = calculator.call(this.fee_schedule, loan);
     }
     if (loan.status === LoanStatus.OVERDUE) {
       const calculator =
-        (this.fee_schedule as any).feeForOverdueItem ??
-        (this.fee_schedule as any).fee_for_overdue_item;
+        this.fee_schedule.feeForOverdueItem
       if (calculator) fee_amount = calculator.call(this.fee_schedule, loan);
     }
 

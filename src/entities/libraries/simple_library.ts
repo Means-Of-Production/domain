@@ -43,7 +43,7 @@ export class SimpleLibrary extends Library implements Lender {
     until?: DueDate | null,
   ): Promise<Loan> {
     if (thing.status !== ThingStatus.READY) {
-      throw new InvalidThingStatusToBorrowError(thing.status as any);
+      throw new InvalidThingStatusToBorrowError(thing.status);
     }
     if (!this.can_borrow(borrower)) {
       throw new BorrowerNotInGoodStandingError();

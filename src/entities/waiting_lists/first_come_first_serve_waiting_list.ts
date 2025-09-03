@@ -27,10 +27,9 @@ export class FirstComeFirstServeWaitingList extends WaitingList {
   }
 
   process_reservation_expired(reservation: Reservation): this {
-    // Mark as expired if allowed; otherwise just clear current reservation
+    // Mark as expired if allowed; otherwise just clear the current reservation
     try {
       // Only transition if currently BORROWER_NOTIFIED per Python logic; our Reservation setter enforces transitions
-      (reservation as any)._status = ReservationStatus.BORROWER_NOTIFIED;
       reservation.status = ReservationStatus.EXPIRED;
     } catch {
       // ignore invalid transition in this minimal model

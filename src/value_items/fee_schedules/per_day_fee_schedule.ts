@@ -1,5 +1,6 @@
 import { Money } from "../money";
 import { FeeSchedule } from "./fee_schedule";
+import {Loan} from "../../entities";
 
 export class PerDayFeeSchedule implements FeeSchedule {
   public readonly daily_charge: Money;
@@ -8,7 +9,7 @@ export class PerDayFeeSchedule implements FeeSchedule {
     this.daily_charge = params.daily_charge;
   }
 
-  feeForOverdueItem(loan: any): Money {
+  feeForOverdueItem(loan: Loan): Money {
     const dueDate: Date | null | undefined =
       loan?.due_date?.date ?? loan?.due_date ?? null;
     if (!dueDate) {

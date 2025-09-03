@@ -1,21 +1,22 @@
 import { describe, it, expect } from "vitest";
-import { SimpleLibrary } from "../../../src/entities/libraries/simple_library";
+import { SimpleLibrary } from "../../../src";
 import {
   ID,
   DueDate,
   LoanStatus,
   ThingStatus,
   ThingTitle,
-} from "../../../src/value_items";
-import { Person } from "../../../src/entities/people/person";
-import { PersonName } from "../../../src/value_items/person_name";
-import { URL } from "../../../src/value_items/url";
-import { MOPServer } from "../../../src/entities/mop_server";
-import { Money, Currency } from "../../../src/value_items/money";
-import { MoneyFactory } from "../../../src/factories/money_factory";
-import { FeeSchedule } from "../../../src/value_items/fee_schedules/fee_schedule";
-import { Thing } from "../../../src/entities/thing";
-import { PhysicalLocation } from "../../../src/value_items/location/physical_location";
+} from "../../../src";
+import { Person } from "../../../src";
+import { PersonName } from "../../../src";
+import { URL } from "../../../src";
+import { MOPServer } from "../../../src";
+import { Money, Currency } from "../../../src";
+import { MoneyFactory } from "../../../src";
+import { FeeSchedule } from "../../../src";
+import { Thing } from "../../../src";
+import { PhysicalLocation } from "../../../src";
+import {PersonBorrower} from "../../../src";
 
 class TestFeeSchedule implements FeeSchedule {
   feeForOverdueItem(): Money {
@@ -48,7 +49,7 @@ describe("SimpleLibrary", () => {
       fee_schedule,
       default_loan_time: { days: 14 },
       mop_server,
-      public_url: URL.parse("https://example.com") as any,
+      public_url: URL.parse("https://example.com"),
     });
     lib.location = new PhysicalLocation({
       street_address: "1 Main",
@@ -58,7 +59,7 @@ describe("SimpleLibrary", () => {
       country: "US",
     });
     // ensure default currency aligns with max_fines currency to avoid mismatch when borrower has no fees
-    (lib as any).money_factory.default_currency = Currency.USD;
+    lib.money_factory.default_currency = Currency.USD;
     return lib;
   }
 
@@ -81,13 +82,15 @@ describe("SimpleLibrary", () => {
   it("borrows when thing ready and borrower in good standing", async () => {
     const lib = makeLibrary();
     const thing = makeThing();
-    const borrower = new Person({
+    const borrower = new PersonBorrower({
       person_id: ID.generate(),
       name: new PersonName({ first_name: "B", last_name: "R" }),
-    }) as any;
-    (borrower as any).library_id = lib.entity_id; // minimal borrower shape
-    (borrower as any).fees = [];
-    (borrower as any).apply_fee = () => borrower;
+      emails: null,
+      library_id: lib.library_id,
+      verification_flags: null as any,
+    });
+    borrower.library_id = lib.entity_id; // minimal borrower shape
+    borrower.apply_fee = () => borrower;
 
     lib.add_item(thing);
     const until = new DueDate({ date: new Date(Date.now() + 3 * 86400000) });
