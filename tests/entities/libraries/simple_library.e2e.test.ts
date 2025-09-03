@@ -74,7 +74,7 @@ function makeThing(): Thing {
   });
 }
 
-function makeBorrower(lib: SimpleLibrary): PersonBorrower & { fees: any[]; apply_fee: Function } {
+function makeBorrower(lib: SimpleLibrary): PersonBorrower {
   const borrower = new PersonBorrower({
     person_id: ID.generate(),
     name: new PersonName({ first_name: "B", last_name: "R" }),
