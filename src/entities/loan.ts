@@ -7,9 +7,8 @@ export class Loan extends Entity {
   item: Thing;
   due_date: DueDate;
   borrower_id: ID;
-  location: Location | null;
   private _status: LoanStatus = LoanStatus.RETURNED;
-  return_location: Location;
+  return_location: Location | null;
   time_returned: Date | null;
 
   constructor(params: {
@@ -17,7 +16,6 @@ export class Loan extends Entity {
     item: Thing;
     due_date: DueDate;
     borrower_id: ID;
-    location?: Location | null;
     return_location: Location;
     time_returned: Date | null;
   }) {
@@ -26,7 +24,6 @@ export class Loan extends Entity {
     this.item = params.item;
     this.due_date = params.due_date;
     this.borrower_id = params.borrower_id;
-    this.location = params.location ?? null;
     this.return_location = params.return_location;
     this.time_returned = params.time_returned;
   }
